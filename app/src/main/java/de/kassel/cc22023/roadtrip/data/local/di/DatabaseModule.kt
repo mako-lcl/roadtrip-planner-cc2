@@ -32,7 +32,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 class DatabaseModule {
     @Provides
-    fun provideWeatherDataDao(appDatabase: AppDatabase): RoadtripDataDao {
+    fun provideRoadtripDataDao(appDatabase: AppDatabase): RoadtripDataDao {
         return appDatabase.roadtripDataDao()
     }
 
