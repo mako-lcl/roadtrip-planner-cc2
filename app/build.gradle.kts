@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 /*
  * Copyright (C) 2022 The Android Open Source Project
  *
@@ -43,6 +45,9 @@ android {
         ksp {
             arg("room.schemaLocation", "$projectDir/schemas")
         }
+
+        gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
+        manifestPlaceholders["googleMapsApiKey"] = gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
     }
 
     buildTypes {
@@ -81,6 +86,18 @@ android {
 }
 
 dependencies {
+    //maps
+    implementation("com.google.maps.android:maps-compose:2.11.2")
+
+    // Make sure to also include the latest version of the Maps SDK for Android
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
+    // Optionally, you can include the Compose utils library for Clustering, etc.
+    implementation("com.google.maps.android:maps-compose-utils:2.11.2")
+
+    // Optionally, you can include the widgets library for ScaleBar, etc.
+    implementation("com.google.maps.android:maps-compose-widgets:2.11.2")
+
     //sensors
     implementation("com.mutualmobile:composesensors:1.1.0")
 
