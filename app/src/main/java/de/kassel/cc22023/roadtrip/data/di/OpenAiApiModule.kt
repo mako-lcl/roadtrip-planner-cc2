@@ -4,8 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import de.kassel.cc22023.roadtrip.data.network.OpenWeatherApi
-import de.kassel.cc22023.roadtrip.data.network.OpenWeatherApiBuilder
+import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
+import de.kassel.cc22023.roadtrip.data.network.OpenAiApiBuilder
 import javax.inject.Singleton
 
 @Module
@@ -14,7 +14,7 @@ object ApiModule {
 
     @Provides
     @Singleton
-    fun openWeatherApi(): OpenWeatherApi {
-        return OpenWeatherApiBuilder().openWeather()
+    fun openAiApi(): OpenAiApi {
+        return OpenAiApiBuilder().openAiApi()
     }
 }
