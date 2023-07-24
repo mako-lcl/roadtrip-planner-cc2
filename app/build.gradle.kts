@@ -117,7 +117,6 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
-
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
     androidTestImplementation(composeBom)
