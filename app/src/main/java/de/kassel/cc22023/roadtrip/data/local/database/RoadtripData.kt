@@ -26,6 +26,8 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
+import com.squareup.moshi.Json
+import de.kassel.cc22023.roadtrip.ui.planner.Loc
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
@@ -34,7 +36,9 @@ const val STATIC_UID = 0
 data class RoadtripData(
     @PrimaryKey
     val uid: Int = STATIC_UID,
+    @Json(name = "start_date")
     val startDate: String?,
+    @Json(name = "end_date")
     val endDate: String?,
     val startLocation: String?,
     val endLocation: String?,
@@ -45,7 +49,7 @@ data class RoadtripData(
             "today",
             "tomorrow",
             "Kassel",
-            "Not Kassel"
+            "Not Kassel",
         )
     }
 }

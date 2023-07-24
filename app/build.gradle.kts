@@ -113,10 +113,14 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.8")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
-    implementation("com.squareup.moshi:moshi-adapters:1.11.0")
+    implementation("com.squareup.moshi:moshi:1.14.0")
+    implementation("com.squareup.moshi:moshi-adapters:1.14.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:0.9.2")
     implementation("com.squareup.moshi:moshi-kotlin:1.13.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    //moshi
+    ksp("com.squareup.moshi:moshi-kotlin-codegen:1.13.0")
 
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)

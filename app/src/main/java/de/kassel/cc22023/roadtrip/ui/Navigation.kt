@@ -16,6 +16,8 @@
 
 package de.kassel.cc22023.roadtrip.ui
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
