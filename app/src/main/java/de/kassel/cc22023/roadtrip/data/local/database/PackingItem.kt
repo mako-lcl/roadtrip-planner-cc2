@@ -30,37 +30,37 @@ data class PackingItem(
                 isChecked = false
             ),
             PackingItem(
-                0,
+                1,
                 "Bread",
                 NotificationType.BASEMENT,
                 isChecked = false
             ),
             PackingItem(
-                0,
+                2,
                 "Ham",
                 NotificationType.NONE,
                 isChecked = false
             ),
             PackingItem(
-                0,
+                3,
                 "Coke Zero",
                 NotificationType.NONE,
                 isChecked = false
             ),
             PackingItem(
-                0,
+                4,
                 "Yoshi Plush",
                 NotificationType.NONE,
                 isChecked = false
             ),
             PackingItem(
-                0,
+                5,
                 "Grissini",
                 NotificationType.NONE,
                 isChecked = false
             ),
             PackingItem(
-                0,
+                6,
                 "iPad",
                 NotificationType.NONE,
                 isChecked = false
@@ -82,7 +82,8 @@ interface PackingItemDao {
 
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
-
+    @Delete
+    fun deleteItem(item: PackingItem)
     @Update
     suspend fun updateCheckboxState(item: PackingItem)
     @Insert
