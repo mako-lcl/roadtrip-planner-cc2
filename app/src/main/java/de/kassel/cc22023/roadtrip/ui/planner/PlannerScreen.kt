@@ -32,6 +32,15 @@ import androidx.compose.material3.rememberDatePickerState
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import com.squareup.moshi.FromJson
+import com.squareup.moshi.Json
+import com.squareup.moshi.JsonAdapter
+import com.squareup.moshi.JsonClass
+import com.squareup.moshi.JsonReader
+import com.squareup.moshi.JsonWriter
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.ToJson
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,6 +66,20 @@ import java.time.ZoneOffset
 @ExperimentalMaterial3Api
 @Composable
 fun PlannerScreen() {
+    val context = LocalContext.current
+
+    Text(text = "Planner")
+
+    val string = context.assets.open("roadtrip.txt").bufferedReader().use{
+        it.readText()
+    }
+
+    val moshi: Moshi = Moshi.Builder().build()
+    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
+    val trip = jsonAdapter.fromJson(string)
+
+    print(trip)
+
     var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
@@ -194,3 +217,22 @@ fun DatePickerDialogSample(
         }
     }
 }
+@JsonClass(generateAdapter = true)
+data class TestTrip(
+    @Json(name = "start_date")
+    val startDate: String,
+    @Json(name = "end_date")
+    val endDate: String,
+    @Json(name = "packing_list")
+    val packingList: List<String>,
+    @Json(name = "locations")
+    val locs: List<Loc>
+)
+
+@JsonClass(generateAdapter = true)
+data class Loc(
+    val name: String,
+    val latitude: Double,
+    val longitude: Double,
+    val activities: List<String>
+)

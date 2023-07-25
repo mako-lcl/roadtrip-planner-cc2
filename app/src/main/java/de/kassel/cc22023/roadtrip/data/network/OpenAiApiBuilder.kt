@@ -9,17 +9,17 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import java.util.concurrent.TimeUnit
 
-class OpenWeatherApiBuilder {
+class OpenAiApiBuilder {
     private val moshi: Moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
-    fun openWeather(): OpenWeatherApi =
+    fun openAiApi(): OpenAiApi =
         Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/2.5/")
+            .baseUrl("https://api.openai.com/v1/chat/completions/")
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(initOkHttp())
             .build()
-            .create(OpenWeatherApi::class.java)
+            .create(OpenAiApi::class.java)
 
     private fun initOkHttp(): OkHttpClient {
         val client = OkHttpClient.Builder()

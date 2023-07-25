@@ -15,6 +15,7 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
+import de.kassel.cc22023.roadtrip.ui.map.MapViewModel
 
 private lateinit var locationCallback: LocationCallback
 @SuppressLint("MissingPermission")
@@ -24,6 +25,7 @@ private lateinit var locationCallback: LocationCallback
 @Composable
 fun FetchLocationUtil(
     usePreciseLocation: Boolean,
+    viewModel: MapViewModel = hiltViewModel()
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val context = LocalContext.current
@@ -47,6 +49,7 @@ fun FetchLocationUtil(
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(result: LocationResult) {
                     result.locations.firstOrNull()?.let {
+                        viewModel.updateLocation(it)
                     }
                 }
             }

@@ -17,11 +17,17 @@
 package de.kassel.cc22023.roadtrip.data.local.database
 
 import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Relation
+import androidx.room.Transaction
+import com.squareup.moshi.Json
+import de.kassel.cc22023.roadtrip.ui.planner.Loc
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
@@ -30,20 +36,43 @@ const val STATIC_UID = 0
 data class RoadtripData(
     @PrimaryKey
     val uid: Int = STATIC_UID,
-    var main: String?,
+    @Json(name = "start_date")
+    val startDate: String?,
+    @Json(name = "end_date")
+    val endDate: String?,
+    val startLocation: String?,
+    val endLocation: String?,
 ) {
     companion object {
         val exampleData = RoadtripData(
-            main = "Cloudy",
+            STATIC_UID,
+            "today",
+            "tomorrow",
+            "Kassel",
+            "Not Kassel",
         )
     }
 }
 
+data class RoadtripAndLocationsAndActivities(
+    @Embedded val roadtrip: RoadtripData,
+    @Relation(
+        parentColumn = "uid",
+        entityColumn = "roadtripId"
+    )
+    val locations: List<RoadtripLocation>
+)
+
+
 @Dao
 interface RoadtripDataDao {
+    @Transaction
     @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
-    fun getRoadtripData(): Flow<RoadtripData>
+    fun getRoadtripData(): Flow<RoadtripAndLocationsAndActivities>
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert
     suspend fun insertRoadtripData(item: RoadtripData)
+
+    @Query("DELETE FROM roadtripdata WHERE roadtripdata.uid = $STATIC_UID")
+    fun deleteRoadtrip()
 }

@@ -17,7 +17,7 @@
 package de.kassel.cc22023.roadtrip.data
 
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
-import de.kassel.cc22023.roadtrip.data.network.OpenWeatherApi
+import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import javax.inject.Inject
 
 interface RoadtripRepository {
@@ -25,6 +25,6 @@ interface RoadtripRepository {
 
 class DefaultWeatherDataRepository @Inject constructor(
     private val roadtripDataDao: RoadtripDataDao,
-    private val weatherApi: OpenWeatherApi
+    private val weatherApi: OpenAiApi
 ) : RoadtripRepository {
 }

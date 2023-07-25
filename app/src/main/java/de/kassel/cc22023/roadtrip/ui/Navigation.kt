@@ -16,7 +16,10 @@
 
 package de.kassel.cc22023.roadtrip.ui
 
+import android.Manifest
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -39,6 +42,7 @@ import de.kassel.cc22023.roadtrip.ui.navigation.Screen
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
