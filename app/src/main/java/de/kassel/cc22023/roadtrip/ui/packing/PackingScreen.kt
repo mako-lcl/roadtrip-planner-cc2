@@ -16,6 +16,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,18 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
+import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 
 @Composable
-fun PackingScreen() {
+fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
-    var packingList by remember { mutableStateOf(PackingItem.exampleData.toMutableList()) }
+    val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
 
 
-    Column(
+        Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -54,28 +58,29 @@ fun PackingScreen() {
             Text(modifier = Modifier.weight(0.5f), text = "Notification", fontSize = 20.sp)
         }
 
-        PackingItem.exampleData.forEach {card ->
-            PackingItemCard(card)
+        if (data is PackingDataUiState.Success) {
+            (data as PackingDataUiState.Success).data.forEach { card ->
+                PackingItemCard(card)
+            }
+        } else {
+            LoadingScreen()
         }
-        PackingItemCard(
-            item = PackingItem(0, newItemName, newItemNotificationType),
+/*        PackingItemCard(
+            item = PackingItem(0, newItemName, newItemNotificationType, isChecked = false),
             newItem = true,
             newItemName = newItemName,
             newItemNotificationType = newItemNotificationType
-        )
+        )*/
         Button(
             onClick = {
                 // Add a new PackingItem to the packingList
                 val newItem = PackingItem(
-                    id = packingList.size + 1,
+                    id = 0,
                     name = newItemName,
-                    notificationType = newItemNotificationType
-
+                    notificationType = NotificationType.NONE,
+                    isChecked = false
                 )
-                packingList.add(newItem)
-                packingList = packingList.toMutableList()
-                newItemName = ""
-                newItemNotificationType = NotificationType.NONE
+                viewModel.insertIntoList(newItem)
             },
             modifier = Modifier.fillMaxWidth()
         ) {
@@ -87,13 +92,16 @@ fun PackingScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: String = "", newItemNotificationType: NotificationType = NotificationType.NONE) {
+fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: String = "", newItemNotificationType: NotificationType = NotificationType.NONE, viewModel: PackingViewModel = hiltViewModel()) {
     var checked by remember {
-        mutableStateOf(false)
+        mutableStateOf(item.isChecked)
     }
+
+
     var expanded by remember {
         mutableStateOf(false)
     }
+
 
     var selectedText by remember {
         mutableStateOf(NotificationType.values().first().value)
@@ -109,6 +117,9 @@ fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: St
         ) {
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
+                item.isChecked = it
+                viewModel.updateCheckBoxState(item)
+
             })
 
             Text("${item.name}!")
@@ -150,6 +161,8 @@ fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: St
         }
     }
 }
+
+
 
 @Preview
 @Composable

@@ -20,10 +20,12 @@ import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import de.kassel.cc22023.roadtrip.data.DefaultWeatherDataRepository
+import de.kassel.cc22023.roadtrip.data.DefaultRoadtripRepository
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
+import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -34,11 +36,22 @@ interface DataModule {
     @Singleton
     @Binds
     fun bindsWeatherDataRepository(
-        weatherDataRepository: DefaultWeatherDataRepository
+        weatherDataRepository: DefaultRoadtripRepository
     ): RoadtripRepository
 }
 
 class FakeWeatherDataRepository @Inject constructor() : RoadtripRepository {
+    override val packingList: Flow<List<PackingItem>?>
+        get() = TODO("Not yet implemented")
+
+    override suspend fun updateCheckbox(item: PackingItem) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertIntoList(item: PackingItem) {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun insertNewRoadtrip(trip: CombinedRoadtrip) {
         TODO("Not yet implemented")
     }

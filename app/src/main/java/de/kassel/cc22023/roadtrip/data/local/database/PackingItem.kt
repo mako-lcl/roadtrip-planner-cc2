@@ -19,44 +19,52 @@ data class PackingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val name: String,
-    val notificationType: NotificationType
+    val notificationType: NotificationType,
+    var isChecked: Boolean
 ) {
     companion object {
         val exampleData = listOf(
             PackingItem(
                 0,
                 "Driver's License",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "Bread",
-                NotificationType.BASEMENT
+                NotificationType.BASEMENT,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "Ham",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "Coke Zero",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "Yoshi Plush",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "Grissini",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
                 0,
                 "iPad",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
         )
     }
@@ -73,6 +81,10 @@ interface PackingItemDao {
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
 
+    @Update
+    suspend fun updateCheckboxState(item: PackingItem)
+    @Insert
+    fun insertIntoList(item: PackingItem)
     @Update
     fun updateItem(item: PackingItem)
     @Insert

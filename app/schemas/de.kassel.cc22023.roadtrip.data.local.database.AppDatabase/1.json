@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b72f54ac2e4ffbca07f2eb023f9b19cd",
+    "identityHash": "6ea930a5a1f6de058b560d060f79b33d",
     "entities": [
       {
         "tableName": "RoadtripData",
@@ -117,12 +117,50 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "PackingItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notificationType",
+            "columnName": "notificationType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isChecked",
+            "columnName": "isChecked",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b72f54ac2e4ffbca07f2eb023f9b19cd')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ea930a5a1f6de058b560d060f79b33d')"
     ]
   }
 }

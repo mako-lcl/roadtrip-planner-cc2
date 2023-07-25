@@ -37,7 +37,7 @@ data class Loc(
 
 fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
     val packingItems = trip.packingList.map {
-        PackingItem(0, it, NotificationType.NONE)
+        PackingItem(0, it, NotificationType.NONE, isChecked = false)
     }
 
     val locations = trip.locs.map {
@@ -49,7 +49,7 @@ fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
     }
 
     val roadtripCombined = CombinedRoadtrip(
-        trip.startDate, trip.endDate, "", "", listOf(),
+        trip.startDate, trip.endDate, "", "", trip.packingList,
         locations
     )
 
