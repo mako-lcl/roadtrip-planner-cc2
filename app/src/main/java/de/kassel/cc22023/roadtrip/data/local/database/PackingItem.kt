@@ -75,4 +75,6 @@ interface PackingItemDao {
 
     @Update
     fun updateItem(item: PackingItem)
+    @Insert
+    suspend fun insertPackingItem(item: PackingItem)
 }
