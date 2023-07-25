@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 
@@ -36,7 +37,7 @@ fun PackingScreen() {
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
 
 
-    Column(
+        Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -58,7 +59,7 @@ fun PackingScreen() {
             PackingItemCard(card)
         }
         PackingItemCard(
-            item = PackingItem(0, newItemName, newItemNotificationType),
+            item = PackingItem(0, newItemName, newItemNotificationType, isChecked = false),
             newItem = true,
             newItemName = newItemName,
             newItemNotificationType = newItemNotificationType
@@ -69,12 +70,12 @@ fun PackingScreen() {
                 val newItem = PackingItem(
                     id = packingList.size + 1,
                     name = newItemName,
-                    notificationType = newItemNotificationType
-
+                    notificationType = newItemNotificationType,
+                    isChecked = false
                 )
                 packingList.add(newItem)
                 packingList = packingList.toMutableList()
-                newItemName = ""
+                newItemName = "Test"
                 newItemNotificationType = NotificationType.NONE
             },
             modifier = Modifier.fillMaxWidth()
@@ -87,13 +88,16 @@ fun PackingScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: String = "", newItemNotificationType: NotificationType = NotificationType.NONE) {
+fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: String = "", newItemNotificationType: NotificationType = NotificationType.NONE, viewModel: PackingViewModel = hiltViewModel()) {
     var checked by remember {
-        mutableStateOf(false)
+        mutableStateOf(item.isChecked)
     }
+
+
     var expanded by remember {
         mutableStateOf(false)
     }
+
 
     var selectedText by remember {
         mutableStateOf(NotificationType.values().first().value)
@@ -109,6 +113,9 @@ fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: St
         ) {
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
+                item.isChecked = it
+                viewModel.updateCheckBoxState(item)
+
             })
 
             Text("${item.name}!")
@@ -150,6 +157,8 @@ fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: St
         }
     }
 }
+
+
 
 @Preview
 @Composable
