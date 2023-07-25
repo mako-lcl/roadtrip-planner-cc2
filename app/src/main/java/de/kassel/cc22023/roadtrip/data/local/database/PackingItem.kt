@@ -1,6 +1,7 @@
 package de.kassel.cc22023.roadtrip.data.local.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
@@ -82,14 +83,19 @@ interface PackingItemDao {
 
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
+
     @Delete
     fun deleteItem(item: PackingItem)
+
     @Update
     suspend fun updateCheckboxState(item: PackingItem)
+
     @Insert
     fun insertIntoList(item: PackingItem)
+
     @Update
     fun updateItem(item: PackingItem)
+
     @Insert
     suspend fun insertPackingItem(item: PackingItem)
 }
