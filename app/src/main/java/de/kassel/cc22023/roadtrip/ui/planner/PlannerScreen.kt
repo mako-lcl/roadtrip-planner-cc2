@@ -1,29 +1,27 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
+
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Button
+
+
+
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 
-import androidx.compose.material3.DateRangePicker
-import androidx.compose.material3.DateRangePickerState
-import androidx.compose.material3.DisplayMode
+
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -32,9 +30,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
 
-import androidx.compose.material3.rememberDateRangePickerState
+
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,19 +41,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.zIndex
+
 
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-import java.util.Calendar
-import java.util.Date
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -66,36 +63,26 @@ fun PlannerScreen() {
     var showEndDatePicker by remember { mutableStateOf(false) }
 
     Column(
-        Modifier.fillMaxWidth(),
+        Modifier.fillMaxWidth()
+            .padding(all=30.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // First Date Selection
         var startDate by remember { mutableStateOf(selectedStartDate.toString()) }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            TextField(
-                value = startDate,
-                onValueChange = { startDate = it },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        selectedStartDate = try {
-                            LocalDate.parse(startDate)
-                        } catch (e: Exception) {
-                            LocalDate.now()
-                        }
-                        showStartDatePicker = false
-                    }
-                ),
-                singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+            Box(
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                Text(
+                    text = startDate,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             TextButton(onClick = { showStartDatePicker = true }) {
                 Text(text = "Choose Start Date")
@@ -119,29 +106,18 @@ fun PlannerScreen() {
         var endDate by remember { mutableStateOf(selectedEndDate.toString()) }
 
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth()
         ) {
-            TextField(
-                value = endDate,
-                onValueChange = { endDate = it },
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        selectedEndDate = try {
-                            LocalDate.parse(endDate)
-                        } catch (e: Exception) {
-                            LocalDate.now()
-                        }
-                        showEndDatePicker = false
-                    }
-                ),
-                singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 18.sp),
+            Box(
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                Text(
+                    text = endDate,
+                    fontSize = 18.sp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             TextButton(onClick = { showEndDatePicker = true }) {
                 Text(text = "Choose End Date")
@@ -184,8 +160,9 @@ fun DatePickerDialogSample(
                 // Dismiss the dialog when the user clicks outside the dialog or on the back
                 // button. If you want to disable that functionality, simply use an empty
                 // onDismissRequest.
-                openDialog.value = false
+                //openDialog.value = false
             },
+
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -213,7 +190,7 @@ fun DatePickerDialogSample(
                 }
             }
         ) {
-            DatePicker(state = state)
+            DatePicker(state = state, showModeToggle = false)
         }
     }
 }
