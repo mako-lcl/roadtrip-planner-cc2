@@ -59,6 +59,10 @@ class FakeWeatherDataRepository @Inject constructor() : RoadtripRepository {
     override fun getRoadtrip(): CombinedRoadtrip {
         TODO("Not yet implemented")
     }
+
+    override fun deleteItem(card: PackingItem) {
+        TODO("Not yet implemented")
+    }
 }
 
 val fakeWeatherDatas = RoadtripData.exampleData
