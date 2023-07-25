@@ -14,7 +14,7 @@ class OpenAiApiBuilder {
 
     fun openAiApi(): OpenAiApi =
         Retrofit.Builder()
-            .baseUrl("https://api.openai.com/v1/chat/completions")
+            .baseUrl("https://api.openai.com/v1/chat/completions/")
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .addConverterFactory(MoshiConverterFactory.create(moshi))
             .client(initOkHttp())
