@@ -22,6 +22,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import de.kassel.cc22023.roadtrip.data.DefaultWeatherDataRepository
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
+import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -38,6 +39,13 @@ interface DataModule {
 }
 
 class FakeWeatherDataRepository @Inject constructor() : RoadtripRepository {
+    override suspend fun updateCheckbox(item: PackingItem) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateList(item: PackingItem) {
+        TODO("Not yet implemented")
+    }
 }
 
 val fakeWeatherDatas = RoadtripData.exampleData

@@ -20,10 +20,12 @@ import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
+import de.kassel.cc22023.roadtrip.ui.navigation.Screen
 import javax.inject.Inject
 
 interface RoadtripRepository {
     suspend fun updateCheckbox(item: PackingItem)
+    suspend fun insertIntoList(item: PackingItem)
 }
 
 class DefaultWeatherDataRepository @Inject constructor(
@@ -33,5 +35,11 @@ class DefaultWeatherDataRepository @Inject constructor(
 ) : RoadtripRepository {
     override suspend fun updateCheckbox(item: PackingItem) {
         packingItemDao.updateCheckboxState(item)
+    }
+
+
+
+    override suspend fun insertIntoList(item: PackingItem) {
+        packingItemDao.insertIntoList(item)
     }
 }

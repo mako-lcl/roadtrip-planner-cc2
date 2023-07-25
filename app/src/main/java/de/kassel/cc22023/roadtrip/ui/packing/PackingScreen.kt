@@ -26,11 +26,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 
 @Composable
-fun PackingScreen() {
+fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
     var packingList by remember { mutableStateOf(PackingItem.exampleData.toMutableList()) }
     var newItemName by remember { mutableStateOf("") }
@@ -73,6 +74,7 @@ fun PackingScreen() {
                     notificationType = newItemNotificationType,
                     isChecked = false
                 )
+                viewModel.insertIntoList(newItem)
                 packingList.add(newItem)
                 packingList = packingList.toMutableList()
                 newItemName = "Test"

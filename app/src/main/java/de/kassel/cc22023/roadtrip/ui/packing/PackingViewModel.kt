@@ -17,4 +17,9 @@ class PackingViewModel @Inject constructor(
             roadtripRepository.updateCheckbox(item)
         }
     }
+    fun insertIntoList(item: PackingItem) {
+        viewModelScope.launch {
+            roadtripRepository.insertIntoList(item)
+        }
+    }
 }

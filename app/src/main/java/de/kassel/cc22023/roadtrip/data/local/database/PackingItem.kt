@@ -83,8 +83,8 @@ interface PackingItemDao {
 
     @Update
     suspend fun updateCheckboxState(item: PackingItem)
-
-
+    @Insert
+    fun insertIntoList(item: PackingItem)
     @Update
     fun updateItem(item: PackingItem)
     @Insert
