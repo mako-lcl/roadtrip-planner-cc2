@@ -1,8 +1,9 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
+
 
 import androidx.compose.foundation.layout.Column
 
@@ -17,7 +18,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
+
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 
 
@@ -42,7 +44,14 @@ import androidx.compose.material3.rememberDatePickerState
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
@@ -51,6 +60,7 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
+import de.kassel.cc22023.roadtrip.R
 
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -70,7 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.hilt.navigation.compose.hiltViewModel
-import de.kassel.cc22023.roadtrip.R
+
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
@@ -87,13 +97,22 @@ import java.time.ZoneOffset
 @Composable
 fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     val context = LocalContext.current
+    val trip by viewModel.trip.collectAsState()
+    val image: Painter = painterResource(R.drawable.map_pin)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        // Background image
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxSize()
+        )
 
 
-
-
-
-
-
+        Column {
+        
 
     var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
@@ -263,6 +282,8 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     }
 
 }
+    }
+}
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -318,7 +339,8 @@ fun DatePickerDialogSample(
             DatePicker(state = state, showModeToggle = false)
         }
     }
-}
+    }
+
 
 @JsonClass(generateAdapter = true)
 data class TestTrip(
