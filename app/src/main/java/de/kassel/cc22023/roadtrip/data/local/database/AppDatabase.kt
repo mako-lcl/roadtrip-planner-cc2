@@ -19,7 +19,10 @@ package de.kassel.cc22023.roadtrip.data.local.database
 import androidx.room.Database
 import androidx.room.RoomDatabase
 
-@Database(entities = [RoadtripData::class, RoadtripLocation::class, RoadtripActivity::class], version = 1)
+@Database(entities = [RoadtripData::class, RoadtripLocation::class, RoadtripActivity::class, PackingItem::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun roadtripDataDao(): RoadtripDataDao
+    abstract fun providePackingDao(): PackingItemDao
+    abstract fun roadtripLocationDao(): RoadtripLocationDao
+    abstract fun roadtripActivityDao(): RoadtripActivityDao
 }

@@ -68,9 +68,13 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.HiltViewModelFactory
+import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
+import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 
 
 import kotlinx.coroutines.launch
@@ -81,19 +85,15 @@ import java.time.ZoneOffset
 
 @ExperimentalMaterial3Api
 @Composable
-fun PlannerScreen() {
+fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
 
-    val string = context.assets.open("roadtrip.txt").bufferedReader().use {
-        it.readText()
-    }
 
-    val moshi: Moshi = Moshi.Builder().build()
-    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
-    val trip = jsonAdapter.fromJson(string)
 
-    print(trip)
+
+
+
 
     var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
@@ -229,7 +229,9 @@ fun PlannerScreen() {
                 onValueChange = {},
                 readOnly = true,
                 trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                modifier = Modifier.menuAnchor().fillMaxWidth()
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth()
             )
 
             ExposedDropdownMenu(
@@ -248,6 +250,15 @@ fun PlannerScreen() {
                 }
             }
         }
+        Button(onClick = {
+            val testTrip = loadRoadtripFromAssets(context)
+            val trip = convertRoadtripFromTestTrip(testTrip)
+            viewModel.insertNewRoadtrip(trip)
+        }) {
+            Text(text = "Load")
+
+        }
+
 
     }
 

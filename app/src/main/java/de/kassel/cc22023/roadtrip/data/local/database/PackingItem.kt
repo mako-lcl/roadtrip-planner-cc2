@@ -19,44 +19,52 @@ data class PackingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val name: String,
-    val notificationType: NotificationType
+    val notificationType: NotificationType,
+    var isChecked: Boolean
 ) {
     companion object {
         val exampleData = listOf(
             PackingItem(
                 0,
                 "Driver's License",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                1,
                 "Bread",
-                NotificationType.BASEMENT
+                NotificationType.BASEMENT,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                2,
                 "Ham",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                3,
                 "Coke Zero",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                4,
                 "Yoshi Plush",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                5,
                 "Grissini",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
             PackingItem(
-                0,
+                6,
                 "iPad",
-                NotificationType.NONE
+                NotificationType.NONE,
+                isChecked = false
             ),
         )
     }
@@ -65,7 +73,10 @@ data class PackingItem(
 @Dao
 interface PackingItemDao {
     @Query("SELECT * FROM PackingItem")
-    fun getPackingItems(): Flow<List<PackingItem>>
+    fun getPackingItems(): List<PackingItem>
+
+    @Query("SELECT * FROM PackingItem")
+    fun getPackingItemsAsFlow(): Flow<List<PackingItem>>
 
     @Insert
     suspend fun insertPackingItems(items: List<PackingItem>)
@@ -73,8 +84,18 @@ interface PackingItemDao {
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
 
+    @Delete
+    fun deleteItem(item: PackingItem)
+
+    @Update
+    suspend fun updateCheckboxState(item: PackingItem)
+
+    @Insert
+    fun insertIntoList(item: PackingItem)
+
     @Update
     fun updateItem(item: PackingItem)
+
     @Insert
     suspend fun insertPackingItem(item: PackingItem)
 }

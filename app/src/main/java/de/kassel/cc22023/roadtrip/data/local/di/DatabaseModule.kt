@@ -24,7 +24,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import de.kassel.cc22023.roadtrip.data.local.database.AppDatabase
+import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
+import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivityDao
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
+import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
 import javax.inject.Singleton
 
 
@@ -34,6 +37,21 @@ class DatabaseModule {
     @Provides
     fun provideRoadtripDataDao(appDatabase: AppDatabase): RoadtripDataDao {
         return appDatabase.roadtripDataDao()
+    }
+
+    @Provides
+    fun providePackingItemDao(appDatabase: AppDatabase): PackingItemDao {
+        return appDatabase.providePackingDao()
+    }
+
+    @Provides
+    fun provideRoadtripLocationDao(appDatabase: AppDatabase): RoadtripLocationDao {
+        return appDatabase.roadtripLocationDao()
+    }
+
+    @Provides
+    fun provideRoadtripActivityDao(appDatabase: AppDatabase): RoadtripActivityDao {
+        return appDatabase.roadtripActivityDao()
     }
 
     @Provides
