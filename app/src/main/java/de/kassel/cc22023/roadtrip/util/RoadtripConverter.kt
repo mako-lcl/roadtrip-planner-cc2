@@ -35,11 +35,22 @@ data class Loc(
     val activities: List<String>
 )
 
-fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
-    val packingItems = trip.packingList.map {
-        PackingItem(0, it, NotificationType.NONE, isChecked = false)
+fun combineRoadtrip(data: RoadtripData, locations: List<RoadtripLocation>, activities: List<RoadtripActivity>, packingList: List<PackingItem>) : CombinedRoadtrip {
+    val combinedLocations = locations.map {
+        CombinedLocation(
+            it.lat ?: 0.0, it.lon ?: 0.0, it.name ?: "",
+            activities.filter {activity ->
+                it.id == activity.locId
+            }
+        )
     }
 
+    val combinedRoadtrip = CombinedRoadtrip(data.startDate ?: "", data.endDate ?: "", "", "", packingList.map { it.name }, combinedLocations)
+
+    return combinedRoadtrip
+}
+
+fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
     val locations = trip.locs.map {
         val activities = it.activities.map {
             RoadtripActivity(0, 0, it)

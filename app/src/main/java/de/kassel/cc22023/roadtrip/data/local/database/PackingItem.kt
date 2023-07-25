@@ -73,21 +73,29 @@ data class PackingItem(
 @Dao
 interface PackingItemDao {
     @Query("SELECT * FROM PackingItem")
-    fun getPackingItems(): Flow<List<PackingItem>>
+    fun getPackingItems(): List<PackingItem>
+
+    @Query("SELECT * FROM PackingItem")
+    fun getPackingItemsAsFlow(): Flow<List<PackingItem>>
 
     @Insert
     suspend fun insertPackingItems(items: List<PackingItem>)
 
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
+
     @Delete
     fun deleteItem(item: PackingItem)
+
     @Update
     suspend fun updateCheckboxState(item: PackingItem)
+
     @Insert
     fun insertIntoList(item: PackingItem)
+
     @Update
     fun updateItem(item: PackingItem)
+
     @Insert
     suspend fun insertPackingItem(item: PackingItem)
 }

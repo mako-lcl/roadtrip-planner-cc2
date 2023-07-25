@@ -39,30 +39,3 @@ interface DataModule {
         weatherDataRepository: DefaultRoadtripRepository
     ): RoadtripRepository
 }
-
-class FakeWeatherDataRepository @Inject constructor() : RoadtripRepository {
-    override val packingList: Flow<List<PackingItem>?>
-        get() = TODO("Not yet implemented")
-
-    override suspend fun updateCheckbox(item: PackingItem) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun insertIntoList(item: PackingItem) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun insertNewRoadtrip(trip: CombinedRoadtrip) {
-        TODO("Not yet implemented")
-    }
-
-    override fun getRoadtrip(): CombinedRoadtrip {
-        TODO("Not yet implemented")
-    }
-
-    override fun deleteItem(card: PackingItem) {
-        TODO("Not yet implemented")
-    }
-}
-
-val fakeWeatherDatas = RoadtripData.exampleData

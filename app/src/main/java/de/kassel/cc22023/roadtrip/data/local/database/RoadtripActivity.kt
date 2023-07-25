@@ -36,6 +36,9 @@ interface RoadtripActivityDao {
     @Query("SELECT * FROM RoadtripActivity")
     fun getActivities(): List<RoadtripActivity>
 
+    @Query("SELECT * FROM RoadtripActivity")
+    fun getActivitiesAsFlow(): Flow<List<RoadtripActivity>>
+
     @Insert
     fun insertActivities(activities: List<RoadtripActivity>)
 
