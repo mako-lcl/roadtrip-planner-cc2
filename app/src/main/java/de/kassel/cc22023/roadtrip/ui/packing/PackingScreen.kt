@@ -55,10 +55,13 @@ import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import timber.log.Timber
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,6 +71,15 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
     val image: Painter = painterResource(R.drawable.packbg)
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    var selectedText by remember {
+        mutableStateOf(NotificationType.values().first().value)
+    }
+    val listState = rememberLazyListState()
+// Remember a CoroutineScope to be able to launch
+    val coroutineScope = rememberCoroutineScope()
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -80,58 +92,122 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
         )
 
 
-    Column(
-        modifier = Modifier
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            "Packing list",
-            fontSize = 30.sp
-        )
 
-        Row {
-            Text(modifier = Modifier.weight(0.5f), text = "Item", fontSize = 20.sp)
-            Text(modifier = Modifier.weight(0.5f), text = "Notification", fontSize = 20.sp)
-        }
-        if (data is PackingDataUiState.Success) {
-           val list = (data as PackingDataUiState.Success).data
-            LazyColumn {
-                itemsIndexed(items = list, key = {index,item -> item.hashCode()}) {
-                        index,item ->
-                    val currentItem by rememberUpdatedState(newValue = item)
+        Column(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                "Packing list",
+                fontSize = 30.sp
+            )
 
-                    val dismissState = rememberDismissState(confirmValueChange = {
-                        viewModel.deleteItem(currentItem)
-                        true
-                    })
-                    SwipeToDismiss(state = dismissState, background = {
-                        SwipeBackground(dismissState)
-                    }, dismissContent = { PackingItemCard(item) })
+            Row {
+                // Text input field to enter the new item name
+                TextField(
+                    value = newItemName,
+                    onValueChange = { newItemName = it },
+                    label = { Text("Enter new item name") },
+                    modifier = Modifier.weight(0.7f)
+                )
+            }
+            Row {
+                // Dropdown menu to select the notification type for the new item
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    modifier = Modifier.weight(0.3f)
+                ) {
+                    TextField(
+                        value = selectedText,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        NotificationType.values().forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type.value) },
+                                onClick = {
+                                    selectedText = type.value
+                                    expanded = false
+                                    newItemNotificationType =
+                                        type // Update the newItemNotificationType when a value is selected
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
                 }
             }
 
-        } else {
-            LoadingScreen()
+            Button(
+                onClick = {
+                    // Add a new PackingItem to the packingList
+                    val newItem = PackingItem(
+                        id = 0,
+                        name = newItemName,
+                        notificationType = newItemNotificationType,
+                        isChecked = false
+                    )
+                    viewModel.insertIntoList(newItem)
+                    newItemName = ""
+                    newItemNotificationType = NotificationType.NONE
+                    coroutineScope.launch {
+                        // Animate scroll to the 10th item
+                        listState.animateScrollToItem(index = 10)
+                    }
+
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add New Item")
+            }
+
+            Row {
+                Text(modifier = Modifier.weight(0.5f), text = "Item", fontSize = 20.sp)
+                Text(modifier = Modifier.weight(0.5f), text = "Notification", fontSize = 20.sp)
+            }
+            if (data is PackingDataUiState.Success) {
+                val list = (data as PackingDataUiState.Success).data
+                val reversedList = list.reversed()
+
+                LazyColumn(state = listState) {
+                    itemsIndexed(
+                        items = reversedList,
+                        key = { index, item -> item.hashCode() }) { index, item ->
+                        val currentItem by rememberUpdatedState(newValue = item)
+
+                        val dismissState = rememberDismissState(confirmValueChange = {
+                            viewModel.deleteItem(currentItem)
+                            true
+                        })
+                        SwipeToDismiss(state = dismissState, background = {
+                            SwipeBackground(dismissState)
+                        }, dismissContent = { PackingItemCard(item) })
+                    }
+                }
+            } else {
+                LoadingScreen()
+            }
+
+
+        }
+        LaunchedEffect(key1 = viewModel.data.collectAsState().value) {
+            if (data is PackingDataUiState.Success) {
+                listState.scrollToItem(0)
+            }
         }
 
-        Button(
-            onClick = {
-                val newItem = PackingItem(
-                    id = 0,
-                    name = newItemName,
-                    notificationType = NotificationType.NONE,
-                    isChecked = false
-                )
-                viewModel.insertIntoList(newItem)
-            },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add New Item")
-        }
-    }
+
     }
 }
 
