@@ -39,6 +39,9 @@ interface RoadtripRepository {
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: CombinedRoadtrip)
     fun getRoadtrip() : CombinedRoadtrip
+    fun deleteItem(card: PackingItem)
+
+
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -101,6 +104,11 @@ class DefaultRoadtripRepository @Inject constructor(
 
         return combinedRoadtrip
     }
+
+    override fun deleteItem(card: PackingItem) {
+        packingItemDao.deleteItem(card)
+    }
+
     override suspend fun updateCheckbox(item: PackingItem) {
         packingItemDao.updateCheckboxState(item)
     }

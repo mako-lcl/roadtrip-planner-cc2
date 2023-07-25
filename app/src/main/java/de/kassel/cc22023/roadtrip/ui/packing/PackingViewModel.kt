@@ -47,6 +47,13 @@ class PackingViewModel @Inject constructor(
             roadtripRepository.insertIntoList(item)
         }
     }
+
+    fun deleteItem(card: PackingItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            roadtripRepository.deleteItem(card)
+        }
+
+    }
 }
 
 sealed interface PackingDataUiState {
