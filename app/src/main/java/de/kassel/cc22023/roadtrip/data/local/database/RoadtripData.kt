@@ -31,7 +31,12 @@ import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
-
+enum class TransportationType(val value: String) {
+    CAR("Car"),
+    BIKE("Bike"),
+    BICYCLE("Bicycle"),
+    HIKING("Hiking")
+}
 @Entity
 data class RoadtripData(
     @PrimaryKey
@@ -74,6 +79,9 @@ data class CombinedLocation(
 interface RoadtripDataDao {
     @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
     fun getRoadtripData(): RoadtripData
+
+    @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
+    fun getRoadtripDataAsFlow(): Flow<RoadtripData>
 
     @Insert
     fun insertRoadtripData(item: RoadtripData)

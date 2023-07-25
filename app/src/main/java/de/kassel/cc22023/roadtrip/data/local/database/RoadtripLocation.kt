@@ -67,6 +67,9 @@ interface RoadtripLocationDao {
     @Query("SELECT * FROM RoadtripLocation")
     fun getLocations(): List<RoadtripLocation>
 
+    @Query("SELECT * FROM RoadtripLocation")
+    fun getLocationsAsFlow(): Flow<List<RoadtripLocation>>
+
     @Insert
     fun insertLocations(locations: List<RoadtripLocation>)
 

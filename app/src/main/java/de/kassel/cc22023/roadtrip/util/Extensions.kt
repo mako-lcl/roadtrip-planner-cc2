@@ -2,6 +2,7 @@ package de.kassel.cc22023.roadtrip.util
 
 import androidx.compose.ui.graphics.Color
 import de.kassel.cc22023.roadtrip.R
+import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +55,13 @@ suspend fun <T> Deferred<Response<T>>.launch(
     }
 
 }
+
+fun List<RoadtripActivity>.makeActivityList() : String {
+    return this.map{ it.name }.joinToString("\n") {
+        "• $it"
+    }
+}
+
 fun String.toWeatherIcon() : Int {
     return when(this){
         "01d"  -> R.drawable.clear_sky_01d
