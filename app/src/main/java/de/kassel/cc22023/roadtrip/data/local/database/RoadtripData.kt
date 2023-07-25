@@ -75,6 +75,9 @@ interface RoadtripDataDao {
     @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
     fun getRoadtripData(): RoadtripData
 
+    @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
+    fun getRoadtripDataAsFlow(): Flow<RoadtripData>
+
     @Insert
     fun insertRoadtripData(item: RoadtripData)
 

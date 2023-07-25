@@ -1,7 +1,6 @@
 package de.kassel.cc22023.roadtrip.data.local.database
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
@@ -73,7 +72,10 @@ data class PackingItem(
 @Dao
 interface PackingItemDao {
     @Query("SELECT * FROM PackingItem")
-    fun getPackingItems(): Flow<List<PackingItem>>
+    fun getPackingItems(): List<PackingItem>
+
+    @Query("SELECT * FROM PackingItem")
+    fun getPackingItemsAsFlow(): Flow<List<PackingItem>>
 
     @Insert
     suspend fun insertPackingItems(items: List<PackingItem>)

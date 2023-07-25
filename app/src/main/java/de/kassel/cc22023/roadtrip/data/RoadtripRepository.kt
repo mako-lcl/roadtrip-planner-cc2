@@ -29,11 +29,15 @@ import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
 import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
+import de.kassel.cc22023.roadtrip.util.combineRoadtrip
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface RoadtripRepository {
     val packingList: Flow<List<PackingItem>?>
+    val roadtrip: Flow<RoadtripData?>
+    val locations: Flow<List<RoadtripLocation>?>
+    val activities: Flow<List<RoadtripActivity>?>
 
     suspend fun updateCheckbox(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
@@ -49,7 +53,13 @@ class DefaultRoadtripRepository @Inject constructor(
     private val weatherApi: OpenAiApi
 ) : RoadtripRepository {
     override val packingList: Flow<List<PackingItem>?> =
-        packingItemDao.getPackingItems()
+        packingItemDao.getPackingItemsAsFlow()
+    override val roadtrip: Flow<RoadtripData?>
+        get() = roadtripDataDao.getRoadtripDataAsFlow()
+    override val locations: Flow<List<RoadtripLocation>?>
+        get() = roadtripLocationDao.getLocationsAsFlow()
+    override val activities: Flow<List<RoadtripActivity>?>
+        get() = roadtripActivityDao.getActivitiesAsFlow()
 
     override suspend fun insertNewRoadtrip(trip: CombinedRoadtrip) {
         roadtripDataDao.deleteRoadtrip()
@@ -87,19 +97,9 @@ class DefaultRoadtripRepository @Inject constructor(
         val roadtrip = roadtripDataDao.getRoadtripData()
         val locations = roadtripLocationDao.getLocations()
         val activities = roadtripActivityDao.getActivities()
+        val packingList = packingItemDao.getPackingItems()
 
-        val combinedLocations = locations.map {
-            CombinedLocation(
-                it.lat ?: 0.0, it.lon ?: 0.0, it.name ?: "",
-                activities.filter {activity ->
-                    it.id == activity.locId
-                }
-            )
-        }
-
-        val combinedRoadtrip = CombinedRoadtrip(roadtrip.startDate ?: "", roadtrip.endDate ?: "", "", "", listOf("abc"), combinedLocations)
-
-        return combinedRoadtrip
+        return combineRoadtrip(roadtrip, locations, activities, packingList)
     }
     override suspend fun updateCheckbox(item: PackingItem) {
         packingItemDao.updateCheckboxState(item)
