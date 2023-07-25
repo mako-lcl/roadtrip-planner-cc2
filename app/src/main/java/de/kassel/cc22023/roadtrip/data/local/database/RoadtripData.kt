@@ -27,7 +27,7 @@ import androidx.room.Query
 import androidx.room.Relation
 import androidx.room.Transaction
 import com.squareup.moshi.Json
-import de.kassel.cc22023.roadtrip.ui.planner.Loc
+import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
@@ -54,25 +54,30 @@ data class RoadtripData(
     }
 }
 
-data class RoadtripAndLocationsAndActivities(
-    @Embedded val roadtrip: RoadtripData,
-    @Relation(
-        parentColumn = "uid",
-        entityColumn = "roadtripId"
-    )
-    val locations: List<RoadtripLocation>
+data class CombinedRoadtrip(
+    val startDate: String,
+    val endDate: String,
+    val startLocation: String,
+    val endLocation: String,
+    val packingList: List<String>,
+    val locations: List<CombinedLocation>
 )
 
+data class CombinedLocation(
+    val latitude: Double,
+    val longitude: Double,
+    val name: String,
+    val activities: List<RoadtripActivity>
+)
 
 @Dao
 interface RoadtripDataDao {
-    @Transaction
     @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
-    fun getRoadtripData(): Flow<RoadtripAndLocationsAndActivities>
+    fun getRoadtripData(): RoadtripData
 
     @Insert
-    suspend fun insertRoadtripData(item: RoadtripData)
+    fun insertRoadtripData(item: RoadtripData)
 
     @Query("DELETE FROM roadtripdata WHERE roadtripdata.uid = $STATIC_UID")
-    fun deleteRoadtrip()
+    suspend fun deleteRoadtrip()
 }

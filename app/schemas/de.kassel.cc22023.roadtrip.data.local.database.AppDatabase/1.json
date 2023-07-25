@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "59a6228c5683af368074a9faa097af8f",
+    "identityHash": "6ea930a5a1f6de058b560d060f79b33d",
     "entities": [
       {
         "tableName": "RoadtripData",
@@ -50,17 +50,11 @@
       },
       {
         "tableName": "RoadtripLocation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `roadtripId` INTEGER NOT NULL, `lat` REAL, `lon` REAL, `name` TEXT, FOREIGN KEY(`roadtripId`) REFERENCES `RoadtripData`(`uid`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `lat` REAL, `lon` REAL, `name` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "roadtripId",
-            "columnName": "roadtripId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -84,29 +78,17 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": true,
+          "autoGenerate": false,
           "columnNames": [
             "id"
           ]
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "RoadtripData",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "roadtripId"
-            ],
-            "referencedColumns": [
-              "uid"
-            ]
-          }
-        ]
+        "foreignKeys": []
       },
       {
         "tableName": "RoadtripActivity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `locationId` INTEGER NOT NULL, `name` TEXT, FOREIGN KEY(`locationId`) REFERENCES `RoadtripLocation`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `locId` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -115,8 +97,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "locationId",
-            "columnName": "locationId",
+            "fieldPath": "locId",
+            "columnName": "locId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -128,31 +110,57 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "PackingItem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "notificationType",
+            "columnName": "notificationType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isChecked",
+            "columnName": "isChecked",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
             "id"
           ]
         },
         "indices": [],
-        "foreignKeys": [
-          {
-            "table": "RoadtripLocation",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "locationId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '59a6228c5683af368074a9faa097af8f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ea930a5a1f6de058b560d060f79b33d')"
     ]
   }
 }
