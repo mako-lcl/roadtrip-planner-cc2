@@ -20,6 +20,7 @@ import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedLocation
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivityDao
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
@@ -28,9 +29,12 @@ import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
 import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface RoadtripRepository {
+    val packingList: Flow<List<PackingItem>?>
+
     suspend fun updateCheckbox(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: CombinedRoadtrip)
@@ -44,10 +48,14 @@ class DefaultRoadtripRepository @Inject constructor(
     private val roadtripActivityDao: RoadtripActivityDao,
     private val weatherApi: OpenAiApi
 ) : RoadtripRepository {
+    override val packingList: Flow<List<PackingItem>?> =
+        packingItemDao.getPackingItems()
+
     override suspend fun insertNewRoadtrip(trip: CombinedRoadtrip) {
         roadtripDataDao.deleteRoadtrip()
         roadtripLocationDao.deleteAll()
         roadtripActivityDao.deleteAll()
+        packingItemDao.deleteAllItems()
 
         roadtripDataDao.insertRoadtripData(RoadtripData(STATIC_UID, trip.startDate, trip.endDate, "Kassel", "not Kassel"))
         trip.locations.forEachIndexed {i, loc ->
@@ -60,6 +68,17 @@ class DefaultRoadtripRepository @Inject constructor(
         roadtripLocationDao.insertLocations(
             trip.locations.mapIndexed {i, loc ->
                 RoadtripLocation(i, loc.latitude, loc.longitude, loc.name)
+            }
+        )
+
+        packingItemDao.insertPackingItems(
+            trip.packingList.map {
+                PackingItem(
+                    0,
+                    it,
+                    NotificationType.NONE,
+                    false
+                )
             }
         )
     }

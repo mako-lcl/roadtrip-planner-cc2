@@ -25,6 +25,7 @@ import de.kassel.cc22023.roadtrip.data.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -40,6 +41,9 @@ interface DataModule {
 }
 
 class FakeWeatherDataRepository @Inject constructor() : RoadtripRepository {
+    override val packingList: Flow<List<PackingItem>?>
+        get() = TODO("Not yet implemented")
+
     override suspend fun updateCheckbox(item: PackingItem) {
         TODO("Not yet implemented")
     }

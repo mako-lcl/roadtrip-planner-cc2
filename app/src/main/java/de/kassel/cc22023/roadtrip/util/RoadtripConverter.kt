@@ -49,7 +49,7 @@ fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
     }
 
     val roadtripCombined = CombinedRoadtrip(
-        trip.startDate, trip.endDate, "", "", listOf(),
+        trip.startDate, trip.endDate, "", "", trip.packingList,
         locations
     )
 

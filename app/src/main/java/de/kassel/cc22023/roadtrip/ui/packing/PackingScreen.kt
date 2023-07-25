@@ -16,6 +16,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,11 +30,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
+import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
-    var packingList by remember { mutableStateOf(PackingItem.exampleData.toMutableList()) }
+    val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
 
@@ -56,29 +58,29 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             Text(modifier = Modifier.weight(0.5f), text = "Notification", fontSize = 20.sp)
         }
 
-        PackingItem.exampleData.forEach {card ->
-            PackingItemCard(card)
+        if (data is PackingDataUiState.Success) {
+            (data as PackingDataUiState.Success).data.forEach { card ->
+                PackingItemCard(card)
+            }
+        } else {
+            LoadingScreen()
         }
-        PackingItemCard(
+/*        PackingItemCard(
             item = PackingItem(0, newItemName, newItemNotificationType, isChecked = false),
             newItem = true,
             newItemName = newItemName,
             newItemNotificationType = newItemNotificationType
-        )
+        )*/
         Button(
             onClick = {
                 // Add a new PackingItem to the packingList
                 val newItem = PackingItem(
-                    id = packingList.size + 1,
+                    id = 0,
                     name = newItemName,
-                    notificationType = newItemNotificationType,
+                    notificationType = NotificationType.NONE,
                     isChecked = false
                 )
                 viewModel.insertIntoList(newItem)
-                packingList.add(newItem)
-                packingList = packingList.toMutableList()
-                newItemName = "Test"
-                newItemNotificationType = NotificationType.NONE
             },
             modifier = Modifier.fillMaxWidth()
         ) {
