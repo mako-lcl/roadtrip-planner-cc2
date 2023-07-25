@@ -1,18 +1,23 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
+
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-
+import androidx.compose.material3.Button
 
 
 import androidx.compose.material3.DatePicker
@@ -21,6 +26,7 @@ import androidx.compose.material3.DatePickerState
 
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SnackbarHost
@@ -50,11 +56,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
 
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import de.kassel.cc22023.roadtrip.R
 
 
 import kotlinx.coroutines.launch
@@ -68,7 +78,7 @@ import java.time.ZoneOffset
 fun PlannerScreen() {
     val context = LocalContext.current
 
-    Text(text = "Planner")
+
 
     val string = context.assets.open("roadtrip.txt").bufferedReader().use{
         it.readText()
@@ -84,10 +94,15 @@ fun PlannerScreen() {
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
     var showEndDatePicker by remember { mutableStateOf(false) }
+    var startLocation by remember { mutableStateOf("") }
+    var endLocation by remember { mutableStateOf("") }
+
+
 
     Column(
-        Modifier.fillMaxWidth()
-            .padding(all=30.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(all = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // First Date Selection
@@ -97,18 +112,33 @@ fun PlannerScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            TextField(
+                value = startLocation,
+                onValueChange = { startLocation = it },
+                label = { Text("Start Location") },
+                modifier = Modifier.weight(1.5f)
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+
             Box(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = startDate,
-                    fontSize = 18.sp,
+                    //fontSize = 16.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            TextButton(onClick = { showStartDatePicker = true }) {
-                Text(text = "Choose Start Date")
+            Button(onClick = { showStartDatePicker = true },
+                //modifier = Modifier.weight(1f)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.baseline_calendar_month_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    colorFilter = ColorFilter.tint(color = Color.White)
+                )
             }
         }
 
@@ -132,18 +162,34 @@ fun PlannerScreen() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
         ) {
+            TextField(
+                value = endLocation,
+                onValueChange = { endLocation = it },
+                label = { Text("End Location") },
+                modifier = Modifier.weight(1.5f)
+
+            )
+            Spacer(modifier = Modifier.width(5.dp))
+
             Box(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = endDate,
-                    fontSize = 18.sp,
+                    //fontSize = 16.sp,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            TextButton(onClick = { showEndDatePicker = true }) {
-                Text(text = "Choose End Date")
+            Button(onClick = { showEndDatePicker = true },
+                //modifier = Modifier.weight(1f)
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.baseline_calendar_month_24),
+                    contentDescription = null,
+                    modifier = Modifier.size(20.dp),
+                    colorFilter = ColorFilter.tint(color = Color.White)
+                )
             }
         }
 
