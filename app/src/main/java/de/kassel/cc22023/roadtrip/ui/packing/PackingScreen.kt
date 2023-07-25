@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +30,12 @@ import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 
 @Composable
 fun PackingScreen() {
+
+    var packingList by remember { mutableStateOf(PackingItem.exampleData.toMutableList()) }
+    var newItemName by remember { mutableStateOf("") }
+    var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
+
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
@@ -50,12 +57,37 @@ fun PackingScreen() {
         PackingItem.exampleData.forEach {card ->
             PackingItemCard(card)
         }
+        PackingItemCard(
+            item = PackingItem(0, newItemName, newItemNotificationType),
+            newItem = true,
+            newItemName = newItemName,
+            newItemNotificationType = newItemNotificationType
+        )
+        Button(
+            onClick = {
+                // Add a new PackingItem to the packingList
+                val newItem = PackingItem(
+                    id = packingList.size + 1,
+                    name = newItemName,
+                    notificationType = newItemNotificationType
+
+                )
+                packingList.add(newItem)
+                packingList = packingList.toMutableList()
+                newItemName = ""
+                newItemNotificationType = NotificationType.NONE
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Add New Item")
+        }
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackingItemCard(item: PackingItem) {
+fun PackingItemCard(item: PackingItem, newItem: Boolean = false, newItemName: String = "", newItemNotificationType: NotificationType = NotificationType.NONE) {
     var checked by remember {
         mutableStateOf(false)
     }
@@ -66,7 +98,8 @@ fun PackingItemCard(item: PackingItem) {
     var selectedText by remember {
         mutableStateOf(NotificationType.values().first().value)
     }
-
+    val itemName = if (newItem) newItemName else item.name
+    val itemNotificationType = if (newItem) newItemNotificationType else item.notificationType
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
