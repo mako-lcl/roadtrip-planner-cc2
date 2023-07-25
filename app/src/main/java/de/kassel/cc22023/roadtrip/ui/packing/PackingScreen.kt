@@ -1,8 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
@@ -28,16 +30,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+@Preview
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
+    val image: Painter = painterResource(R.drawable.packbg)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        // Background image
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxSize()
+        )
 
 
         Column(
@@ -87,7 +107,7 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             Text("Add New Item")
         }
     }
-
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
