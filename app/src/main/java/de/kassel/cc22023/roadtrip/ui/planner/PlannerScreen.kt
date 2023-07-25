@@ -126,7 +126,8 @@ fun PlannerScreen() {
                 value = startLocation,
                 onValueChange = { startLocation = it },
                 label = { Text("Start Location") },
-                modifier = Modifier.weight(1.5f)
+                modifier = Modifier.weight(1.5f),
+                singleLine = true
             )
             Spacer(modifier = Modifier.width(5.dp))
 
@@ -179,7 +180,8 @@ fun PlannerScreen() {
                 value = endLocation,
                 onValueChange = { endLocation = it },
                 label = { Text("End Location") },
-                modifier = Modifier.weight(1.5f)
+                modifier = Modifier.weight(1.5f),
+                singleLine = true
 
             )
             Spacer(modifier = Modifier.width(5.dp))
