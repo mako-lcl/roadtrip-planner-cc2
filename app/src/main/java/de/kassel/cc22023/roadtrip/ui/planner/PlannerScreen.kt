@@ -1,8 +1,13 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
@@ -11,40 +16,32 @@ import com.squareup.moshi.JsonReader
 import com.squareup.moshi.JsonWriter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
+import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 
 @Composable
-fun PlannerScreen() {
+fun PlannerScreen(
+    viewModel: PlannerViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
+    val trip by viewModel.trip.collectAsState()
 
-    Text(text = "Planner")
+    Column {
+        Text(text = "Planner")
+        Text(trip.toString())
 
-    val string = context.assets.open("roadtrip.txt").bufferedReader().use{
-        it.readText()
+        Button(onClick = {
+            val testTrip = loadRoadtripFromAssets(context)
+            val trip = convertRoadtripFromTestTrip(testTrip)
+            viewModel.insertNewRoadtrip(trip)
+        }) {
+            Text("Load data!")
+        }
+
+        Button(onClick = {
+            viewModel.getRoadtrip()
+        }) {
+            Text("Show")
+        }
     }
-
-    val moshi: Moshi = Moshi.Builder().build()
-    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
-    val trip = jsonAdapter.fromJson(string)
-
-    print(trip)
 }
-
-@JsonClass(generateAdapter = true)
-data class TestTrip(
-    @Json(name = "start_date")
-    val startDate: String,
-    @Json(name = "end_date")
-    val endDate: String,
-    @Json(name = "packing_list")
-    val packingList: List<String>,
-    @Json(name = "locations")
-    val locs: List<Loc>
-)
-
-@JsonClass(generateAdapter = true)
-data class Loc(
-    val name: String,
-    val latitude: Double,
-    val longitude: Double,
-    val activities: List<String>
-)

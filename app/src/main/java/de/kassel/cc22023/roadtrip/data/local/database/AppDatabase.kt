@@ -22,4 +22,6 @@ import androidx.room.RoomDatabase
 @Database(entities = [RoadtripData::class, RoadtripLocation::class, RoadtripActivity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun roadtripDataDao(): RoadtripDataDao
+    abstract fun roadtripLocationDao(): RoadtripLocationDao
+    abstract fun roadtripActivityDao(): RoadtripActivityDao
 }

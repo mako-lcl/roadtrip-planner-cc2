@@ -9,27 +9,16 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
-@Entity(
-    tableName = "RoadtripActivity",
-    foreignKeys = [
-        ForeignKey(
-            entity = RoadtripLocation::class,
-            parentColumns = ["id"],
-            childColumns = ["locationId"],
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        )
-    ]
-)
+@Entity()
 data class RoadtripActivity(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey()
     val id: Int,
-    val locationId: Int,
+    val locId: Int,
     val name: String?
 ) {
     companion object {
         val exampleData = listOf(
-            RoadtripActivity(0,  0,"Hiking"),
+            RoadtripActivity(0, 0,  "Hiking"),
             RoadtripActivity(0, 0, "Eating"),
             RoadtripActivity(0, 0, "Sleeping"),
             RoadtripActivity(0, 0, "Catching Fairies"),
@@ -40,4 +29,16 @@ data class RoadtripActivity(
             RoadtripActivity(0, 0, "Swimming"),
         )
     }
+}
+
+@Dao
+interface RoadtripActivityDao {
+    @Query("SELECT * FROM RoadtripActivity")
+    fun getActivities(): List<RoadtripActivity>
+
+    @Insert
+    fun insertActivities(activities: List<RoadtripActivity>)
+
+    @Query("DELETE FROM RoadtripActivity")
+    fun deleteAll()
 }
