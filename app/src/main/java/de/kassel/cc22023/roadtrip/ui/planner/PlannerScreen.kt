@@ -107,7 +107,9 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     var selectedText by remember {
         mutableStateOf(TransportationType.values().first().value)
     }
-
+    var startDate by remember { mutableStateOf(selectedStartDate.toString()) }
+    var endDate by remember { mutableStateOf(selectedEndDate.toString()) }
+    val currentDate = remember { LocalDate.now() }
 
     Column(
         Modifier
@@ -116,7 +118,7 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // First Date Selection
-        var startDate by remember { mutableStateOf(selectedStartDate.toString()) }
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -143,7 +145,7 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
 
             Button(
                 onClick = { showStartDatePicker = true },
-                //modifier = Modifier.weight(1f)
+
             ) {
                 Image(
                     painter = painterResource(R.drawable.baseline_calendar_month_24),
@@ -164,13 +166,23 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
                         Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
                     startDate = selectedStartDate.toString()
                     showStartDatePicker = false
-                }
+                    if (selectedStartDate.isBefore(currentDate)) {
+                        selectedStartDate = currentDate
+                        startDate = currentDate.toString()
+                    }
+                    if (selectedEndDate.isBefore(selectedStartDate)) {
+                        // If the endDate is before the startDate, reset the endDate to match the startDate
+                        selectedEndDate = selectedStartDate
+                        endDate = selectedStartDate.toString()
+                    }
+                },
+                onCloseDialog = { showStartDatePicker = false }
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
 
         // Second Date Selection
-        var endDate by remember { mutableStateOf(selectedEndDate.toString()) }
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -219,9 +231,20 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
                         Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
                     endDate = selectedEndDate.toString()
                     showEndDatePicker = false
-                }
+                    if (selectedEndDate.isBefore(selectedStartDate)) {
+                        // If the endDate is before the startDate, reset the endDate to match the startDate
+                        selectedEndDate = selectedStartDate
+                        endDate = selectedStartDate.toString()
+                    }
+                },
+
+                onCloseDialog = { showEndDatePicker = false }
+
             )
         }
+
+
+
         Spacer(modifier = Modifier.height(40.dp))
         ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it },Modifier.fillMaxWidth()) {
             TextField(
@@ -269,7 +292,8 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
 @Composable
 fun DatePickerDialogSample(
     state: DatePickerState,
-    onDateSelected: (Long) -> Unit
+    onDateSelected: (Long) -> Unit,
+    onCloseDialog:() ->Unit
 ) {
     // Decoupled snackbar host state from scaffold state for demo purposes.
     val snackState = remember { SnackbarHostState() }
@@ -309,6 +333,8 @@ fun DatePickerDialogSample(
                 TextButton(
                     onClick = {
                         openDialog.value = false
+                        onCloseDialog()
+
                     }
                 ) {
                     Text("Cancel")
