@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -23,9 +24,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DropdownMenuItem
 
 
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 
 import androidx.compose.material3.LocalTextStyle
@@ -65,6 +69,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import de.kassel.cc22023.roadtrip.R
+import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
+import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
 
 
 import kotlinx.coroutines.launch
@@ -79,8 +85,7 @@ fun PlannerScreen() {
     val context = LocalContext.current
 
 
-
-    val string = context.assets.open("roadtrip.txt").bufferedReader().use{
+    val string = context.assets.open("roadtrip.txt").bufferedReader().use {
         it.readText()
     }
 
@@ -96,7 +101,12 @@ fun PlannerScreen() {
     var showEndDatePicker by remember { mutableStateOf(false) }
     var startLocation by remember { mutableStateOf("") }
     var endLocation by remember { mutableStateOf("") }
-
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    var selectedText by remember {
+        mutableStateOf(TransportationType.values().first().value)
+    }
 
 
     Column(
@@ -130,7 +140,8 @@ fun PlannerScreen() {
                 )
             }
 
-            Button(onClick = { showStartDatePicker = true },
+            Button(
+                onClick = { showStartDatePicker = true },
                 //modifier = Modifier.weight(1f)
             ) {
                 Image(
@@ -148,12 +159,14 @@ fun PlannerScreen() {
                     initialSelectedDateMillis = selectedStartDate.toEpochDay() * 24 * 60 * 60 * 1000
                 ),
                 onDateSelected = { newDate ->
-                    selectedStartDate = Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
+                    selectedStartDate =
+                        Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
                     startDate = selectedStartDate.toString()
                     showStartDatePicker = false
                 }
             )
         }
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Second Date Selection
         var endDate by remember { mutableStateOf(selectedEndDate.toString()) }
@@ -181,7 +194,8 @@ fun PlannerScreen() {
                 )
             }
 
-            Button(onClick = { showEndDatePicker = true },
+            Button(
+                onClick = { showEndDatePicker = true },
                 //modifier = Modifier.weight(1f)
             ) {
                 Image(
@@ -199,13 +213,42 @@ fun PlannerScreen() {
                     initialSelectedDateMillis = selectedEndDate.toEpochDay() * 24 * 60 * 60 * 1000
                 ),
                 onDateSelected = { newDate ->
-                    selectedEndDate = Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
+                    selectedEndDate =
+                        Instant.ofEpochMilli(newDate).atZone(ZoneOffset.UTC).toLocalDate()
                     endDate = selectedEndDate.toString()
                     showEndDatePicker = false
                 }
             )
         }
+        Spacer(modifier = Modifier.height(40.dp))
+        ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it },Modifier.fillMaxWidth()) {
+            TextField(
+                value = selectedText,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier.menuAnchor().fillMaxWidth()
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+            ) {
+                TransportationType.values().forEach { type ->
+                    DropdownMenuItem(
+                        text = { Text(type.value) },
+                        onClick = {
+                            selectedText = type.value
+                            expanded = false
+                        },
+                        contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                    )
+                }
+            }
+        }
+
     }
+
 }
 
 @SuppressLint("UnrememberedMutableState")
@@ -263,6 +306,7 @@ fun DatePickerDialogSample(
         }
     }
 }
+
 @JsonClass(generateAdapter = true)
 data class TestTrip(
     @Json(name = "start_date")

@@ -31,7 +31,12 @@ import de.kassel.cc22023.roadtrip.ui.planner.Loc
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
-
+enum class TransportationType(val value: String) {
+    CAR("Car"),
+    BIKE("Bike"),
+    BICYCLE("Bicycle"),
+    HIKING("Hiking")
+}
 @Entity
 data class RoadtripData(
     @PrimaryKey
