@@ -53,9 +53,13 @@ fun MainNavigation() {
         }
     ) {innerPadding ->
         NavHost(navController = navController, startDestination = Screen.Planner.route, modifier = Modifier.padding(innerPadding)) {
-            composable("planner") { PlannerScreen() }
-            composable("map") { MapScreen() }
-            composable("packing") { PackingScreen() }
+            composable(Screen.Planner.route) {
+                PlannerScreen() {
+                    navController.navigate(Screen.Map.route)
+                }
+            }
+            composable(Screen.Map.route) { MapScreen() }
+            composable(Screen.Packing.route) { PackingScreen() }
         }
     }
 }

@@ -16,6 +16,7 @@
 
 package de.kassel.cc22023.roadtrip.data
 
+import de.kassel.cc22023.roadtrip.BuildConfig
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedLocation
@@ -29,8 +30,18 @@ import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
 import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
+import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
+import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
+import de.kassel.cc22023.roadtrip.util.cleanJsonString
 import de.kassel.cc22023.roadtrip.util.combineRoadtrip
+import de.kassel.cc22023.roadtrip.util.convertCleanedStringToTrip
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
+import de.kassel.cc22023.roadtrip.util.createRoadtripPrompt
+import de.kassel.cc22023.roadtrip.util.launch
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import java.io.FileInputStream
+import java.util.Properties
 import javax.inject.Inject
 
 interface RoadtripRepository {
@@ -42,10 +53,20 @@ interface RoadtripRepository {
     suspend fun updateCheckbox(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: CombinedRoadtrip)
+
+    suspend fun createRoadtrip(
+        startLocation: String,
+        endLocation: String,
+        startDate: String,
+        endDate: String,
+        transportation: String,
+        onSuccess: (CombinedRoadtrip) -> Unit,
+        onLoading: () -> Unit,
+        onError: () -> Unit
+    )
+
     fun getRoadtrip() : CombinedRoadtrip
     fun deleteItem(card: PackingItem)
-
-
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -53,7 +74,7 @@ class DefaultRoadtripRepository @Inject constructor(
     private val packingItemDao: PackingItemDao,
     private val roadtripLocationDao: RoadtripLocationDao,
     private val roadtripActivityDao: RoadtripActivityDao,
-    private val weatherApi: OpenAiApi
+    private val openAiApi: OpenAiApi
 ) : RoadtripRepository {
     override val packingList: Flow<List<PackingItem>?> =
         packingItemDao.getPackingItemsAsFlow()
@@ -94,6 +115,42 @@ class DefaultRoadtripRepository @Inject constructor(
                 )
             }
         )
+    }
+
+    override suspend fun createRoadtrip(
+        startLocation: String,
+        endLocation: String,
+        startDate: String,
+        endDate: String,
+        transportation: String,
+        onSuccess: (CombinedRoadtrip) -> Unit,
+        onLoading: () -> Unit,
+        onError: () -> Unit
+    ) {
+        val token = BuildConfig.GPT_KEY
+        val contentType = "application/json"
+        val prompt = createRoadtripPrompt(startLocation, endLocation, startDate, endDate, transportation)
+        val request = RoadtripRequest(messages = listOf(RoadtripRequestMessage(content = prompt)))
+        openAiApi.getRoadtrip( contentType, request)
+            .launch(
+                onSuccess = {resp ->
+                                val content = resp.choices.firstOrNull()?.message?.content
+                                if (content != null) {
+                                    val trip = convertCleanedStringToTrip(content)
+                                    if (trip != null) {
+                                        val combinedRoadtrip = convertRoadtripFromTestTrip(trip)
+                                        onSuccess(combinedRoadtrip)
+                                    } else {
+                                        onError()
+                                    }
+                                } else {
+                                    onError()
+                                }
+                            }, onLoading = {
+                                onLoading()
+                            }, onError = {
+                                onError()
+                            })
     }
 
     override fun getRoadtrip(): CombinedRoadtrip {

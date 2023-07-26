@@ -1,0 +1,123 @@
+Plan a roadtrip from Kassel to Medebach from August 1st to August 5th on foot. The roadtrip should contain a packing list, a list of locations with their name, latitude and longitude on the trip with possible activities as a list of names. Reduce the number of stops to a maximum of 10. Give the response as a json and include the start and end location names as start_location and end_location. Include if the trip is possible in the json with the name is_possible. Also include the start and end date in the response as start_date and end_date. Use packing_list as the field name for the packing list and locations as the field name for the list of locations.
+
+{
+  "start_location": "Kassel",
+  "end_location": "Medebach",
+  "start_date": "August 1st",
+  "end_date": "August 5th",
+  "is_possible": true,
+  "packing_list": [
+    "Backpack",
+    "Water bottle",
+    "Comfortable walking shoes",
+    "Weather-appropriate clothing",
+    "Sunscreen",
+    "Map or GPS device",
+    "Snacks",
+    "Cash or credit card",
+    "First aid kit",
+    "Camera"
+  ],
+  "locations": [
+    {
+      "name": "Kassel",
+      "latitude": 51.3127,
+      "longitude": 9.4797,
+      "activities": [
+        "Visit Bergpark Wilhelmshöhe",
+        "Explore Museum Fridericianum",
+        "Take a walk in Karlsaue Park"
+      ]
+    },
+    {
+      "name": "Fuldatal",
+      "latitude": 51.3667,
+      "longitude": 9.45,
+      "activities": [
+        "Hike through Hohes Gras Nature Reserve",
+        "Visit the Fuldataler Streuobstwiese orchard",
+        "Enjoy the panoramic views from Windpark Knickhagen"
+      ]
+    },
+    {
+      "name": "Espenau",
+      "latitude": 51.4167,
+      "longitude": 9.5167,
+      "activities": [
+        "Explore the Espenau Forest",
+        "Visit the Hirschhof Wildlife Park",
+        "Walk along the Fulda River"
+      ]
+    },
+    {
+      "name": "Wolfhagen",
+      "latitude": 51.3746,
+      "longitude": 9.1662,
+      "activities": [
+        "Visit the Wolfhagen Castle",
+        "Explore the historic town center",
+        "Hike in the nearby Reinhardswald Forest"
+      ]
+    },
+    {
+      "name": "Bad Arolsen",
+      "latitude": 51.3688,
+      "longitude": 9.0212,
+      "activities": [
+        "Tour the Baroque-style Bad Arolsen Castle",
+        "Relax at the Twistesee Lake",
+        "Visit the Museum Bad Arolsen"
+      ]
+    },
+    {
+      "name": "Volkmarsen",
+      "latitude": 51.4144,
+      "longitude": 9.0272,
+      "activities": [
+        "Explore the historic town center",
+        "Walk along the Eder River",
+        "Visit the Baroque-style St. John's Church"
+      ]
+    },
+    {
+      "name": "Diemelsee",
+      "latitude": 51.3892,
+      "longitude": 8.825,
+      "activities": [
+        "Enjoy water activities at the Diemelsee Reservoir",
+        "Hike in the Diemelsee Nature Park",
+        "Visit the Diemelsee Castle"
+      ]
+    },
+    {
+      "name": "Adorf",
+      "latitude": 51.3217,
+      "longitude": 8.779,
+      "activities": [
+        "Explore the Adorfer Wald Forest",
+        "Visit the Adorf Castle ruins",
+        "Walk along the Aar River"
+      ]
+    },
+    {
+      "name": "Medelon",
+      "latitude": 51.2333,
+      "longitude": 8.65,
+      "activities": [
+        "Hike in the Medelon Forest",
+        "Visit the Medelon Castle",
+        "Enjoy the scenic views from Medelon Hill"
+      ]
+    },
+    {
+      "name": "Medebach",
+      "latitude": 51.1708,
+      "longitude": 8.7388,
+      "activities": [
+        "Explore the historic town center",
+        "Visit the St. Peter and Paul Church",
+        "Hike in the nearby Rothaargebirge mountains"
+      ]
+    }
+  ]
+}

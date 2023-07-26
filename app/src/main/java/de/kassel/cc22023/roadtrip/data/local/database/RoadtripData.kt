@@ -32,10 +32,10 @@ import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0
 enum class TransportationType(val value: String) {
-    CAR("Car"),
-    BIKE("Bike"),
-    BICYCLE("Bicycle"),
-    HIKING("Hiking")
+    CAR("by car"),
+    BIKE("by bike"),
+    BICYCLE("by bicycle"),
+    HIKING("on foot")
 }
 @Entity
 data class RoadtripData(

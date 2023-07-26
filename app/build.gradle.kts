@@ -48,6 +48,7 @@ android {
 
         gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
         manifestPlaceholders["googleMapsApiKey"] = gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
+        buildConfigField("String", "GPT_KEY", "\"" + gradleLocalProperties(rootDir).getProperty("GPT_KEY") + "\"")
     }
 
     buildTypes {

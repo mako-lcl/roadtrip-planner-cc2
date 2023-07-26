@@ -54,6 +54,14 @@ class PackingViewModel @Inject constructor(
         }
 
     }
+
+    fun onPermissionGranted() {
+
+    }
+
+    fun onPermissionDenied() {
+
+    }
 }
 
 sealed interface PackingDataUiState {

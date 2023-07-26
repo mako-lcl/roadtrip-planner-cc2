@@ -1,5 +1,12 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -58,6 +65,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,22 +77,89 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
+import de.kassel.cc22023.roadtrip.util.createNotificationChannel
+import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
+import com.mutualmobile.composesensors.rememberPressureSensorState
+import kotlinx.coroutines.launch
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+val notificationPermissions = listOf(
+    android.Manifest.permission.POST_NOTIFICATIONS,
+)
+
+@OptIn(ExperimentalPermissionsApi::class)
+
 @Preview
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
+    val context = LocalContext.current
 
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
+
+        if (permissionState.allPermissionsGranted) {
+            viewModel.onPermissionGranted()
+        } else {
+            viewModel.onPermissionDenied()
+        }
+
+        if (permissionState.shouldShowRationale ||
+            !permissionState.allPermissionsGranted ||
+            permissionState.revokedPermissions.isNotEmpty()
+        ) {
+            PermissionsRejectedView()
+        } else {
+            LaunchedEffect(Unit) {
+                createNotificationChannel(context)
+            }
+
+            PackingListView()
+        }
+    } else {
+        PackingListView()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PackingListView(
+    viewModel: PackingViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+
+    var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
     val image: Painter = painterResource(R.drawable.packbg_dark)
+
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+    var sensoralitude by remember {mutableStateOf ( SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
+        Sensor.TYPE_PRESSURE.toFloat()
+    ))}
+
+    var selectedText by remember {
+        mutableStateOf(NotificationType.values().first().value)
+    }
+    val listState = rememberLazyListState()
+    val pressureState = rememberPressureSensorState()
+
+    sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
+    var height by remember { mutableStateOf(0.0f) }
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -96,103 +172,172 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
         )
 
 
-    Column(
-        modifier = Modifier
-            .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
-            .fillMaxWidth(),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Box(modifier = Modifier
-            .size(width = 400.dp, height = 100.dp)
-            .padding(16.dp)
-            .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
-            contentAlignment = Alignment.Center){
-//        Card(
-//            colors = CardDefaults.cardColors(
-//            MaterialTheme.colorScheme.primaryContainer
-//        ),
-//
-//            shape = RoundedCornerShape(10.dp),
-//            modifier = Modifier
-//                .size(width = 200.dp, height = 50.dp)
-//                .aspectRatio(2f)
-//                .padding(16.dp)
-//        ){}
 
-        Text(
-            "Pack Your Bags",
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp, fontFamily = FontFamily.Serif
-        )
 
-        }
-
-        Row {
+        Column(
+            modifier = Modifier
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+                .fillMaxWidth(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Box(modifier = Modifier
-                .fillMaxSize(0.05f)
-                .weight(0.5f)
-                .padding(1.dp)
+                .size(width = 400.dp, height = 100.dp)
+                .padding(16.dp)
                 .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center){
+            Row {
+                // Text input field to enter the new item name
 
-            Text(text = "Carry Me", fontSize = 15.sp)
             }
-            Box(modifier = Modifier
-                .fillMaxSize(0.05f)
-                .weight(0.5f)
-                .padding(1.dp)
-                .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
-                contentAlignment = Alignment.Center){
-            Text(text = "Remind Me", fontSize = 15.sp)
-        }
-        }
+            Button(
+                onClick = {
+                    // Parse the user input to a Double and update the sensoralitude value
+                    height = sensoralitude
+                },
 
-        if (data is PackingDataUiState.Success) {
-           val list = (data as PackingDataUiState.Success).data
-            LazyColumn {
-                itemsIndexed(items = list, key = {index,item -> item.hashCode()}) {
-                        index,item ->
-                    Box(modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .padding(1.dp)
-                        .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(10.dp)),
-                        contentAlignment = Alignment.Center){
-                    val currentItem by rememberUpdatedState(newValue = item)
+            ) {
+                Text("Set Height")
+            }
+            Text(
+                text = "Sensor Altitude: $height m",
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
+            )
+            Text(
+                "Packing list",
+                fontSize = 30.sp
+            )
+            }
 
-                    val dismissState = rememberDismissState(confirmValueChange = {
-                        viewModel.deleteItem(currentItem)
-                        true
-                    })
-                    SwipeToDismiss(state = dismissState, background = {
-                        SwipeBackground(dismissState)
-                    }, dismissContent = { PackingItemCard(item) })
+
+//        if (data is PackingDataUiState.Success) {
+//           val list = (data as PackingDataUiState.Success).data
+//            LazyColumn {
+//                itemsIndexed(items = list, key = {index,item -> item.hashCode()}) {
+//                        index,item ->
+//                    Box(modifier = Modifier
+//                        .wrapContentSize(Alignment.Center)
+//                        .padding(1.dp)
+//                        .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(10.dp)),
+//                        contentAlignment = Alignment.Center){
+//                    val currentItem by rememberUpdatedState(newValue = item)
+            Row {
+                // Text input field to enter the new item name
+                TextField(
+                    value = newItemName,
+                    onValueChange = { newItemName = it },
+                    label = { Text("Enter new item name") },
+                    modifier = Modifier.weight(0.7f)
+                )
+            }
+            Row {
+                // Dropdown menu to select the notification type for the new item
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = it },
+                    modifier = Modifier.weight(0.3f)
+                ) {
+                    TextField(
+                        value = selectedText,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        modifier = Modifier.menuAnchor()
+                    )
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        NotificationType.values().forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type.value) },
+                                onClick = {
+                                    selectedText = type.value
+                                    expanded = false
+                                    newItemNotificationType =
+                                        type // Update the newItemNotificationType when a value is selected
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
+                    }
                 }
             }
+                    }
+
+            Button(
+                onClick = {
+                    // Add a new PackingItem to the packingList
+                    val newItem = PackingItem(
+                        id = 0,
+                        name = newItemName,
+                        notificationType = newItemNotificationType,
+                        isChecked = false
+                    )
+                    viewModel.insertIntoList(newItem)
+                    newItemName = ""
+                    newItemNotificationType = NotificationType.NONE
+
+                },
+                shape = CircleShape,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Add New Item")
             }
 
-        } else {
-            LoadingScreen()
-        }
+            Row {
+                Box(modifier = Modifier
+                    .fillMaxSize(0.05f)
+                    .weight(0.5f)
+                    .padding(1.dp)
+                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center){
 
-        Button(
-            onClick = {
-                val newItem = PackingItem(
-                    id = 0,
-                    name = newItemName,
-                    notificationType = NotificationType.NONE,
-                    isChecked = false
-                )
-                viewModel.insertIntoList(newItem)
-            },
-            shape = CircleShape,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text("Add New Item")
+                    Text(text = "Carry Me", fontSize = 15.sp)
+                }
+                Box(modifier = Modifier
+                    .fillMaxSize(0.05f)
+                    .weight(0.5f)
+                    .padding(1.dp)
+                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    contentAlignment = Alignment.Center){
+                    Text(text = "Remind Me", fontSize = 15.sp)
+                }
+            }
+            if (data is PackingDataUiState.Success) {
+                val list = (data as PackingDataUiState.Success).data
+                val reversedList = list.reversed()
+
+                LazyColumn(state = listState) {
+                    itemsIndexed(
+                        items = reversedList,
+                        key = { index, item -> item.hashCode() }) { index, item ->
+                        val currentItem by rememberUpdatedState(newValue = item)
+
+                        val dismissState = rememberDismissState(confirmValueChange = {
+                            viewModel.deleteItem(currentItem)
+                            true
+                        })
+                        SwipeToDismiss(state = dismissState, background = {
+                            SwipeBackground(dismissState)
+                        }, dismissContent = { PackingItemCard(item) })
+                    }
+
+            }
+            } else {
+                LoadingScreen()
+            }
+
+                }
+        LaunchedEffect(key1 = viewModel.data.collectAsState().value) {
+            if (data is PackingDataUiState.Success) {
+                listState.scrollToItem(0)
+            }
         }
     }
-    }
-}
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -267,7 +412,7 @@ fun PackingItemCard(
 
             })
 
-            Text("${item.name}!")
+            Text(item.name)
         }
 
         Row(
@@ -304,9 +449,7 @@ fun PackingItemCard(
                     }
                 }
             }
-
         }
-
     }
 }
 
