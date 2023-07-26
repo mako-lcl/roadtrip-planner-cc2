@@ -12,7 +12,28 @@ import java.util.Date
 
 enum class NotificationType(val value: String) {
     NONE("None"),
-    BASEMENT("Basement")
+    FLOOR("Floor"),
+    LOCATION("Location"),
+    TIME("Time");
+
+    companion object {
+        fun fromString(type: String) : NotificationType {
+            return when (type) {
+                "None" -> {
+                    NONE
+                }
+                "Floor" -> {
+                    FLOOR
+                }
+                "Location" -> {
+                    LOCATION
+                }
+                else -> {
+                    TIME
+                }
+            }
+        }
+    }
 }
 
 @Entity
@@ -20,7 +41,7 @@ data class PackingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val name: String,
-    val notificationType: NotificationType,
+    var notificationType: NotificationType,
     var isChecked: Boolean,
     val time: Long?,
     val height: Float,
@@ -43,7 +64,7 @@ data class PackingItem(
             PackingItem(
                 1,
                 "Bread",
-                NotificationType.BASEMENT,
+                NotificationType.FLOOR,
                 isChecked = false,
                 null,
                 0f,

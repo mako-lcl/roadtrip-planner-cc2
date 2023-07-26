@@ -122,6 +122,10 @@ fun PackingListScaffold() {
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
+    var selectedItem: PackingItem? by remember {
+        mutableStateOf(null)
+    }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetShape = RoundedCornerShape(
@@ -131,15 +135,14 @@ fun PackingListScaffold() {
             topEnd = 12.dp
         ),
         sheetContent = {
-                       PackingItemSheet {
-
-                       }
+            selectedItem?.let { PackingItemSheet (it) }
         },
 
         sheetPeekHeight = 0.dp
     ) {
-        PackingListView() {
+        PackingListView {
             coroutineScope.launch {
+                selectedItem = it
                 bottomSheetScaffoldState.bottomSheetState.expand()
             }
         }
@@ -150,7 +153,7 @@ fun PackingListScaffold() {
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
-    expand: () -> Unit
+    selectItem: (PackingItem) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -308,7 +311,9 @@ fun PackingListView(
                         })
                         SwipeToDismiss(state = dismissState, background = {
                             SwipeBackground(dismissState)
-                        }, dismissContent = { PackingItemCard(item) })
+                        }, dismissContent = { PackingItemCard(item) {
+                            selectItem(it)
+                        } })
                     }
                 }
             } else {
@@ -374,7 +379,8 @@ fun SwipeBackground(dismissState: DismissState) {
 @Composable
 fun PackingItemCard(
     item: PackingItem,
-    viewModel: PackingViewModel = hiltViewModel()
+    viewModel: PackingViewModel = hiltViewModel(),
+    selectItem: (PackingItem) -> Unit
 ) {
     var checked by remember {
         mutableStateOf(item.isChecked)
@@ -432,6 +438,12 @@ fun PackingItemCard(
                             text = { Text(type.value) },
                             onClick = {
                                 selectedText = type.value
+                                if (type.value != NotificationType.NONE.value) {
+                                    val newItem = PackingItem(
+                                        item.id, item.name, NotificationType.fromString(selectedText), item.isChecked, item.time, item.height, item.lat, item.lon
+                                    )
+                                    selectItem(newItem)
+                                }
                                 expanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
