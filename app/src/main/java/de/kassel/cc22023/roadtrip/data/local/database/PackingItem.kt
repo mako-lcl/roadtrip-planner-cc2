@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 enum class NotificationType(val value: String) {
     NONE("None"),
@@ -20,7 +21,11 @@ data class PackingItem(
     val id: Int,
     val name: String,
     val notificationType: NotificationType,
-    var isChecked: Boolean
+    var isChecked: Boolean,
+    val time: Long?,
+    val height: Float,
+    val lat: Float,
+    val lon: Float
 ) {
     companion object {
         val exampleData = listOf(
@@ -28,43 +33,72 @@ data class PackingItem(
                 0,
                 "Driver's License",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
+
             ),
             PackingItem(
                 1,
                 "Bread",
                 NotificationType.BASEMENT,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 2,
                 "Ham",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 3,
                 "Coke Zero",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 4,
                 "Yoshi Plush",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 5,
                 "Grissini",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 6,
                 "iPad",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
         )
     }

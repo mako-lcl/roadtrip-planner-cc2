@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "6ea930a5a1f6de058b560d060f79b33d",
+    "identityHash": "b8a0ab648fe9551063e3cc7120576ed1",
     "entities": [
       {
         "tableName": "RoadtripData",
@@ -120,7 +120,7 @@
       },
       {
         "tableName": "PackingItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL, `time` INTEGER, `height` REAL NOT NULL, `lat` REAL NOT NULL, `lon` REAL NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -145,6 +145,30 @@
             "columnName": "isChecked",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "time",
+            "columnName": "time",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "height",
+            "columnName": "height",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lon",
+            "columnName": "lon",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -160,7 +184,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '6ea930a5a1f6de058b560d060f79b33d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b8a0ab648fe9551063e3cc7120576ed1')"
     ]
   }
 }
