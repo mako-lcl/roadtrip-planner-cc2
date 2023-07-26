@@ -102,7 +102,7 @@ fun PlannerScreen(
         }
 
         is PlannerDataUiState.Success -> {
-            LaunchedEffect(data) {
+            LaunchedEffect(Unit) {
                 Timber.d("Navigating to map!")
                 //onNavigateToMap()
                 Toast

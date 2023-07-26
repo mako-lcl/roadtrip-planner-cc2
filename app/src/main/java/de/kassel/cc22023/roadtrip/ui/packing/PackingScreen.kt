@@ -5,6 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -67,12 +69,57 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
+import de.kassel.cc22023.roadtrip.util.createNotificationChannel
+import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
 import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+val notificationPermissions = listOf(
+    android.Manifest.permission.POST_NOTIFICATIONS,
+)
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
+
+        if (permissionState.allPermissionsGranted) {
+            viewModel.onPermissionGranted()
+        } else {
+            viewModel.onPermissionDenied()
+        }
+
+        if (permissionState.shouldShowRationale ||
+            !permissionState.allPermissionsGranted ||
+            permissionState.revokedPermissions.isNotEmpty()
+        ) {
+            PermissionsRejectedView()
+        } else {
+            LaunchedEffect(Unit) {
+                createNotificationChannel(context)
+            }
+
+            PackingListView()
+        }
+    } else {
+        PackingListView()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PackingListView(
+    viewModel: PackingViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+
     var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
@@ -105,7 +152,6 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.fillMaxSize()
         )
-
 
 
 
@@ -236,8 +282,6 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
                 listState.scrollToItem(0)
             }
         }
-
-
     }
 }
 
