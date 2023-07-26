@@ -66,10 +66,13 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.shape
@@ -98,8 +101,6 @@ val notificationPermissions = listOf(
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
-
-@Preview
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     val context = LocalContext.current
@@ -123,17 +124,48 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
                 createNotificationChannel(context)
             }
 
-            PackingListView()
+            PackingListScaffold()
         }
     } else {
-        PackingListView()
+        PackingListScaffold()
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PackingListScaffold() {
+    val coroutineScope = rememberCoroutineScope()
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetScaffoldState,
+        sheetShape = RoundedCornerShape(
+            bottomStart = 0.dp,
+            bottomEnd = 0.dp,
+            topStart = 12.dp,
+            topEnd = 12.dp
+        ),
+        sheetContent = {
+                       PackingItemSheet {
+
+                       }
+        },
+
+        sheetPeekHeight = 0.dp
+    ) {
+        PackingListView() {
+            coroutineScope.launch {
+                bottomSheetScaffoldState.bottomSheetState.expand()
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingListView(
-    viewModel: PackingViewModel = hiltViewModel()
+    viewModel: PackingViewModel = hiltViewModel(),
+    expand: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -155,10 +187,9 @@ fun PackingListView(
     }
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
-
+    val notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
-    var height by remember { mutableStateOf(0.0f) }
-
+    val height by remember { mutableStateOf(0.0f) }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -170,7 +201,6 @@ fun PackingListView(
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.fillMaxSize()
         )
-
 
 
 
@@ -193,7 +223,7 @@ fun PackingListView(
             Button(
                 onClick = {
                     // Parse the user input to a Double and update the sensoralitude value
-                    height = sensoralitude
+                    //viewModel.setHeightAndLocation(sensoralitude)
                 },
 
             ) {
@@ -205,23 +235,16 @@ fun PackingListView(
                 modifier = Modifier.padding(16.dp)
             )
             Text(
+                text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
+            )
+            Text(
                 "Packing list",
                 fontSize = 30.sp
             )
             }
 
-
-//        if (data is PackingDataUiState.Success) {
-//           val list = (data as PackingDataUiState.Success).data
-//            LazyColumn {
-//                itemsIndexed(items = list, key = {index,item -> item.hashCode()}) {
-//                        index,item ->
-//                    Box(modifier = Modifier
-//                        .wrapContentSize(Alignment.Center)
-//                        .padding(1.dp)
-//                        .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(10.dp)),
-//                        contentAlignment = Alignment.Center){
-//                    val currentItem by rememberUpdatedState(newValue = item)
             Row {
                 // Text input field to enter the new item name
                 TextField(
@@ -265,7 +288,6 @@ fun PackingListView(
                     }
                 }
             }
-                    }
 
             Button(
                 onClick = {
@@ -274,7 +296,11 @@ fun PackingListView(
                         id = 0,
                         name = newItemName,
                         notificationType = newItemNotificationType,
-                        isChecked = false
+                        isChecked = false,
+                        null,
+                        0f,
+                        0f,
+                        0f
                     )
                     viewModel.insertIntoList(newItem)
                     newItemName = ""
@@ -324,20 +350,25 @@ fun PackingListView(
                             SwipeBackground(dismissState)
                         }, dismissContent = { PackingItemCard(item) })
                     }
-
-            }
+                }
             } else {
                 LoadingScreen()
             }
 
-                }
+
+        }
         LaunchedEffect(key1 = viewModel.data.collectAsState().value) {
             if (data is PackingDataUiState.Success) {
                 listState.scrollToItem(0)
             }
         }
-    }
+        LaunchedEffect(sensoralitude) {
+            //notificationMessage = viewModel.getNotificationMessage(sensoralitude)
+            //TODO
+        }
 
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -418,7 +449,6 @@ fun PackingItemCard(
         Row(
             modifier = Modifier.weight(0.5f)
         ) {
-
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = {
