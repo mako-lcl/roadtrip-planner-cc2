@@ -1,11 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import android.annotation.SuppressLint
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import androidx.annotation.RequiresPermission
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
@@ -44,36 +44,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.mutualmobile.composesensors.rememberPressureSensorState
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.BottomSheetScaffold
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import com.mutualmobile.composesensors.rememberPressureSensorState
-import de.kassel.cc22023.roadtrip.Manifest
-import de.kassel.cc22023.roadtrip.ui.map.MapLoadingScreen
-import de.kassel.cc22023.roadtrip.util.PermissionBox
-import kotlinx.coroutines.launch
 
-/*
-@RequiresPermission(
-    anyOf = [android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION],
-)
-
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
@@ -93,47 +76,17 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     }
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
-    var notificationMessage by remember { mutableStateOf("") }
+    val notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
     val height by remember { mutableStateOf(0.0f) }
 
-    val scope = rememberCoroutineScope()
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    var showSheet by remember { mutableStateOf(false) }
 
-    BottomSheetScaffold(
-        scaffoldState = scaffoldState,
-        sheetPeekHeight = 128.dp,
-        sheetContent = {
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(128.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Swipe up to expand sheet")
-            }
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(64.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text("Sheet content")
-                Spacer(Modifier.height(20.dp))
-                Button(
-                    onClick = {
-                        scope.launch { scaffoldState.bottomSheetState.partialExpand() }
-                    }
-                ) {
-                    Text("Click to collapse sheet")
-                }
-            }
-        }) { innerPadding ->
-        Box(Modifier.padding(innerPadding)) {
-            Text("Scaffold Content")
+    if (showSheet) {
+        PackingItemSheet {
+            showSheet = false
         }
     }
-
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -145,9 +98,6 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.fillMaxSize()
         )
-
-
-
 
         Column(
             modifier = Modifier
@@ -230,6 +180,8 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
             Button(
                 onClick = {
+                    showSheet = true
+
                     // Add a new PackingItem to the packingList
                     val newItem = PackingItem(
                         id = 0,

@@ -1,15 +1,12 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
+
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-
-
 import androidx.compose.foundation.layout.Column
-
 import androidx.compose.foundation.layout.Row
-
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,53 +14,23 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-
-import androidx.compose.foundation.text.KeyboardActions
-
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
-
-
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DropdownMenuItem
-
-
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberDatePickerState
-
-
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.squareup.moshi.FromJson
-import com.squareup.moshi.Json
-import com.squareup.moshi.JsonAdapter
-import com.squareup.moshi.JsonClass
-import com.squareup.moshi.JsonReader
-import com.squareup.moshi.JsonWriter
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.ToJson
-
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -74,24 +41,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.hilt.navigation.compose.hiltViewModel
-
-import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.R
-import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
-
-
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Instant
