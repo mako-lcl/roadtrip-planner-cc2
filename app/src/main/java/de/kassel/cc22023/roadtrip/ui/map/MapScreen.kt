@@ -114,8 +114,10 @@ fun MapLoadingScreen(
                     color = Color.Magenta
                 )
             }
-        } else {
+        } else if (data == MapDataUiState.Loading) {
             LoadingScreen()
+        } else if (data == MapDataUiState.NoTrip) {
+            Text("No trip yet!")
         }
     } else {
         LoadingScreen()

@@ -37,7 +37,7 @@ class MapViewModel @Inject constructor(
                 combineRoadtrip(trip, locations, activities, packingList)
             )
         } else {
-            MapDataUiState.Loading
+            MapDataUiState.NoTrip
         }
     }
         .stateIn(
@@ -56,4 +56,6 @@ class MapViewModel @Inject constructor(
 sealed interface MapDataUiState {
     object Loading : MapDataUiState
     data class Success(val data: CombinedRoadtrip) : MapDataUiState
+
+    object NoTrip : MapDataUiState
 }
