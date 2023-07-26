@@ -3,14 +3,12 @@ package de.kassel.cc22023.roadtrip.data.network.model
 import com.squareup.moshi.Json
 
 data class OpenAiResponse(
-    @Json(name = "model")
-    var model: modelResponse,
-    @Json(name = "content")
-    var content: content,
+    var choices: List<Choice>,
 )
-data class content(
-    var content: String?,
+data class Choice(
+    val message: ChoiceMessage,
 )
-data class modelResponse(
-    var model: String?,
+
+data class ChoiceMessage(
+    val content: String
 )

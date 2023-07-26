@@ -284,7 +284,7 @@ fun PackingItemCard(
 
             })
 
-            Text("${item.name}!")
+            Text(item.name)
         }
 
         Row(

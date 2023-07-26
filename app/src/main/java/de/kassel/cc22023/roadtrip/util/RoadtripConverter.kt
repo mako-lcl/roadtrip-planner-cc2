@@ -13,6 +13,7 @@ import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
 import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
+import timber.log.Timber
 import java.io.IOException
 
 @JsonClass(generateAdapter = true)
@@ -81,4 +82,20 @@ fun loadRoadtripFromAssets(context: Context) : TestTrip {
     }
 
     throw IOException()
+}
+
+fun convertCleanedStringToTrip(json: String) : TestTrip? {
+    Timber.d(json)
+    val moshi: Moshi = Moshi.Builder().build()
+    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
+    try {
+        val trip = jsonAdapter.fromJson(json)
+        trip?.let {
+            return trip
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    return null
 }

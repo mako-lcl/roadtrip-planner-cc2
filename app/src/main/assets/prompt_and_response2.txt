@@ -1,0 +1,131 @@
+You are a roadtrip planner. Format the response as a json. Plan a trip from Kassel to Darmstadt from August 1st to August 10th on foot. The trip should contain a packing list named packing_list, the start date as start_date, the end date as end_date, the start location name as start_location, the end loation name as end_location, if the trip is possible as is_possible and a list of locations with their name, latitude, longitude and possible activites as a list of names. Reduce the number of stops to a maximum of 10.
+
+{
+  "packing_list": [
+    "Backpack",
+    "Water bottle",
+    "Hiking shoes",
+    "Raincoat",
+    "Map",
+    "Sunscreen",
+    "First aid kit",
+    "Snacks",
+    "Cash",
+    "Camera"
+  ],
+  "start_date": "August 1st",
+  "end_date": "August 10th",
+  "start_location": "Kassel",
+  "end_location": "Darmstadt",
+  "is_possible": true,
+  "locations": [
+    {
+      "name": "Kassel",
+      "latitude": "51.3126",
+      "longitude": "9.4797",
+      "activities": [
+        "Exploring Bergpark Wilhelmshöhe",
+        "Visiting the Orangerie Palace",
+        "Strolling through Karlsaue Park"
+      ]
+    },
+    {
+      "name": "Bad Wildungen",
+      "latitude": "51.1184",
+      "longitude": "9.1147",
+      "activities": [
+        "Relaxing at the spa",
+        "Exploring the Reinhardswald Forest"
+      ]
+    },
+    {
+      "name": "Marburg",
+      "latitude": "50.8058",
+      "longitude": "8.7714",
+      "activities": [
+        "Visiting Marburg Castle",
+        "Exploring the Old Town",
+        "Enjoying views from Landgrave Tower"
+      ]
+    },
+    {
+      "name": "Gießen",
+      "latitude": "50.5863",
+      "longitude": "8.6705",
+      "activities": [
+        "Exploring Mathematikum",
+        "Visiting Botanical Garden"
+      ]
+    },
+    {
+      "name": "Wetzlar",
+      "latitude": "50.5563",
+      "longitude": "8.5034",
+      "activities": [
+        "Exploring the Old Town",
+        "Visiting Wetzlar Cathedral",
+        "Enjoying the views from Alten Lahnbrücke"
+      ]
+    },
+    {
+      "name": "Weilburg",
+      "latitude": "50.4838",
+      "longitude": "8.2597",
+      "activities": [
+        "Visiting Weilburg Castle",
+        "Exploring the Schlosspark",
+        "Taking a boat tour on the Lahn River"
+      ]
+    },
+    {
+      "name": "Limburg",
+      "latitude": "50.3859",
+      "longitude": "8.0629",
+      "activities": [
+        "Exploring Limburg Cathedral",
+        "Strolling through the Old Town",
+        "Visiting Saint John's Church"
+      ]
+    },
+    {
+      "name": "Diez",
+      "latitude": "50.3664",
+      "longitude": "8.0086",
+      "activities": [
+        "Visiting Oranienstein Castle",
+        "Exploring Diez Old Castle",
+        "Walking along the Lahn River"
+      ]
+    },
+    {
+      "name": "Elz",
+      "latitude": "50.3334",
+      "longitude": "7.9092",
+      "activities": [
+        "Enjoying nature walks",
+        "Visiting the Elzer Dom",
+        "Exploring the Altstadt"
+      ]
+    },
+    {
+      "name": "Wiesbaden",
+      "latitude": "50.0975",
+      "longitude": "8.5874",
+      "activities": [
+        "Strolling through Kurpark",
+        "Visiting Wiesbaden Casino",
+        "Exploring Neroberg"
+      ]
+    },
+    {
+      "name": "Darmstadt",
+      "latitude": "49.8728",
+      "longitude": "8.6512",
+      "activities": [
+        "Exploring Mathildenhöhe",
+        "Visiting Darmstadt Palace",
+        "Strolling through Herrngarten"
+      ]
+    }
+  ]
+}

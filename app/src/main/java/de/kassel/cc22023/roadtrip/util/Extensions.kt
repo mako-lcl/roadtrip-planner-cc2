@@ -38,7 +38,7 @@ suspend fun <T> Deferred<Response<T>>.launch(
                     }
                 }
             } else {
-                Timber.e("Weaper API Error", response.message())
+                Timber.e("OpenAi API Error", response.message())
                 // TODO: We can attach the error code to the onError callback.
                 withContext(Dispatchers.Main) {
                     onError?.invoke(response.message())
@@ -54,6 +54,11 @@ suspend fun <T> Deferred<Response<T>>.launch(
         }
     }
 
+}
+
+fun String.cleanJsonString(): String {
+    // Replace newline characters, double quotes, and consecutive whitespaces with a single space
+    return this.replace(Regex("\\\\n|\\\\(?=\")"), " ")
 }
 
 fun List<RoadtripActivity>.makeActivityList() : String {
