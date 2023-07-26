@@ -90,7 +90,7 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     }
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
-
+    var notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
     var height by remember { mutableStateOf(0.0f) }
 
@@ -123,7 +123,7 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             Button(
                 onClick = {
                     // Parse the user input to a Double and update the sensoralitude value
-                    height = sensoralitude
+                    viewModel.setHeight(sensoralitude)
                 },
 
             ) {
@@ -131,6 +131,11 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             }
             Text(
                 text = "Sensor Altitude: $height m",
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
+            )
+            Text(
+                text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
                 fontSize = 18.sp,
                 modifier = Modifier.padding(16.dp)
             )
@@ -236,7 +241,9 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
                 listState.scrollToItem(0)
             }
         }
-
+        LaunchedEffect(sensoralitude) {
+            notificationMessage = viewModel.getNotificationMessage(sensoralitude)
+        }
 
     }
 }

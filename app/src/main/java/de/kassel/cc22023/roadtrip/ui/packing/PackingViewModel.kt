@@ -18,6 +18,23 @@ import javax.inject.Inject
 class PackingViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository
 ) : ViewModel() {
+
+    private var height = 0.0f// Initialize the reference value to 0
+
+    fun setHeight(value: Float) {
+        height = value
+    }
+
+    fun getNotificationMessage(sensoralitude: Float): String {
+        val difference = sensoralitude - height
+        return when {
+            difference > 5.0 -> "Up" // Notify "up" if you are 5 meters above the set value
+            difference < -5.0 -> "Down" // Notify "down" if you are under the set value
+            else -> "" // Empty message if you are within the 5-meter range
+        }
+    }
+
+
     val data: StateFlow<PackingDataUiState> =
         roadtripRepository
             .packingList
