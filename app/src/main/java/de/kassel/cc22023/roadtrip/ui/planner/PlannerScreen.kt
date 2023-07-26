@@ -1,9 +1,11 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+
 
 import androidx.compose.foundation.layout.Column
 
@@ -20,6 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 
 
@@ -46,7 +50,16 @@ import androidx.compose.material3.rememberDatePickerState
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
@@ -75,14 +88,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.hilt.navigation.compose.hiltViewModel
+
+import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 
 
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -91,7 +108,48 @@ import kotlin.reflect.jvm.internal.impl.descriptors.deserialization.PlatformDepe
 
 @ExperimentalMaterial3Api
 @Composable
-fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
+fun PlannerScreen(
+    viewModel: PlannerViewModel = hiltViewModel(),
+    onNavigateToMap: () -> Unit
+) {
+    val context = LocalContext.current
+    val data by viewModel.trip.collectAsState()
+
+    when (data) {
+        PlannerDataUiState.Idle -> {
+            PlannerInputScreen()
+        }
+
+        is PlannerDataUiState.Success -> {
+            LaunchedEffect(data) {
+                Timber.d("Navigating to map!")
+                //onNavigateToMap()
+                Toast
+                    .makeText(context, "Successfully created trip!", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+
+        PlannerDataUiState.Error -> {
+            PlannerInputScreen()
+            LaunchedEffect(data) {
+                Toast
+                    .makeText(context, "Error while creating trip", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+
+        else -> {
+            LoadingScreen()
+        }
+    }
+}
+
+@ExperimentalMaterial3Api
+@Composable
+fun PlannerInputScreen(
+    viewModel: PlannerViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
 
 
@@ -114,6 +172,33 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     var endLocationError by remember { mutableStateOf(false) }
     var startLocationError by remember { mutableStateOf(false) }
     val currentDate = remember { LocalDate.now() }
+    val trip by viewModel.trip.collectAsState()
+    val image: Painter = painterResource(R.drawable.map_pin)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        // Background image
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxSize()
+        )
+
+
+        Column {
+            var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
+            var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
+            var showStartDatePicker by remember { mutableStateOf(false) }
+            var showEndDatePicker by remember { mutableStateOf(false) }
+            var startLocation by remember { mutableStateOf("") }
+            var endLocation by remember { mutableStateOf("") }
+            var expanded by remember {
+                mutableStateOf(false)
+            }
+            var selectedText by remember {
+                mutableStateOf(TransportationType.values().first().value)
+            }
 
 
     Column(
@@ -123,7 +208,6 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // First Date Selection
-
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -378,18 +462,31 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
                 }
             }
         }
-        Button(
-            onClick = {
-                val testTrip = loadRoadtripFromAssets(context)
-                val trip = convertRoadtripFromTestTrip(testTrip)
-                viewModel.insertNewRoadtrip(trip)
-            },
-        ) {
+
+        Button(onClick = {
+            viewModel.createRoadtrip(
+                startDate,
+                endDate,
+                startLocation,
+                endLocation,
+                selectedText
+            )
+        }) {
+            Text("Load from GPT")
+        }
+
+        Button(onClick = {
+            val testTrip = loadRoadtripFromAssets(context)
+            val trip = convertRoadtripFromTestTrip(testTrip)
+            viewModel.insertNewRoadtrip(trip)
+        }) {
             Text(text = "Load")
 
         }
 
 
+            }
+        }
     }
 
 }
