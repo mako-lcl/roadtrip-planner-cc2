@@ -1,5 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
@@ -69,6 +74,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
+import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -114,6 +120,7 @@ fun PackingListView(
 ) {
     val context = LocalContext.current
 
+    var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
@@ -121,12 +128,20 @@ fun PackingListView(
     var expanded by remember {
         mutableStateOf(false)
     }
+    var sensoralitude by remember {mutableStateOf ( SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
+        Sensor.TYPE_PRESSURE.toFloat()
+    ))}
+
     var selectedText by remember {
         mutableStateOf(NotificationType.values().first().value)
     }
     val listState = rememberLazyListState()
-// Remember a CoroutineScope to be able to launch
-    val coroutineScope = rememberCoroutineScope()
+    val pressureState = rememberPressureSensorState()
+
+    sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
+    var height by remember { mutableStateOf(0.0f) }
+
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -138,6 +153,8 @@ fun PackingListView(
             modifier = Modifier.fillMaxSize()
         )
 
+
+
         Column(
             modifier = Modifier
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
@@ -145,6 +162,24 @@ fun PackingListView(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Row {
+                // Text input field to enter the new item name
+
+            }
+            Button(
+                onClick = {
+                    // Parse the user input to a Double and update the sensoralitude value
+                    height = sensoralitude
+                },
+
+            ) {
+                Text("Set Height")
+            }
+            Text(
+                text = "Sensor Altitude: $height m",
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
+            )
             Text(
                 "Packing list",
                 fontSize = 30.sp
@@ -206,10 +241,6 @@ fun PackingListView(
                     viewModel.insertIntoList(newItem)
                     newItemName = ""
                     newItemNotificationType = NotificationType.NONE
-                    coroutineScope.launch {
-                        // Animate scroll to the 10th item
-                        listState.animateScrollToItem(index = 10)
-                    }
 
                 },
                 modifier = Modifier.fillMaxWidth()
