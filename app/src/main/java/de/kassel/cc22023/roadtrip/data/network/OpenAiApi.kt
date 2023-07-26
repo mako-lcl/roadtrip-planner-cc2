@@ -1,12 +1,15 @@
 package de.kassel.cc22023.roadtrip.data.network
 
 import de.kassel.cc22023.roadtrip.data.network.model.OpenAiResponse
+import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface OpenAiApi {
-    @GET("weather")
-    fun getRoadtrip(@Query("Authorization") token: String, @Query("Content-Type") contenttype: String) : Deferred<Response<OpenAiResponse>>
+    @POST("completions")
+    fun getRoadtrip(@Query("Content-Type") contentType: String, @Body roadtripRequest : RoadtripRequest) : Deferred<Response<OpenAiResponse>>
 }

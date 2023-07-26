@@ -1,6 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 
@@ -42,6 +43,8 @@ import androidx.compose.material3.rememberDatePickerState
 
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.LocalContext
 import com.squareup.moshi.FromJson
 import com.squareup.moshi.Json
@@ -70,9 +73,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.HiltViewModelFactory
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 
@@ -85,15 +90,45 @@ import java.time.ZoneOffset
 
 @ExperimentalMaterial3Api
 @Composable
-fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
+fun PlannerScreen(
+    viewModel: PlannerViewModel = hiltViewModel(),
+    onNavigateToMap: () -> Unit
+) {
     val context = LocalContext.current
+    val data by viewModel.trip.collectAsState()
 
+    when (data) {
+        PlannerDataUiState.Idle -> {
+            PlannerInputScreen()
+        }
+        is PlannerDataUiState.Success -> {
+            LaunchedEffect(data) {
+                onNavigateToMap()
+                Toast
+                    .makeText(context, "Successfully created trip!", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+        PlannerDataUiState.Error -> {
+            PlannerInputScreen()
+            LaunchedEffect(data) {
+                Toast
+                    .makeText(context, "Error while creating trip", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+        else -> {
+            LoadingScreen()
+        }
+    }
+}
 
-
-
-
-
-
+@ExperimentalMaterial3Api
+@Composable
+fun PlannerInputScreen(
+    viewModel: PlannerViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
 
     var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
@@ -107,7 +142,6 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
     var selectedText by remember {
         mutableStateOf(TransportationType.values().first().value)
     }
-
 
     Column(
         Modifier
@@ -184,6 +218,7 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
                 singleLine = true
 
             )
+
             Spacer(modifier = Modifier.width(5.dp))
 
             Box(
@@ -250,18 +285,21 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
                 }
             }
         }
+
+        Button(onClick = {
+            viewModel.createRoadtrip(startDate, endDate, startLocation, endLocation, selectedText)
+        }) {
+            Text("Load from GPT")
+        }
+
         Button(onClick = {
             val testTrip = loadRoadtripFromAssets(context)
             val trip = convertRoadtripFromTestTrip(testTrip)
             viewModel.insertNewRoadtrip(trip)
         }) {
-            Text(text = "Load")
-
+            Text(text = "Load from Disk")
         }
-
-
     }
-
 }
 
 @SuppressLint("UnrememberedMutableState")

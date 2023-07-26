@@ -82,3 +82,28 @@ fun loadRoadtripFromAssets(context: Context) : TestTrip {
 
     throw IOException()
 }
+
+fun convertCleanedStringToTrip(json: String) : TestTrip? {
+    val cleanedJson = json.cleanJsonString()
+    val moshi: Moshi = Moshi.Builder().build()
+    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
+    try {
+        val trip = jsonAdapter.fromJson(json)
+    } catch (e: Exception) {
+        print(cleanedJson)
+        e.printStackTrace()
+    }
+
+    try {
+        val trip = jsonAdapter.fromJson(cleanedJson)
+
+        trip?.let {
+            return it
+        }
+    } catch (e: Exception) {
+        print(cleanedJson)
+        e.printStackTrace()
+    }
+
+    return null
+}
