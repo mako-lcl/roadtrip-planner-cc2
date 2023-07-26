@@ -13,13 +13,5 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingItemSheet(onDismiss: () -> Unit) {
-    val modalBottomSheetState = rememberModalBottomSheetState()
-
-    ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
-        sheetState = modalBottomSheetState,
-        dragHandle = { BottomSheetDefaults.DragHandle() },
-    ) {
-        Text("Test", modifier = Modifier.size(200.dp, 500.dp))
-    }
+    Text("Test", modifier = Modifier.size(200.dp, 900.dp))
 }
