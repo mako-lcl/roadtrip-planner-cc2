@@ -117,7 +117,7 @@ fun MapLoadingScreen(
         } else if (data == MapDataUiState.Loading) {
             LoadingScreen()
         } else if (data == MapDataUiState.NoTrip) {
-            Text("No trip yet!")
+            NoTripScreen()
         }
     } else {
         LoadingScreen()
