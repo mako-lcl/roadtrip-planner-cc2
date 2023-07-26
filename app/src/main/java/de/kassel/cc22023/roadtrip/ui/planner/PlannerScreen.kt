@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import de.kassel.cc22023.roadtrip.R
 
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.ui.util.CoolLoadingScreen
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
@@ -122,7 +123,7 @@ fun PlannerScreen(
         }
 
         else -> {
-            LoadingScreen()
+            CoolLoadingScreen()
         }
     }
 }
