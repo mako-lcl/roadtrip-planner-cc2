@@ -28,6 +28,12 @@ class PlannerViewModel @Inject constructor(
         }
     }
 
+    fun resetToIdle() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _trip.value = PlannerDataUiState.Idle
+        }
+    }
+
     fun createRoadtrip(startLocation: String, endLocation: String, startDate: String, endDate: String, transportationType: String) {
         viewModelScope.launch(Dispatchers.IO) {
             roadtripRepository.createRoadtrip(
