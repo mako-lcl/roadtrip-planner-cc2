@@ -1,10 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.packing
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -20,16 +20,21 @@ class PackingViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var height = 0.0f// Initialize the reference value to 0
+    private var lat = 0.0f// Initialize the reference value to 0
+    private var lon = 0.0f// Initialize the reference value to 0
 
-    fun setHeight(value: Float) {
+    fun setHeightAndLocation(value: Float, lat1: Float, lon1: Float) {
         height = value
+        lat = lat1
+        lon = lon1
+
     }
 
-    fun getNotificationMessage(sensoralitude: Float): String {
+    fun getNotificationMessage(sensoralitude: Float, lat1: Float, lon1: Float): String {
         val difference = sensoralitude - height
         return when {
-            difference > 5.0 -> "Up" // Notify "up" if you are 5 meters above the set value
-            difference < -5.0 -> "Down" // Notify "down" if you are under the set value
+            difference > 5.0 && lat == lat1 && lon == lon1 -> "Up and in Location" // Notify "up" if you are 5 meters above the set value
+            difference < -5.0 && lat == lat1 && lon == lon1 -> "Down and in Location" // Notify "down" if you are under the set value
             else -> "" // Empty message if you are within the 5-meter range
         }
     }
