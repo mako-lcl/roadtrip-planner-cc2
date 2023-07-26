@@ -54,20 +54,36 @@ import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import timber.log.Timber
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardDefaults.shape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
+import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
-    val image: Painter = painterResource(R.drawable.packbg)
+    val image: Painter = painterResource(R.drawable.packbg_dark)
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -87,20 +103,61 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Box(modifier = Modifier
+            .size(width = 400.dp, height = 100.dp)
+            .padding(16.dp)
+            .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+            contentAlignment = Alignment.Center){
+//        Card(
+//            colors = CardDefaults.cardColors(
+//            MaterialTheme.colorScheme.primaryContainer
+//        ),
+//
+//            shape = RoundedCornerShape(10.dp),
+//            modifier = Modifier
+//                .size(width = 200.dp, height = 50.dp)
+//                .aspectRatio(2f)
+//                .padding(16.dp)
+//        ){}
+
         Text(
-            "Packing list",
-            fontSize = 30.sp
+            "Pack Your Bags",
+            textAlign = TextAlign.Center,
+            fontSize = 20.sp, fontFamily = FontFamily.Serif
         )
 
-        Row {
-            Text(modifier = Modifier.weight(0.5f), text = "Item", fontSize = 20.sp)
-            Text(modifier = Modifier.weight(0.5f), text = "Notification", fontSize = 20.sp)
         }
+
+        Row {
+            Box(modifier = Modifier
+                .fillMaxSize(0.05f)
+                .weight(0.5f)
+                .padding(1.dp)
+                .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center){
+
+            Text(text = "Carry Me", fontSize = 15.sp)
+            }
+            Box(modifier = Modifier
+                .fillMaxSize(0.05f)
+                .weight(0.5f)
+                .padding(1.dp)
+                .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                contentAlignment = Alignment.Center){
+            Text(text = "Remind Me", fontSize = 15.sp)
+        }
+        }
+
         if (data is PackingDataUiState.Success) {
            val list = (data as PackingDataUiState.Success).data
             LazyColumn {
                 itemsIndexed(items = list, key = {index,item -> item.hashCode()}) {
                         index,item ->
+                    Box(modifier = Modifier
+                        .wrapContentSize(Alignment.Center)
+                        .padding(1.dp)
+                        .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(10.dp)),
+                        contentAlignment = Alignment.Center){
                     val currentItem by rememberUpdatedState(newValue = item)
 
                     val dismissState = rememberDismissState(confirmValueChange = {
@@ -111,6 +168,7 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
                         SwipeBackground(dismissState)
                     }, dismissContent = { PackingItemCard(item) })
                 }
+            }
             }
 
         } else {
@@ -127,6 +185,7 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
                 )
                 viewModel.insertIntoList(newItem)
             },
+            shape = CircleShape,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Add New Item")
@@ -143,8 +202,8 @@ fun SwipeBackground(dismissState: DismissState) {
     val color by animateColorAsState(
         when (dismissState.targetValue) {
             DismissValue.Default -> Color.LightGray
-            DismissValue.DismissedToEnd -> Color.Red
-            DismissValue.DismissedToStart -> Color.Red
+            DismissValue.DismissedToEnd -> Color(0xFFDFA878)
+            DismissValue.DismissedToStart -> Color(0xFFDFA878)
         }
     )
     val alignment = when (direction) {
@@ -163,7 +222,7 @@ fun SwipeBackground(dismissState: DismissState) {
         Modifier
             .fillMaxSize()
             .background(color)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 10.dp),
         contentAlignment = alignment
     ) {
         Icon(
@@ -214,6 +273,7 @@ fun PackingItemCard(
         Row(
             modifier = Modifier.weight(0.5f)
         ) {
+
             ExposedDropdownMenuBox(
                 expanded = expanded,
                 onExpandedChange = {
@@ -244,7 +304,9 @@ fun PackingItemCard(
                     }
                 }
             }
+
         }
+
     }
 }
 

@@ -112,7 +112,7 @@ fun PlannerScreen(viewModel: PlannerViewModel = hiltViewModel()) {
 
 
         Column {
-        
+
 
     var selectedStartDate by remember { mutableStateOf(LocalDate.now()) }
     var selectedEndDate by remember { mutableStateOf(LocalDate.now()) }
