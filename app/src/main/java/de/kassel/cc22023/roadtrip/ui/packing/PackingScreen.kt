@@ -1,10 +1,14 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import android.content.Context
 import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,9 +19,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DismissDirection
@@ -44,22 +50,77 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.mutualmobile.composesensors.rememberPressureSensorState
+import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
+import timber.log.Timber
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
+import de.kassel.cc22023.roadtrip.util.createNotificationChannel
+import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
+import com.mutualmobile.composesensors.rememberPressureSensorState
+import kotlinx.coroutines.launch
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+val notificationPermissions = listOf(
+    android.Manifest.permission.POST_NOTIFICATIONS,
+)
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
+    val context = LocalContext.current
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
+
+        if (permissionState.allPermissionsGranted) {
+            viewModel.onPermissionGranted()
+        } else {
+            viewModel.onPermissionDenied()
+        }
+
+        if (permissionState.shouldShowRationale ||
+            !permissionState.allPermissionsGranted ||
+            permissionState.revokedPermissions.isNotEmpty()
+        ) {
+            PermissionsRejectedView()
+        } else {
+            LaunchedEffect(Unit) {
+                createNotificationChannel(context)
+            }
+
+            PackingListView()
+        }
+    } else {
+        PackingListView()
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
+fun PackingListView(
+    viewModel: PackingViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+
+    var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
@@ -98,6 +159,9 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
             contentScale = ContentScale.FillHeight,
             modifier = Modifier.fillMaxSize()
         )
+
+
+
 
         Column(
             modifier = Modifier
