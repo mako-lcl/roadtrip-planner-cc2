@@ -97,6 +97,8 @@ import com.mutualmobile.composesensors.rememberPressureSensorState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.text.style.TextAlign
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -355,17 +357,27 @@ fun PackingListView(
                         key = { index, item -> item.hashCode() }) { index, item ->
                         val currentItem by rememberUpdatedState(newValue = item)
 
-                        val dismissState = rememberDismissState(confirmValueChange = {
-                            viewModel.deleteItem(currentItem)
-                            true
-                        })
-                        SwipeToDismiss(state = dismissState, background = {
-                            SwipeBackground(dismissState)
-                        }, dismissContent = {
-                            PackingItemCard(item) {
-                                selectedItem = it
-                            }
-                        })
+                        val delete = SwipeAction(
+                            onSwipe = {
+                                viewModel.onSwipeToDelete(item)
+                            },
+                            icon = {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete chat",
+                                    modifier = Modifier.padding(16.dp),
+                                    tint = Color.White
+                                )
+                            }, background = Color.Red.copy(alpha = 0.5f),
+                            isUndo = true
+                        )
+                        SwipeableActionsBox(
+                            modifier = Modifier,
+                            swipeThreshold = 200.dp,
+                            endActions = listOf(delete)
+                        ) {
+                            PackingItemCard(item, ){selectedItem = it}
+                        }
                     }
                 }
             } else {
