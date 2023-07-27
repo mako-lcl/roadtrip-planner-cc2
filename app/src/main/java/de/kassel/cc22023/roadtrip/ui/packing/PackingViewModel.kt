@@ -1,5 +1,4 @@
 package de.kassel.cc22023.roadtrip.ui.packing
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,9 +58,9 @@ class PackingViewModel @Inject constructor(
     private val _packing = MutableStateFlow<List<PackingItem>?>(null)
     val packing: StateFlow<List<PackingItem>?> = _packing
 
-    fun updateCheckBoxState(item: PackingItem) {
+    fun updateItem(item: PackingItem) {
         viewModelScope.launch(Dispatchers.IO) {
-            roadtripRepository.updateCheckbox(item)
+            roadtripRepository.updateItem(item)
         }
     }
     fun insertIntoList(item: PackingItem) {
