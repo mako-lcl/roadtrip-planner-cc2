@@ -84,7 +84,7 @@ import androidx.compose.ui.window.Dialog
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
-    android.Manifest.permission.POST_NOTIFICATIONS,
+    android.Manifest.permission.POST_NOTIFICATIONS,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
