@@ -25,13 +25,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
-import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
-import de.kassel.cc22023.roadtrip.ui.util.FetchLocationUtil
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.PermissionBox
 import de.kassel.cc22023.roadtrip.util.makeActivityList
@@ -68,8 +65,7 @@ fun MapLoadingScreen(
     val location by viewModel.location.collectAsState()
     val data by viewModel.data.collectAsState()
 
-    //fetch the location
-    FetchLocationUtil(usePreciseLocation = usePreciseLocation)
+    viewModel.locationPermissionGranted()
 
     if (location != null) {
         when (data) {
@@ -84,7 +80,6 @@ fun MapLoadingScreen(
                     modifier = Modifier.fillMaxSize(),
                     cameraPositionState = cameraPositionState
                 ) {
-
                     Timber.d("locations: ${(data as MapDataUiState.Success).data.locations.count()}")
                     val locations = (data as MapDataUiState.Success).data.locations.toImmutableList()
                     locations.forEach {loc ->
