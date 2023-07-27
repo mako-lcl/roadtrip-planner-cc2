@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 
 
+
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
@@ -74,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import de.kassel.cc22023.roadtrip.R
 
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.ui.util.CoolLoadingScreen
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
@@ -121,10 +123,12 @@ fun PlannerScreen(
         }
 
         else -> {
-            LoadingScreen()
+            CoolLoadingScreen()
         }
     }
 }
+
+
 
 @ExperimentalMaterial3Api
 @Composable

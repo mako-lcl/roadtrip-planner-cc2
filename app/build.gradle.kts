@@ -88,6 +88,9 @@ android {
 }
 
 dependencies {
+    //lottie
+    implementation("com.airbnb.android:lottie-compose:6.1.0")
+
     //maps
     implementation("com.google.maps.android:maps-compose:2.11.2")
 
