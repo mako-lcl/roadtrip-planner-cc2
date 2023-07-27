@@ -16,10 +16,8 @@
 
 package de.kassel.cc22023.roadtrip.data
 
-import de.kassel.cc22023.roadtrip.BuildConfig
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
-import de.kassel.cc22023.roadtrip.data.local.database.CombinedLocation
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
@@ -32,16 +30,12 @@ import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
-import de.kassel.cc22023.roadtrip.util.cleanJsonString
 import de.kassel.cc22023.roadtrip.util.combineRoadtrip
 import de.kassel.cc22023.roadtrip.util.convertCleanedStringToTrip
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.createRoadtripPrompt
 import de.kassel.cc22023.roadtrip.util.launch
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import java.io.FileInputStream
-import java.util.Properties
 import javax.inject.Inject
 
 interface RoadtripRepository {
@@ -50,7 +44,7 @@ interface RoadtripRepository {
     val locations: Flow<List<RoadtripLocation>?>
     val activities: Flow<List<RoadtripActivity>?>
 
-    suspend fun updateCheckbox(item: PackingItem)
+    suspend fun updateItem(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: CombinedRoadtrip)
 
@@ -67,6 +61,7 @@ interface RoadtripRepository {
 
     fun getRoadtrip() : CombinedRoadtrip
     fun deleteItem(card: PackingItem)
+
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -111,7 +106,11 @@ class DefaultRoadtripRepository @Inject constructor(
                     0,
                     it,
                     NotificationType.NONE,
-                    false
+                    false,
+                    null,
+                    0f,
+                    0f,
+                    0f
                 )
             }
         )
@@ -127,7 +126,6 @@ class DefaultRoadtripRepository @Inject constructor(
         onLoading: () -> Unit,
         onError: () -> Unit
     ) {
-        val token = BuildConfig.GPT_KEY
         val contentType = "application/json"
         val prompt = createRoadtripPrompt(startLocation, endLocation, startDate, endDate, transportation)
         val request = RoadtripRequest(messages = listOf(RoadtripRequestMessage(content = prompt)))
@@ -166,8 +164,8 @@ class DefaultRoadtripRepository @Inject constructor(
         packingItemDao.deleteItem(card)
     }
 
-    override suspend fun updateCheckbox(item: PackingItem) {
-        packingItemDao.updateCheckboxState(item)
+    override suspend fun updateItem(item: PackingItem) {
+        packingItemDao.updateItem(item)
     }
 
 

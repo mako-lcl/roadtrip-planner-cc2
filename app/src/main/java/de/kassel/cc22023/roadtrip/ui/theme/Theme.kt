@@ -30,19 +30,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.core.view.ViewCompat
+import de.kassel.cc22023.roadtrip.R
+
+//val primaryDark = R.color.brown_700),
+//val secondaryDark = R.color.brown_200),
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80,
-    primaryContainer = containerColorDark,
-    onPrimaryContainer = Color.White,
+    primary = Color(0xFFBA704F),
+    secondary = Color(0xFFDFA878),
+    tertiary = Color(0xFFF4E0B9),
+    primaryContainer = Color(0xFFDFA878),
+    onPrimaryContainer = Color(0xFFF4E0B9),
 
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
+    primary = Color(0xFFBA704F),
     secondary = PurpleGrey40,
     tertiary = Pink40 ,
     background = LightBlue,

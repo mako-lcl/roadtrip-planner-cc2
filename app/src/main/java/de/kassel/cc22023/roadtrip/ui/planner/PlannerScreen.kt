@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 
 
+
 import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
@@ -74,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import de.kassel.cc22023.roadtrip.R
 
 import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.ui.util.CoolLoadingScreen
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
@@ -102,12 +104,9 @@ fun PlannerScreen(
         }
 
         is PlannerDataUiState.Success -> {
-            LaunchedEffect(data) {
-                Timber.d("Navigating to map!")
-                //onNavigateToMap()
-                Toast
-                    .makeText(context, "Successfully created trip!", Toast.LENGTH_LONG)
-                    .show()
+            LaunchedEffect(Unit) {
+                onNavigateToMap()
+                viewModel.resetToIdle()
             }
         }
 
@@ -117,14 +116,17 @@ fun PlannerScreen(
                 Toast
                     .makeText(context, "Error while creating trip", Toast.LENGTH_LONG)
                     .show()
+                viewModel.resetToIdle()
             }
         }
 
         else -> {
-            LoadingScreen()
+            CoolLoadingScreen()
         }
     }
 }
+
+
 
 @ExperimentalMaterial3Api
 @Composable
@@ -452,17 +454,9 @@ fun PlannerInputScreen(
             }
 
             Button(onClick = {
-                startLocationError = startLocation ==""
-                endLocationError = endLocation == ""
-                print(startLocationError)
-                if(!startDateError && !endDateError && !startLocationError && !endLocationError) {
-                    val testTrip = loadRoadtripFromAssets(context)
-                    val trip = convertRoadtripFromTestTrip(testTrip)
-                    viewModel.insertNewRoadtrip(trip)
-                }
-
-
-
+                val testTrip = loadRoadtripFromAssets(context)
+                val trip = convertRoadtripFromTestTrip(testTrip)
+                viewModel.insertNewRoadtrip(trip)
             }) {
                 Text(text = "Load")
 

@@ -64,6 +64,7 @@ class PlannerViewModel @Inject constructor(
 
     fun insertNewRoadtrip(trip: CombinedRoadtrip) {
         viewModelScope.launch(Dispatchers.IO) {
+            _trip.value = PlannerDataUiState.Success(trip)
             roadtripRepository.insertNewRoadtrip(trip)
         }
     }

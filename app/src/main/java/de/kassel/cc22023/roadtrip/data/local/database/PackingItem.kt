@@ -8,10 +8,32 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
+import java.util.Date
 
 enum class NotificationType(val value: String) {
     NONE("None"),
-    BASEMENT("Basement")
+    FLOOR("Floor"),
+    LOCATION("Location"),
+    TIME("Time");
+
+    companion object {
+        fun fromString(type: String) : NotificationType {
+            return when (type) {
+                "None" -> {
+                    NONE
+                }
+                "Floor" -> {
+                    FLOOR
+                }
+                "Location" -> {
+                    LOCATION
+                }
+                else -> {
+                    TIME
+                }
+            }
+        }
+    }
 }
 
 @Entity
@@ -19,8 +41,12 @@ data class PackingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val name: String,
-    val notificationType: NotificationType,
-    var isChecked: Boolean
+    var notificationType: NotificationType,
+    var isChecked: Boolean,
+    var time: Long?,
+    var height: Float,
+    var lat: Float,
+    var lon: Float
 ) {
     companion object {
         val exampleData = listOf(
@@ -28,43 +54,72 @@ data class PackingItem(
                 0,
                 "Driver's License",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
+
             ),
             PackingItem(
                 1,
                 "Bread",
-                NotificationType.BASEMENT,
-                isChecked = false
+                NotificationType.FLOOR,
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 2,
                 "Ham",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 3,
                 "Coke Zero",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 4,
                 "Yoshi Plush",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 5,
                 "Grissini",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
             PackingItem(
                 6,
                 "iPad",
                 NotificationType.NONE,
-                isChecked = false
+                isChecked = false,
+                null,
+                0f,
+                0f,
+                0f
             ),
         )
     }
@@ -86,9 +141,6 @@ interface PackingItemDao {
 
     @Delete
     fun deleteItem(item: PackingItem)
-
-    @Update
-    suspend fun updateCheckboxState(item: PackingItem)
 
     @Insert
     fun insertIntoList(item: PackingItem)
