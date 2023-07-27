@@ -50,19 +50,111 @@ fun PackingItemSheet(
 
         when (item.notificationType.value) {
             "Floor" -> {
-                // Handle case 1
-                Text("Type: Case 1")
-                // Add additional UI components or logic specific to Case 1 here
+                // State variables to hold latitude and longitude
+                var latitude by remember { mutableStateOf("") }
+                var longitude by remember { mutableStateOf("") }
+                var height by remember { mutableStateOf("") }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // TextField for entering latitude
+                    TextField(
+                        value = latitude,
+                        onValueChange = { newValue -> latitude = newValue },
+                        singleLine = true,
+                        label = { Text(text = "Latitude") },
+                    )
+
+                    // TextField for entering longitude
+                    TextField(
+                        value = longitude,
+                        onValueChange = { newValue -> longitude = newValue },
+                        singleLine = true,
+                        label = { Text(text = "Longitude") },
+                    )
+                    TextField(
+                        value = height,
+                        onValueChange = { newValue -> height = newValue },
+                        singleLine = true,
+                        label = { Text(text = "Height (in sealevel)") },
+                    )
+
+                    // Button to submit location
+                    Button(onClick = {
+                        // Process the latitude and longitude values here (e.g., save to database)
+                        // For example, you can convert them to Double values like this:
+                        val lat = latitude.toFloatOrNull()
+                        val lon = longitude.toFloatOrNull()
+                        val h = height.toFloatOrNull()
+
+                        if (lat != null && lon != null && h != null) {
+                            // Do something with the latitude and longitude values, e.g., save to the item
+                            item.lat = lat
+                            item.lon = lon
+                            item.height = h
+                            // Update the item using the viewModel
+                            viewModel.updateItem(item)
+                        } else {
+                            // Handle invalid latitude or longitude input
+                        }
+                    }) {
+                        Text(text = "Submit Location")
+                    }
+                }
             }
 
             "Location" -> {
-                // Handle case 2
-                Text("Type: Case 2")
-                // Add additional UI components or logic specific to Case 2 here
+                // State variables to hold latitude and longitude
+                var latitude by remember { mutableStateOf("") }
+                var longitude by remember { mutableStateOf("") }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // TextField for entering latitude
+                    TextField(
+                        value = latitude,
+                        onValueChange = { newValue -> latitude = newValue },
+                        singleLine = true,
+                        label = { Text(text = "Latitude") },
+                    )
+
+                    // TextField for entering longitude
+                    TextField(
+                        value = longitude,
+                        onValueChange = { newValue -> longitude = newValue },
+                        singleLine = true,
+                        label = { Text(text = "Longitude") },
+                    )
+
+                    // Button to submit location
+                    Button(onClick = {
+                        // Process the latitude and longitude values here (e.g., save to database)
+                        // For example, you can convert them to Double values like this:
+                        val lat = latitude.toDoubleOrNull()
+                        val lon = longitude.toDoubleOrNull()
+
+                        if (lat != null && lon != null) {
+                            // Do something with the latitude and longitude values, e.g., save to the item
+                            item.lat = lat.toFloat()
+                            item.lon = lon.toFloat()
+
+                            // Update the item using the viewModel
+                            viewModel.updateItem(item)
+                        } else {
+                            // Handle invalid latitude or longitude input
+                        }
+                    }) {
+                        Text(text = "Submit Location")
+                    }
+                }
             }
 
             "Time" -> {
-                // Handle case 3
+
                 Text(
                     "Add Time Notification",
                     fontSize = 30.sp
@@ -107,7 +199,6 @@ fun PackingItemSheet(
 
                     val mContext = LocalContext.current
 
-                    // Declaring and initializing a calendar
                     val mCalendar = Calendar.getInstance()
                     val mHour = mCalendar[Calendar.HOUR_OF_DAY]
                     val mMinute = mCalendar[Calendar.MINUTE]
@@ -115,8 +206,6 @@ fun PackingItemSheet(
                     val dateTime by remember { mutableStateOf(defaultDateTime) }
                     var selectedTimeMillis by remember { mutableStateOf(System.currentTimeMillis()) }
 
-
-                    // Creating a TimePicker dialog
                     val mTimePickerDialog = TimePickerDialog(
                         mContext,
                         { _, mHour: Int, mMinute: Int ->
@@ -128,7 +217,6 @@ fun PackingItemSheet(
 
                     val localTime = Instant.ofEpochMilli(clockMilis).atZone(ZoneOffset.UTC).toLocalTime()
                     val formatter = DateTimeFormatter.ofPattern("HH:mm")
-                    val formattedTime = localTime.format(formatter)
 
                     Box() {
                         TextField(
@@ -152,12 +240,6 @@ fun PackingItemSheet(
                         Text(text = "Confirm Date and Time")
                     }
                 }
-            }
-
-            else -> {
-                // Default case
-                Text("Unknown Type: ${item.notificationType}")
-                // Add additional UI components or logic for unknown types here
             }
         }
     }

@@ -44,9 +44,9 @@ data class PackingItem(
     var notificationType: NotificationType,
     var isChecked: Boolean,
     var time: Long?,
-    val height: Float,
-    val lat: Float,
-    val lon: Float
+    var height: Float,
+    var lat: Float,
+    var lon: Float
 ) {
     companion object {
         val exampleData = listOf(
