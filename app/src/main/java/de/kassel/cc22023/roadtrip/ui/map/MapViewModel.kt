@@ -9,6 +9,7 @@ import de.kassel.cc22023.roadtrip.data.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
+import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.ui.packing.PackingDataUiState
 import de.kassel.cc22023.roadtrip.util.combineRoadtrip
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,10 +23,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MapViewModel @Inject constructor(
-    private val roadtripRepository: RoadtripRepository
+    roadtripRepository: RoadtripRepository,
+    private val sensorRepository: SensorRepository,
 ) : ViewModel() {
-    private val _location = MutableStateFlow<Location?>(null)
-    val location: StateFlow<Location?> = _location
+    val location: StateFlow<Location?> = sensorRepository.locationFlow
 
     val data: StateFlow<MapDataUiState> = combine(
         roadtripRepository.roadtrip,
@@ -47,10 +48,8 @@ class MapViewModel @Inject constructor(
             initialValue = MapDataUiState.Loading
         )
 
-    fun updateLocation(newLocation: Location?) {
-        newLocation?.let {
-            _location.value = newLocation
-        }
+    fun locationPermissionGranted() {
+        sensorRepository.permissionsGranted()
     }
 }
 

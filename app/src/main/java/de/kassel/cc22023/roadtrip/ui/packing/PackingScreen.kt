@@ -1,9 +1,8 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import PackingItemSheet
+import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -57,42 +56,31 @@ import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardDefaults.shape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberStandardBottomSheetState
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import com.mutualmobile.composesensors.rememberPressureSensorState
-import kotlinx.coroutines.launch
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDirection
-import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
-import timber.log.Timber
+import androidx.compose.ui.window.Dialog
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
@@ -142,43 +130,13 @@ fun PackingListScaffold() {
         bottomSheetState = bottomSheetState
     )
 
-    var selectedItem: PackingItem? by remember {
-        mutableStateOf(null)
-    }
-
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetShape = RoundedCornerShape(
-            bottomStart = 0.dp,
-            bottomEnd = 0.dp,
-            topStart = 12.dp,
-            topEnd = 12.dp
-        ),
-        sheetContent = {
-            selectedItem?.let { PackingItemSheet(it, closeSheet = {
-                coroutineScope.launch {
-                    selectedItem = null
-                    bottomSheetScaffoldState.bottomSheetState.hide()
-                }
-            })}
-        },
-
-        sheetPeekHeight = 0.dp
-    ) {
-        PackingListView {
-            coroutineScope.launch {
-                selectedItem = it
-                bottomSheetScaffoldState.bottomSheetState.expand()
-            }
-        }
-    }
+    PackingListView()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
-    selectItem: (PackingItem) -> Unit
 ) {
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
@@ -197,6 +155,25 @@ fun PackingListView(
     val notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
     val height by remember { mutableStateOf(0.0f) }
+
+    var selectedItem: PackingItem? by remember {
+        mutableStateOf(null)
+    }
+
+    selectedItem?.let {
+        Dialog(onDismissRequest = {}) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                PermissionBeforeItemSheet(item = it, closeDialog = {
+                    selectedItem = null
+                })
+            }
+        }
+    }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -296,7 +273,11 @@ fun PackingListView(
                     .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp)
-                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    .border(
+                        width = 2.dp,
+                        color = Color(0xFFF4E0B9),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
                     contentAlignment = Alignment.Center){
 
                     Text(text = "Carry Me", fontSize = 15.sp)
@@ -305,7 +286,11 @@ fun PackingListView(
                     .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp)
-                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    .border(
+                        width = 2.dp,
+                        color = Color(0xFFF4E0B9),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
                     contentAlignment = Alignment.Center){
                     Text(text = "Remind Me", fontSize = 15.sp)
                 }
@@ -327,7 +312,7 @@ fun PackingListView(
                         SwipeToDismiss(state = dismissState, background = {
                             SwipeBackground(dismissState)
                         }, dismissContent = { PackingItemCard(item) {
-                            selectItem(it)
+                            selectedItem = it
                         } })
                     }
                 }
