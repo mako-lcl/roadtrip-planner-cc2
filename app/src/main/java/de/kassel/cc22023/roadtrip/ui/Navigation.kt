@@ -55,7 +55,16 @@ fun MainNavigation() {
         NavHost(navController = navController, startDestination = Screen.Planner.route, modifier = Modifier.padding(innerPadding)) {
             composable(Screen.Planner.route) {
                 PlannerScreen() {
-                    navController.navigate(Screen.Map.route)
+                    navController.navigate(Screen.Map.route) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        // Avoid multiple copies of the same destination when
+                        // reselecting the same item
+                        launchSingleTop = true
+                        // Restore state when reselecting a previously selected item
+                        restoreState = true
+                    }
                 }
             }
             composable(Screen.Map.route) { MapScreen() }
