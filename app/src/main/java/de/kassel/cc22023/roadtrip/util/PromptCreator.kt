@@ -7,6 +7,6 @@ fun createRoadtripPrompt(startLocation: String, endLocation: String, startDate: 
             "the end date as end_date, the start location name as start_location, the end loation name as end_location," +
             " if the trip is possible as is_possible and a list of locations with their name, latitude, longitude, the dat you are there and possible" +
             " activities as a list of names, with the field_names name, latitude, longitude, date, activities."+
-            "Give one location for each day from $startDate to $endDate, last day inclusive. Check that all dates " +
-            "are covered and that you arrive on the $endDate at $endLocation ."
+            "Give one location for each day from $startDate to $endDate. Check that all dates " +
+            "are covered and that you arrive on the $endDate at $endLocation. Also check that the distances between locations are below 10 hours"
 }
