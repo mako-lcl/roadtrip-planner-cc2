@@ -253,61 +253,46 @@ fun PackingListView(
             }
             }
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, // Center the children vertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
+                    .height(32.dp) // Set the height of the row
             ) {
-                // Text input field to enter the new item name
-                Box(modifier = Modifier
-                    .wrapContentSize(Alignment.Center)
-                    .padding(1.dp)
-                    .border(
-                        width = 0.dp,
-                        color = Color(0xFFF4E0B9),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
-                    contentAlignment = Alignment.Center){
+                // Add the TextField with weight to take the available space
                 TextField(
                     value = newItemName,
                     onValueChange = { newItemName = it },
                     label = { Text("Enter new item name") },
-//                    modifier = Modifier.weight(0.7f),
                     shape = RoundedCornerShape(20.dp),
-
-
+                    modifier = Modifier.weight(0.7f) // Take 70% of the available width
                 )
-            }
-            }
-                Box(
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
-                        .height(32.dp) // Set the height of the button
-                ){
-                    Box{Button(
-                        onClick = {
-                            // Add a new PackingItem to the packingList
-                            val newItem = PackingItem(
-                                id = 0,
-                                name = newItemName,
-                                notificationType = newItemNotificationType,
-                                isChecked = false,
-                                null,
-                                0.0,
-                                0.0,
-                                0.0
-                            )
-                            viewModel.insertIntoList(newItem)
-                            newItemName = ""
-                            newItemNotificationType = NotificationType.NONE
 
-                        },
-                        shape = CircleShape,
-                        modifier = Modifier.wrapContentSize()
-                    ) {
-                        Text("Add")
-                    }}
-
+                // Add the Button with weight to align to the end of the row
+                Button(
+                    onClick = {
+                        // Add a new PackingItem to the packingList
+                        val newItem = PackingItem(
+                            id = 0,
+                            name = newItemName,
+                            notificationType = newItemNotificationType,
+                            isChecked = false,
+                            null,
+                            0.0,
+                            0.0,
+                            0.0
+                        )
+                        viewModel.insertIntoList(newItem)
+                        newItemName = ""
+                        newItemNotificationType = NotificationType.NONE
+                    },
+                    shape = CircleShape,
+                    modifier = Modifier.weight(0.3f) // Take 30% of the available width
+                ) {
+                    Text("Add")
                 }
+            }
+
             Row {
                 Surface(
                     color = Color(0xFFDFA878),
