@@ -72,6 +72,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardDefaults.shape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -89,6 +92,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
+import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
@@ -130,7 +134,13 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 @Composable
 fun PackingListScaffold() {
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetState: SheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        skipHiddenState = false
+    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
 
     var selectedItem: PackingItem? by remember {
         mutableStateOf(null)
@@ -145,7 +155,12 @@ fun PackingListScaffold() {
             topEnd = 12.dp
         ),
         sheetContent = {
-            selectedItem?.let { PackingItemSheet(it) }
+            selectedItem?.let { PackingItemSheet(it, closeSheet = {
+                coroutineScope.launch {
+                    selectedItem = null
+                    bottomSheetScaffoldState.bottomSheetState.hide()
+                }
+            })}
         },
 
         sheetPeekHeight = 0.dp
@@ -165,9 +180,6 @@ fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
     selectItem: (PackingItem) -> Unit
 ) {
-    val context = LocalContext.current
-
-    var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
@@ -180,9 +192,6 @@ fun PackingListView(
         Sensor.TYPE_PRESSURE.toFloat()
     ))}
 
-    var selectedText by remember {
-        mutableStateOf(NotificationType.values().first().value)
-    }
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
     val notificationMessage by remember { mutableStateOf("") }
@@ -392,14 +401,12 @@ fun PackingItemCard(
         mutableStateOf(item.isChecked)
     }
 
-
     var expanded by remember {
         mutableStateOf(false)
     }
 
-
-    var selectedText by remember {
-        mutableStateOf(NotificationType.values().first().value)
+    val selectedText by remember {
+        mutableStateOf(item.notificationType.value)
     }
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -447,10 +454,9 @@ fun PackingItemCard(
                         DropdownMenuItem(
                             text = { Text(type.value) },
                             onClick = {
-                                selectedText = type.value
                                 if (type.value != NotificationType.NONE.value) {
                                     val newItem = PackingItem(
-                                        item.id, item.name, NotificationType.fromString(selectedText), item.isChecked, item.time, item.height, item.lat, item.lon
+                                        item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
                                     )
                                     selectItem(newItem)
                                 }
