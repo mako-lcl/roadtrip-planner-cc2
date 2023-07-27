@@ -35,6 +35,8 @@ import de.kassel.cc22023.roadtrip.ui.util.FetchLocationUtil
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.PermissionBox
 import de.kassel.cc22023.roadtrip.util.makeActivityList
+import okhttp3.internal.toImmutableList
+import timber.log.Timber
 
 @RequiresPermission(
     anyOf = [Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION],
@@ -70,54 +72,63 @@ fun MapLoadingScreen(
     FetchLocationUtil(usePreciseLocation = usePreciseLocation)
 
     if (location != null) {
-        if (data is MapDataUiState.Success) {
-            val currentLatLng = LatLng(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
+        when (data) {
+            is MapDataUiState.Success -> {
+                val currentLatLng = LatLng(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
 
-            val cameraPositionState = rememberCameraPositionState {
-                position = CameraPosition.fromLatLngZoom(currentLatLng, 10f)
-            }
+                val cameraPositionState = rememberCameraPositionState {
+                    position = CameraPosition.fromLatLngZoom(currentLatLng, 10f)
+                }
 
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
-                cameraPositionState = cameraPositionState
-            ) {
-                (data as MapDataUiState.Success).data.locations.forEach {loc ->
-                    val activities = loc.activities.makeActivityList()
-                    MarkerInfoWindow(
-                        state = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude)),
-                        title = loc.name,
-                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
-                    ) {
-                        Card(
-                            modifier = Modifier
-                                .background(Color.White)
-                                .width(250.dp)
+                GoogleMap(
+                    modifier = Modifier.fillMaxSize(),
+                    cameraPositionState = cameraPositionState
+                ) {
+
+                    Timber.d("locations: ${(data as MapDataUiState.Success).data.locations.count()}")
+                    val locations = (data as MapDataUiState.Success).data.locations.toImmutableList()
+                    locations.forEach {loc ->
+                        val activities = loc.activities.makeActivityList()
+                        MarkerInfoWindow(
+                            state = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude)),
+                            title = loc.name,
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
                         ) {
-                            Column(
-                                horizontalAlignment = CenterHorizontally,
-                                modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                            Card(
+                                modifier = Modifier
+                                    .background(Color.White)
+                                    .width(250.dp)
                             ) {
-                                Text(loc.name, fontSize = 20.sp)
-                                Text("Activities:\n$activities")
+                                Column(
+                                    horizontalAlignment = CenterHorizontally,
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                ) {
+                                    Text(loc.name, fontSize = 20.sp)
+                                    Text("Activities:\n$activities")
+                                }
                             }
                         }
                     }
-                }
 
-                val markerCoords = (data as MapDataUiState.Success).data.locations.map {
-                    LatLng(it.latitude, it.longitude)
-                }
+                    val markerCoords = (data as MapDataUiState.Success).data.locations.map {
+                        LatLng(it.latitude, it.longitude)
+                    }
 
-                Polyline(
-                    points = markerCoords,
-                    color = Color.Magenta
-                )
+                    Polyline(
+                        points = markerCoords,
+                        color = Color.Magenta
+                    )
+                }
             }
-        } else if (data == MapDataUiState.Loading) {
-            LoadingScreen()
-        } else if (data == MapDataUiState.NoTrip) {
-            NoTripScreen()
+
+            MapDataUiState.Loading -> {
+                LoadingScreen()
+            }
+
+            MapDataUiState.NoTrip -> {
+                NoTripScreen()
+            }
         }
     } else {
         LoadingScreen()
