@@ -43,7 +43,7 @@ data class PackingItem(
     val name: String,
     var notificationType: NotificationType,
     var isChecked: Boolean,
-    val time: Long?,
+    var time: Long?,
     val height: Float,
     val lat: Float,
     val lon: Float
@@ -141,9 +141,6 @@ interface PackingItemDao {
 
     @Delete
     fun deleteItem(item: PackingItem)
-
-    @Update
-    suspend fun updateCheckboxState(item: PackingItem)
 
     @Insert
     fun insertIntoList(item: PackingItem)

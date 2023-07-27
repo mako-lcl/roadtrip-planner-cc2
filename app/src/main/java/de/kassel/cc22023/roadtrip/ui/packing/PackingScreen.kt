@@ -1,9 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import android.content.Context
+import PackingItemSheet
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,11 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DismissDirection
@@ -54,20 +49,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-import timber.log.Timber
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -76,7 +67,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
-import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
 import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 
@@ -135,7 +125,7 @@ fun PackingListScaffold() {
             topEnd = 12.dp
         ),
         sheetContent = {
-            selectedItem?.let { PackingItemSheet (it) }
+            selectedItem?.let { PackingItemSheet(it) }
         },
 
         sheetPeekHeight = 0.dp
@@ -405,7 +395,7 @@ fun PackingItemCard(
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
                 item.isChecked = it
-                viewModel.updateCheckBoxState(item)
+                viewModel.updateItem(item)
 
             })
 
