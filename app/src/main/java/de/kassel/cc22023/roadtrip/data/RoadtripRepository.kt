@@ -108,9 +108,9 @@ class DefaultRoadtripRepository @Inject constructor(
                     NotificationType.NONE,
                     false,
                     null,
-                    0f,
-                    0f,
-                    0f
+                    0.0,
+                    0.0,
+                    0.0
                 )
             }
         )
