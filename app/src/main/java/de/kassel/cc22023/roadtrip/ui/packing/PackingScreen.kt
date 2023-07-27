@@ -1,9 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import android.content.Context
+import PackingItemSheet
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,11 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DismissDirection
@@ -54,12 +49,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-import timber.log.Timber
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
@@ -86,7 +79,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
-import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
 import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.TextStyle
@@ -137,6 +129,10 @@ fun PackingListScaffold() {
     val coroutineScope = rememberCoroutineScope()
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
 
+    var selectedItem: PackingItem? by remember {
+        mutableStateOf(null)
+    }
+
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
         sheetShape = RoundedCornerShape(
@@ -146,15 +142,14 @@ fun PackingListScaffold() {
             topEnd = 12.dp
         ),
         sheetContent = {
-                       PackingItemSheet {
-
-                       }
+            selectedItem?.let { PackingItemSheet(it) }
         },
 
         sheetPeekHeight = 0.dp
     ) {
-        PackingListView() {
+        PackingListView {
             coroutineScope.launch {
+                selectedItem = it
                 bottomSheetScaffoldState.bottomSheetState.expand()
             }
         }
@@ -165,7 +160,7 @@ fun PackingListScaffold() {
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
-    expand: () -> Unit
+    selectItem: (PackingItem) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -350,7 +345,9 @@ fun PackingListView(
                         })
                         SwipeToDismiss(state = dismissState, background = {
                             SwipeBackground(dismissState)
-                        }, dismissContent = { PackingItemCard(item) })
+                        }, dismissContent = { PackingItemCard(item) {
+                            selectItem(it)
+                        } })
                     }
                 }
             } else {
@@ -400,7 +397,7 @@ fun SwipeBackground(dismissState: DismissState) {
         Modifier
             .fillMaxSize()
             .background(color)
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 20.dp),
         contentAlignment = alignment
     ) {
         Icon(
@@ -416,7 +413,8 @@ fun SwipeBackground(dismissState: DismissState) {
 @Composable
 fun PackingItemCard(
     item: PackingItem,
-    viewModel: PackingViewModel = hiltViewModel()
+    viewModel: PackingViewModel = hiltViewModel(),
+    selectItem: (PackingItem) -> Unit
 ) {
     var checked by remember {
         mutableStateOf(item.isChecked)
@@ -441,7 +439,7 @@ fun PackingItemCard(
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
                 item.isChecked = it
-                viewModel.updateCheckBoxState(item)
+                viewModel.updateItem(item)
 
             })
 
@@ -474,6 +472,12 @@ fun PackingItemCard(
                             text = { Text(type.value) },
                             onClick = {
                                 selectedText = type.value
+                                if (type.value != NotificationType.NONE.value) {
+                                    val newItem = PackingItem(
+                                        item.id, item.name, NotificationType.fromString(selectedText), item.isChecked, item.time, item.height, item.lat, item.lon
+                                    )
+                                    selectItem(newItem)
+                                }
                                 expanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,

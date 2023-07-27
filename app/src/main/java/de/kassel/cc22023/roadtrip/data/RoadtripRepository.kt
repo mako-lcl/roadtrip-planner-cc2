@@ -16,7 +16,6 @@
 
 package de.kassel.cc22023.roadtrip.data
 
-import de.kassel.cc22023.roadtrip.BuildConfig
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
@@ -45,7 +44,7 @@ interface RoadtripRepository {
     val locations: Flow<List<RoadtripLocation>?>
     val activities: Flow<List<RoadtripActivity>?>
 
-    suspend fun updateCheckbox(item: PackingItem)
+    suspend fun updateItem(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: CombinedRoadtrip)
 
@@ -62,6 +61,7 @@ interface RoadtripRepository {
 
     fun getRoadtrip() : CombinedRoadtrip
     fun deleteItem(card: PackingItem)
+
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -164,8 +164,8 @@ class DefaultRoadtripRepository @Inject constructor(
         packingItemDao.deleteItem(card)
     }
 
-    override suspend fun updateCheckbox(item: PackingItem) {
-        packingItemDao.updateCheckboxState(item)
+    override suspend fun updateItem(item: PackingItem) {
+        packingItemDao.updateItem(item)
     }
 
 
