@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class PackingViewModel @Inject constructor(
     private var height = 0.0f// Initialize the reference value to 0
     private var lat = 0.0f// Initialize the reference value to 0
     private var lon = 0.0f// Initialize the reference value to 0
+
 
     fun locationPermissionGranted() {
         sensorRepository.permissionsGranted()
@@ -46,7 +48,17 @@ class PackingViewModel @Inject constructor(
         }
     }
 
-
+    fun onSwipeToDelete(selectedItem: PackingItem) {
+        _packing.update {
+            it?.filterNot { item ->
+                item.id == selectedItem.id
+            }
+        }
+        // Perform the delete operation in the repository
+        viewModelScope.launch(Dispatchers.IO) {
+            roadtripRepository.deleteItem(selectedItem)
+        }
+    }
     val data: StateFlow<PackingDataUiState> =
         roadtripRepository
             .packingList
