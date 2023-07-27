@@ -210,39 +210,40 @@ fun PackingListView(
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            Box(modifier = Modifier
-                .size(width = 400.dp, height = 100.dp)
-                .padding(16.dp)
-                .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
-                contentAlignment = Alignment.Center){
-            Row {
-                // Text input field to enter the new item name
-
-            }
-            Button(
-                onClick = {
-                    // Parse the user input to a Double and update the sensoralitude value
-                    //viewModel.setHeightAndLocation(sensoralitude)
-                },
+        ) {Button(
+            onClick = {
+                // Parse the user input to a Double and update the sensoralitude value
+                //viewModel.setHeightAndLocation(sensoralitude)
+            },
 
             ) {
-                Text("Set Height")
-            }
-            Text(
-                text = "Sensor Altitude: $height m",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
-            )
-            Text(
-                text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
-            )
-            Text(
-                "Packing list",
-                fontSize = 30.sp
-            )
+            Text("Set Height")
+        }
+            Box(
+                modifier = Modifier
+                    .size(width = 400.dp, height = 100.dp)
+                    .padding(16.dp)
+                    .border(
+                        width = 2.dp,
+                        color = Color(0xFFF4E0B9),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Row {
+                    // Text input field to enter the new item name
+
+                }
+
+                Text(
+                    text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    "Packing list",
+                    fontSize = 30.sp
+                )
             }
 
             Row {
@@ -313,9 +314,10 @@ fun PackingListView(
                 Text("Add New Item")
             }
 
+
             Row {
                 Box(modifier = Modifier
-                    .fillMaxSize(0.05f)
+                    .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp)
                     .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
@@ -324,7 +326,7 @@ fun PackingListView(
                     Text(text = "Carry Me", fontSize = 15.sp)
                 }
                 Box(modifier = Modifier
-                    .fillMaxSize(0.05f)
+                    .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp)
                     .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
