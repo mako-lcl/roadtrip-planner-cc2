@@ -31,7 +31,7 @@ android {
 
     defaultConfig {
         applicationId = "de.kassel.cc22023.roadtrip"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"

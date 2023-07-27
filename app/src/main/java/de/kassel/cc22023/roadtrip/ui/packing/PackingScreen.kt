@@ -96,7 +96,7 @@ import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
-    android.Manifest.permission.POST_NOTIFICATIONS,
+    android.Manifest.permission.POST_NOTIFICATIONS,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
