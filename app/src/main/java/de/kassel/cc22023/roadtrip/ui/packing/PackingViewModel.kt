@@ -1,9 +1,11 @@
 package de.kassel.cc22023.roadtrip.ui.packing
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,12 +17,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PackingViewModel @Inject constructor(
-    private val roadtripRepository: RoadtripRepository
+    private val roadtripRepository: RoadtripRepository,
+    private val sensorRepository: SensorRepository,
 ) : ViewModel() {
+    val location: StateFlow<Location?> = sensorRepository.locationFlow
 
     private var height = 0.0f// Initialize the reference value to 0
     private var lat = 0.0f// Initialize the reference value to 0
     private var lon = 0.0f// Initialize the reference value to 0
+
+    fun locationPermissionGranted() {
+        sensorRepository.permissionsGranted()
+    }
 
     fun setHeightAndLocation(value: Float, lat1: Float, lon1: Float) {
         height = value
