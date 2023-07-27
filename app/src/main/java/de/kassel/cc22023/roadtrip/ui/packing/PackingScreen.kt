@@ -317,7 +317,7 @@ fun PackingListView(
                     shape = RoundedCornerShape(4.dp)
                 ) {
                 Box(modifier = Modifier
-                    .fillMaxSize(0.2f)
+                    .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp),
                     contentAlignment = Alignment.Center){
@@ -336,7 +336,7 @@ fun PackingListView(
 
                 ) {
                 Box(modifier = Modifier
-                    .fillMaxSize(0.2f)
+                    .fillMaxSize(0.1f)
                     .weight(0.5f)
                     .padding(1.dp),
 
