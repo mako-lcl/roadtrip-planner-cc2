@@ -3,6 +3,8 @@ package de.kassel.cc22023.roadtrip.ui.packing
 import PackingItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
@@ -83,6 +85,7 @@ import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
@@ -225,10 +228,6 @@ fun PackingListView(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                Row {
-                    // Text input field to enter the new item name
-
-                }
 
                 Text(
                     text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
@@ -237,78 +236,51 @@ fun PackingListView(
                 )
                 Text(
                     "Packing list",
-                    fontSize = 30.sp
+                    fontSize = 20.sp
                 )
             }
-
-            Row {
-                // Text input field to enter the new item name
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 TextField(
                     value = newItemName,
                     onValueChange = { newItemName = it },
                     label = { Text("Enter new item name") },
                     modifier = Modifier.weight(0.7f)
                 )
-            }
-            Row {
-                // Dropdown menu to select the notification type for the new item
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    modifier = Modifier.weight(0.3f)
-                ) {
-                    TextField(
-                        value = selectedText,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor()
-                    )
-
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        NotificationType.values().forEach { type ->
-                            DropdownMenuItem(
-                                text = { Text(type.value) },
-                                onClick = {
-                                    selectedText = type.value
-                                    expanded = false
-                                    newItemNotificationType =
-                                        type // Update the newItemNotificationType when a value is selected
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                Box(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
+                        .height(32.dp) // Set the height of the button
+                ){
+                    Box{Button(
+                        onClick = {
+                            // Add a new PackingItem to the packingList
+                            val newItem = PackingItem(
+                                id = 0,
+                                name = newItemName,
+                                notificationType = newItemNotificationType,
+                                isChecked = false,
+                                null,
+                                0f,
+                                0f,
+                                0f
                             )
-                        }
-                    }
+                            viewModel.insertIntoList(newItem)
+                            newItemName = ""
+                            newItemNotificationType = NotificationType.NONE
+
+                        },
+                        shape = CircleShape,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Add")
+                    }}
+
                 }
             }
-
-            Button(
-                onClick = {
-                    // Add a new PackingItem to the packingList
-                    val newItem = PackingItem(
-                        id = 0,
-                        name = newItemName,
-                        notificationType = newItemNotificationType,
-                        isChecked = false,
-                        null,
-                        0f,
-                        0f,
-                        0f
-                    )
-                    viewModel.insertIntoList(newItem)
-                    newItemName = ""
-                    newItemNotificationType = NotificationType.NONE
-
-                },
-                shape = CircleShape,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Add New Item")
-            }
-
 
             Row {
                 Box(modifier = Modifier
@@ -443,7 +415,11 @@ fun PackingItemCard(
 
             })
 
-            Text(item.name)
+            Text(item.name,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFDFA878)
+            )
+
         }
 
         Row(
