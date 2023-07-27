@@ -1,5 +1,14 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -34,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.*
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -71,12 +81,10 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CardDefaults.shape
-import androidx.compose.material3.MaterialTheme
+
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -91,6 +99,7 @@ import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
@@ -208,15 +217,11 @@ fun PackingListView(
             modifier = Modifier
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Box(modifier = Modifier
-                .size(width = 400.dp, height = 100.dp)
-                .padding(16.dp)
-                .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
-                contentAlignment = Alignment.Center){
-            Row {
+
+            Row{
                 // Text input field to enter the new item name
 
             }
@@ -232,28 +237,58 @@ fun PackingListView(
             Text(
                 text = "Sensor Altitude: $height m",
                 fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(5.dp)
             )
             Text(
                 text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
                 fontSize = 18.sp,
                 modifier = Modifier.padding(16.dp)
             )
+            Surface(
+                color = Color.Transparent,
+                shadowElevation = 3.dp,
+                tonalElevation = 10.dp,
+                modifier = Modifier
+                    .padding(1.dp)
+                    .fillMaxWidth(0.8f),
+                shape = RoundedCornerShape(5.dp)
+            ) {
+            Box(modifier = Modifier
+                .size(width = 200.dp, height = 50.dp)
+                .padding(5.dp),
+                contentAlignment = Alignment.Center
+            )
+            {
+
             Text(
-                "Packing list",
-                fontSize = 30.sp
+                "Pack Your Bags",
+                fontSize = 30.sp, fontFamily = FontFamily.Serif
             )
             }
-
+            }
             Row {
                 // Text input field to enter the new item name
+                Box(modifier = Modifier
+                    .wrapContentSize(Alignment.Center)
+                    .padding(1.dp)
+                    .border(
+                        width = 0.dp,
+                        color = Color(0xFFF4E0B9),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                    contentAlignment = Alignment.Center){
                 TextField(
                     value = newItemName,
                     onValueChange = { newItemName = it },
                     label = { Text("Enter new item name") },
-                    modifier = Modifier.weight(0.7f)
+//                    modifier = Modifier.weight(0.7f),
+                    shape = RoundedCornerShape(20.dp),
+
+
                 )
+                }
             }
+
             Row {
                 // Dropdown menu to select the notification type for the new item
                 ExposedDropdownMenuBox(
@@ -261,14 +296,24 @@ fun PackingListView(
                     onExpandedChange = { expanded = it },
                     modifier = Modifier.weight(0.3f)
                 ) {
+                    Box(modifier = Modifier
+                        .wrapContentSize(Alignment.Center)
+                        .padding(1.dp)
+                        .border(
+                            width = 0.dp,
+                            color = Color(0xFFF4E0B9),
+                            shape = RoundedCornerShape(20.dp)
+                        ),
+                        contentAlignment = Alignment.Center){
                     TextField(
                         value = selectedText,
                         onValueChange = {},
                         readOnly = true,
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor()
+                        modifier = Modifier.menuAnchor(),
+                        shape = RoundedCornerShape(20.dp),
                     )
-
+                    }
                     ExposedDropdownMenu(
                         expanded = expanded,
                         onDismissRequest = { expanded = false },
@@ -308,28 +353,48 @@ fun PackingListView(
 
                 },
                 shape = CircleShape,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.wrapContentSize()
             ) {
                 Text("Add New Item")
             }
 
             Row {
+                Surface(
+                    color = Color(0xFFDFA878),
+                    shadowElevation = 5.dp,
+                    tonalElevation = 10.dp,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .fillMaxWidth(0.5f),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
                 Box(modifier = Modifier
-                    .fillMaxSize(0.05f)
+                    .fillMaxSize(0.2f)
                     .weight(0.5f)
-                    .padding(1.dp)
-                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    .padding(1.dp),
                     contentAlignment = Alignment.Center){
 
-                    Text(text = "Carry Me", fontSize = 15.sp)
+                    Text(text = "Carry Me", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
                 }
+                }
+                Surface(
+                    color = Color(0xFFDFA878),
+                    shadowElevation = 5 .dp,
+                    tonalElevation = 10.dp,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .fillMaxWidth(1f),
+                    shape = RoundedCornerShape(4.dp)
+
+                ) {
                 Box(modifier = Modifier
-                    .fillMaxSize(0.05f)
+                    .fillMaxSize(0.2f)
                     .weight(0.5f)
-                    .padding(1.dp)
-                    .border(width = 2.dp, color = Color(0xFFF4E0B9),shape = RoundedCornerShape(20.dp)),
+                    .padding(1.dp),
+
                     contentAlignment = Alignment.Center){
-                    Text(text = "Remind Me", fontSize = 15.sp)
+                    Text(text = "Remind Me At", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                }
                 }
             }
             if (data is PackingDataUiState.Success) {
@@ -337,6 +402,7 @@ fun PackingListView(
                 val reversedList = list.reversed()
 
                 LazyColumn(state = listState) {
+
                     itemsIndexed(
                         items = reversedList,
                         key = { index, item -> item.hashCode() }) { index, item ->
@@ -350,6 +416,7 @@ fun PackingListView(
                             SwipeBackground(dismissState)
                         }, dismissContent = { PackingItemCard(item) })
                     }
+
                 }
             } else {
                 LoadingScreen()
@@ -429,11 +496,27 @@ fun PackingItemCard(
     var selectedText by remember {
         mutableStateOf(NotificationType.values().first().value)
     }
+    Surface(
+        color = Color.Transparent,
+        shadowElevation = 1.dp,
+        tonalElevation = 10.dp,
+        modifier = Modifier
+            .padding(1.dp)
+            .fillMaxWidth(1f),
+        shape = RoundedCornerShape(5    .dp)
+
+    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(50.dp)
+            .padding(1.dp)
     ) {
         Row(
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier
+                .weight(0.5f)
+                .height(50.dp)
+                .wrapContentSize(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(checked = checked, onCheckedChange = {
@@ -442,12 +525,23 @@ fun PackingItemCard(
                 viewModel.updateCheckBoxState(item)
 
             })
-
-            Text(item.name)
+            Surface(
+                color = Color(0xFFCDC2AE),
+                shape = RoundedCornerShape(5.dp),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .fillMaxSize(1f),
+            ) {
+                Box(contentAlignment = Alignment.Center){
+            Text(item.name, color = Color(0xFFBA704F), textAlign = TextAlign.Center, fontWeight = FontWeight.Medium )
         }
-
+            }
+        }
         Row(
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier
+                .weight(0.5f)
+                .height(50.dp)
+                .wrapContentSize(Alignment.TopCenter)
         ) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -455,13 +549,28 @@ fun PackingItemCard(
                     expanded = it
                 }
             ) {
+                Surface(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .fillMaxSize(1f)
+                ) {
                 TextField(
                     value = selectedText,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxHeight(1f),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 )
+                }
 
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -482,7 +591,7 @@ fun PackingItemCard(
         }
     }
 }
-
+}
 
 @Preview
 @Composable

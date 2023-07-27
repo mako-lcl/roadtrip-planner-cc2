@@ -18,7 +18,14 @@ package de.kassel.cc22023.roadtrip.ui
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -41,6 +48,14 @@ import de.kassel.cc22023.roadtrip.ui.map.MapScreen
 import de.kassel.cc22023.roadtrip.ui.navigation.Screen
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +81,16 @@ fun MainNavigation() {
 
 @Composable
 fun WeatherNavBar(navController: NavController) {
-    NavigationBar {
+    Surface(shape = RoundedCornerShape(20.dp),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+        modifier = Modifier.size(width = 400.dp, height = 50.dp)
+            .background(color = Color.Transparent))
+    {
+
+
+    NavigationBar(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.Red,
+    modifier = Modifier.fillMaxWidth(1f)
+        .fillMaxHeight(0.1f)) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         listOf(
@@ -74,15 +98,17 @@ fun WeatherNavBar(navController: NavController) {
             Screen.Map,
             Screen.Packing,
         ).forEach { screen ->
+
             NavigationBarItem(
+
                 icon = {
                     Icon(
                         painter = painterResource(id = screen.iconResId),
                         contentDescription = null
                     )
                 },
-                label = { Text(text=stringResource(screen.titleResId),
-                    style= androidx.compose.ui.text.TextStyle(shadow=null))},
+//                label = { Text(text=stringResource(screen.titleResId),
+//                    style= androidx.compose.ui.text.TextStyle(shadow=null))},
                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                 onClick = {
                     navController.navigate(screen.route) {
@@ -99,7 +125,9 @@ fun WeatherNavBar(navController: NavController) {
                         restoreState = true
                     }
                 }
+
             )
         }
     }
+}
 }
