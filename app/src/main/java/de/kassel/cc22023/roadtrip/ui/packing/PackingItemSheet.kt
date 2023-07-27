@@ -36,6 +36,7 @@ import java.util.Calendar
 @Composable
 fun PackingItemSheet(
     item: PackingItem,
+    closeSheet: () -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
 
@@ -96,6 +97,7 @@ fun PackingItemSheet(
                             item.height = h
                             // Update the item using the viewModel
                             viewModel.updateItem(item)
+                            closeSheet()
                         } else {
                             // Handle invalid latitude or longitude input
                         }
@@ -144,6 +146,7 @@ fun PackingItemSheet(
 
                             // Update the item using the viewModel
                             viewModel.updateItem(item)
+                            closeSheet()
                         } else {
                             // Handle invalid latitude or longitude input
                         }
@@ -165,7 +168,7 @@ fun PackingItemSheet(
                 val selectedClock by remember { mutableStateOf(LocalDateTime.now().format(formatter)) }
                 var clock by remember { mutableStateOf(selectedClock.toString()) }
                 var showStartDatePicker by remember { mutableStateOf(false) }
-                var clockMilis by remember { mutableStateOf(0L) }
+                var clockSeconds by remember { mutableStateOf(0L) }
 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -204,25 +207,21 @@ fun PackingItemSheet(
                     val mMinute = mCalendar[Calendar.MINUTE]
                     val defaultDateTime = LocalDateTime.now()
                     val dateTime by remember { mutableStateOf(defaultDateTime) }
-                    var selectedTimeMillis by remember { mutableStateOf(System.currentTimeMillis()) }
+                    var selectedDateSeconds by remember { mutableStateOf(LocalDate.now().toEpochDay()) }
 
                     val mTimePickerDialog = TimePickerDialog(
                         mContext,
                         { _, mHour: Int, mMinute: Int ->
                             val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(mHour, mMinute))
-                            selectedTimeMillis = newTime.toInstant(ZoneOffset.UTC).toEpochMilli()
-                            clockMilis = (mHour * 1000 * 60 + mMinute * 1000).toLong()
+                            selectedDateSeconds = newTime.toEpochSecond(ZoneOffset.UTC)
                         }, mHour, mMinute, false
                     )
 
-                    val localTime = Instant.ofEpochMilli(clockMilis).atZone(ZoneOffset.UTC).toLocalTime()
                     val formatter = DateTimeFormatter.ofPattern("HH:mm")
 
-                    Box() {
+                    Box {
                         TextField(
-                            value = Instant.ofEpochMilli(selectedTimeMillis).atZone(ZoneOffset.UTC)
-                                .toLocalTime()
-                                .format(formatter),
+                            value = LocalDateTime.ofEpochSecond(selectedDateSeconds, 0, ZoneOffset.UTC).format(formatter),
                             onValueChange = {},
                             singleLine = true,
                             enabled = false,
@@ -233,8 +232,9 @@ fun PackingItemSheet(
                     // Display selected date and time
                     Button(onClick = {
 
-                        item.time = clockMilis + date
+                        item.time = selectedDateSeconds
                         viewModel.updateItem(item)
+                        closeSheet()
                         // Use the formattedDateTime for further processing or save it as required
                     }) {
                         Text(text = "Confirm Date and Time")
