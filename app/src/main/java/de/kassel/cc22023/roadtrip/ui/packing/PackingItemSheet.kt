@@ -212,10 +212,10 @@ fun FloorInputView(
     }
     location?.let {
         // State variables to hold latitude and longitude
-        var latitude by remember { mutableStateOf(if (item.lat == 0f) it.latitude.toString() else item.lat.toString()) }
-        var longitude by remember { mutableStateOf(if (item.lon == 0f) it.longitude.toString() else item.lon.toString()) }
+        var latitude by remember { mutableStateOf(if (item.lat == 0.0) it.latitude.toString() else item.lat.toString()) }
+        var longitude by remember { mutableStateOf(if (item.lon == 0.0) it.longitude.toString() else item.lon.toString()) }
         // State variables to hold latitude and longitude
-        var height by remember { mutableStateOf(if (item.height == 0f) it.altitude.toString() else item.height.toString()) }
+        var height by remember { mutableStateOf(if (item.height == 0.0) it.altitude.toString() else item.height.toString()) }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -251,9 +251,9 @@ fun FloorInputView(
             Button(onClick = {
                 // Process the latitude and longitude values here (e.g., save to database)
                 // For example, you can convert them to Double values like this:
-                val lat = latitude.toFloatOrNull()
-                val lon = longitude.toFloatOrNull()
-                val h = height.toFloatOrNull()
+                val lat = latitude.toDoubleOrNull()
+                val lon = longitude.toDoubleOrNull()
+                val h = height.toDoubleOrNull()
 
                 if (lat != null && lon != null && h != null) {
                     // Do something with the latitude and longitude values, e.g., save to the item
@@ -290,8 +290,8 @@ fun LocationInputView(
     }
     location?.let {
         // State variables to hold latitude and longitude
-        var latitude by remember { mutableStateOf(if (item.lat == 0f) it.latitude.toString() else item.lat.toString()) }
-        var longitude by remember { mutableStateOf(if (item.lon == 0f) it.longitude.toString() else item.lon.toString()) }
+        var latitude by remember { mutableStateOf(if (item.lat == 0.0) it.latitude.toString() else item.lat.toString()) }
+        var longitude by remember { mutableStateOf(if (item.lon == 0.0) it.longitude.toString() else item.lon.toString()) }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -323,8 +323,8 @@ fun LocationInputView(
 
                 if (lat != null && lon != null) {
                     // Do something with the latitude and longitude values, e.g., save to the item
-                    item.lat = lat.toFloat()
-                    item.lon = lon.toFloat()
+                    item.lat = lat.toDouble()
+                    item.lon = lon.toDouble()
 
                     // Update the item using the viewModel
                     viewModel.updateItem(item)

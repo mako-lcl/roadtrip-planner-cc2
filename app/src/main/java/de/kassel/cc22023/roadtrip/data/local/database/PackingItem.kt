@@ -44,9 +44,9 @@ data class PackingItem(
     var notificationType: NotificationType,
     var isChecked: Boolean,
     var time: Long?,
-    var height: Float,
-    var lat: Float,
-    var lon: Float
+    var height: Double,
+    var lat: Double,
+    var lon: Double
 ) {
     companion object {
         val exampleData = listOf(
@@ -56,9 +56,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
 
             ),
             PackingItem(
@@ -67,9 +67,9 @@ data class PackingItem(
                 NotificationType.FLOOR,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
             PackingItem(
                 2,
@@ -77,9 +77,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
             PackingItem(
                 3,
@@ -87,9 +87,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
             PackingItem(
                 4,
@@ -97,9 +97,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
             PackingItem(
                 5,
@@ -107,9 +107,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
             PackingItem(
                 6,
@@ -117,9 +117,9 @@ data class PackingItem(
                 NotificationType.NONE,
                 isChecked = false,
                 null,
-                0f,
-                0f,
-                0f
+                0.0,
+                0.0,
+                0.0
             ),
         )
     }

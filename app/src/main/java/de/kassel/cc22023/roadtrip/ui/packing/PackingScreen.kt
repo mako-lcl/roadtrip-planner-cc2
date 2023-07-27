@@ -250,9 +250,9 @@ fun PackingListView(
                                 notificationType = newItemNotificationType,
                                 isChecked = false,
                                 null,
-                                0f,
-                                0f,
-                                0f
+                                0.0,
+                                0.0,
+                                0.0
                             )
                             viewModel.insertIntoList(newItem)
                             newItemName = ""
@@ -311,9 +311,11 @@ fun PackingListView(
                         })
                         SwipeToDismiss(state = dismissState, background = {
                             SwipeBackground(dismissState)
-                        }, dismissContent = { PackingItemCard(item) {
-                            selectedItem = it
-                        } })
+                        }, dismissContent = {
+                            PackingItemCard(item) {
+                                selectedItem = it
+                            }
+                        })
                     }
                 }
             } else {
