@@ -112,11 +112,8 @@ fun PlannerScreen(
 
         is PlannerDataUiState.Success -> {
             LaunchedEffect(Unit) {
-                Timber.d("Navigating to map!")
-                //onNavigateToMap()
-                Toast
-                    .makeText(context, "Successfully created trip!", Toast.LENGTH_LONG)
-                    .show()
+                onNavigateToMap()
+                viewModel.resetToIdle()
             }
         }
 
@@ -126,6 +123,7 @@ fun PlannerScreen(
                 Toast
                     .makeText(context, "Error while creating trip", Toast.LENGTH_LONG)
                     .show()
+                viewModel.resetToIdle()
             }
         }
 
@@ -537,17 +535,9 @@ fun PlannerInputScreen(
             }
 
             Button(onClick = {
-                startLocationError = startLocation ==""
-                endLocationError = endLocation == ""
-                print(startLocationError)
-                if(!startDateError && !endDateError && !startLocationError && !endLocationError) {
-                    val testTrip = loadRoadtripFromAssets(context)
-                    val trip = convertRoadtripFromTestTrip(testTrip)
-                    viewModel.insertNewRoadtrip(trip)
-                }
-
-
-
+                val testTrip = loadRoadtripFromAssets(context)
+                val trip = convertRoadtripFromTestTrip(testTrip)
+                viewModel.insertNewRoadtrip(trip)
             }) {
                 Text(text = "Load")
 

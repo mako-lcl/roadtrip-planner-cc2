@@ -10,10 +10,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 import android.content.Context
+import PackingItemSheet
 import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateColorAsState
@@ -28,11 +29,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DismissDirection
@@ -64,12 +62,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-import timber.log.Timber
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.aspectRatio
@@ -84,7 +80,13 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 
-
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardDefaults.shape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -94,7 +96,6 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
-import de.kassel.cc22023.roadtrip.util.sendNotificationWithRuntime
 import com.mutualmobile.composesensors.rememberPressureSensorState
 import kotlinx.coroutines.launch
 import androidx.compose.ui.text.TextStyle
@@ -103,6 +104,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import de.kassel.cc22023.roadtrip.ui.theme.darkBackground
+import timber.log.Timber
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
@@ -144,7 +146,17 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 @Composable
 fun PackingListScaffold() {
     val coroutineScope = rememberCoroutineScope()
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+    val bottomSheetState: SheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        skipHiddenState = false
+    )
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
+    var selectedItem: PackingItem? by remember {
+        mutableStateOf(null)
+    }
 
     BottomSheetScaffold(
         scaffoldState = bottomSheetScaffoldState,
@@ -155,15 +167,19 @@ fun PackingListScaffold() {
             topEnd = 12.dp
         ),
         sheetContent = {
-                       PackingItemSheet {
-
-                       }
+            selectedItem?.let { PackingItemSheet(it, closeSheet = {
+                coroutineScope.launch {
+                    selectedItem = null
+                    bottomSheetScaffoldState.bottomSheetState.hide()
+                }
+            })}
         },
 
         sheetPeekHeight = 0.dp
     ) {
-        PackingListView() {
+        PackingListView {
             coroutineScope.launch {
+                selectedItem = it
                 bottomSheetScaffoldState.bottomSheetState.expand()
             }
         }
@@ -174,11 +190,8 @@ fun PackingListScaffold() {
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
-    expand: () -> Unit
+    selectItem: (PackingItem) -> Unit
 ) {
-    val context = LocalContext.current
-
-    var actualHeightText by remember { mutableStateOf("") }
     val data by viewModel.data.collectAsState()
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
@@ -191,9 +204,6 @@ fun PackingListView(
         Sensor.TYPE_PRESSURE.toFloat()
     ))}
 
-    var selectedText by remember {
-        mutableStateOf(NotificationType.values().first().value)
-    }
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
     val notificationMessage by remember { mutableStateOf("") }
@@ -232,18 +242,32 @@ fun PackingListView(
                 },
 
             ) {
+            Text("Set Height")
+        }
+            Box(
+                modifier = Modifier
+                    .size(width = 400.dp, height = 100.dp)
+                    .padding(16.dp)
+                    .border(
+                        width = 2.dp,
+                        color = Color(0xFFF4E0B9),
+                        shape = RoundedCornerShape(20.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Text(
+                    text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(16.dp)
+                )
+                Text(
+                    "Packing list",
+                    fontSize = 20.sp
+                )
                 Text("Set Height")
             }
-            Text(
-                text = "Sensor Altitude: $height m",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(5.dp)
-            )
-            Text(
-                text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
-            )
+
             Surface(
                 color = Color.Transparent,
                 shadowElevation = 3.dp,
@@ -266,7 +290,10 @@ fun PackingListView(
             )
             }
             }
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 // Text input field to enter the new item name
                 Box(modifier = Modifier
                     .wrapContentSize(Alignment.Center)
@@ -286,78 +313,39 @@ fun PackingListView(
 
 
                 )
-                }
             }
-
-            Row {
-                // Dropdown menu to select the notification type for the new item
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it },
-                    modifier = Modifier.weight(0.3f)
-                ) {
-                    Box(modifier = Modifier
-                        .wrapContentSize(Alignment.Center)
-                        .padding(1.dp)
-                        .border(
-                            width = 0.dp,
-                            color = Color(0xFFF4E0B9),
-                            shape = RoundedCornerShape(20.dp)
-                        ),
-                        contentAlignment = Alignment.Center){
-                    TextField(
-                        value = selectedText,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                        modifier = Modifier.menuAnchor(),
-                        shape = RoundedCornerShape(20.dp),
-                    )
-                    }
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false },
-                    ) {
-                        NotificationType.values().forEach { type ->
-                            DropdownMenuItem(
-                                text = { Text(type.value) },
-                                onClick = {
-                                    selectedText = type.value
-                                    expanded = false
-                                    newItemNotificationType =
-                                        type // Update the newItemNotificationType when a value is selected
-                                },
-                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+            }
+                Box(
+                    modifier = Modifier
+                        .weight(0.3f)
+                        .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
+                        .height(32.dp) // Set the height of the button
+                ){
+                    Box{Button(
+                        onClick = {
+                            // Add a new PackingItem to the packingList
+                            val newItem = PackingItem(
+                                id = 0,
+                                name = newItemName,
+                                notificationType = newItemNotificationType,
+                                isChecked = false,
+                                null,
+                                0f,
+                                0f,
+                                0f
                             )
-                        }
-                    }
+                            viewModel.insertIntoList(newItem)
+                            newItemName = ""
+                            newItemNotificationType = NotificationType.NONE
+
+                        },
+                        shape = CircleShape,
+                        modifier = Modifier.wrapContentSize()
+                    ) {
+                        Text("Add")
+                    }}
+
                 }
-            }
-
-            Button(
-                onClick = {
-                    // Add a new PackingItem to the packingList
-                    val newItem = PackingItem(
-                        id = 0,
-                        name = newItemName,
-                        notificationType = newItemNotificationType,
-                        isChecked = false,
-                        null,
-                        0f,
-                        0f,
-                        0f
-                    )
-                    viewModel.insertIntoList(newItem)
-                    newItemName = ""
-                    newItemNotificationType = NotificationType.NONE
-
-                },
-                shape = CircleShape,
-                modifier = Modifier.wrapContentSize()
-            ) {
-                Text("Add New Item")
-            }
-
             Row {
                 Surface(
                     color = Color(0xFFDFA878),
@@ -402,7 +390,6 @@ fun PackingListView(
                 val reversedList = list.reversed()
 
                 LazyColumn(state = listState) {
-
                     itemsIndexed(
                         items = reversedList,
                         key = { index, item -> item.hashCode() }) { index, item ->
@@ -414,9 +401,10 @@ fun PackingListView(
                         })
                         SwipeToDismiss(state = dismissState, background = {
                             SwipeBackground(dismissState)
-                        }, dismissContent = { PackingItemCard(item) })
+                        }, dismissContent = { PackingItemCard(item) {
+                            selectItem(it)
+                        } })
                     }
-
                 }
             } else {
                 LoadingScreen()
@@ -465,7 +453,7 @@ fun SwipeBackground(dismissState: DismissState) {
         Modifier
             .fillMaxSize()
             .background(color)
-            .padding(horizontal = 10.dp),
+            .padding(horizontal = 20.dp),
         contentAlignment = alignment
     ) {
         Icon(
@@ -481,7 +469,8 @@ fun SwipeBackground(dismissState: DismissState) {
 @Composable
 fun PackingItemCard(
     item: PackingItem,
-    viewModel: PackingViewModel = hiltViewModel()
+    viewModel: PackingViewModel = hiltViewModel(),
+    selectItem: (PackingItem) -> Unit
 ) {
     var checked by remember {
         mutableStateOf(item.isChecked)
@@ -492,9 +481,8 @@ fun PackingItemCard(
         mutableStateOf(false)
     }
 
-
-    var selectedText by remember {
-        mutableStateOf(NotificationType.values().first().value)
+    val selectedText by remember {
+        mutableStateOf(item.notificationType.value)
     }
     Surface(
         color = Color.Transparent,
@@ -522,7 +510,7 @@ fun PackingItemCard(
             Checkbox(checked = checked, onCheckedChange = {
                 checked = it
                 item.isChecked = it
-                viewModel.updateCheckBoxState(item)
+                viewModel.updateItem(item)
 
             })
             Surface(
@@ -580,7 +568,12 @@ fun PackingItemCard(
                         DropdownMenuItem(
                             text = { Text(type.value) },
                             onClick = {
-                                selectedText = type.value
+                                if (type.value != NotificationType.NONE.value) {
+                                    val newItem = PackingItem(
+                                        item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                    )
+                                    selectItem(newItem)
+                                }
                                 expanded = false
                             },
                             contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,

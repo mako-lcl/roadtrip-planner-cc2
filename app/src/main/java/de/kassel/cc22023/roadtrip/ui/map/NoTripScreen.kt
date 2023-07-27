@@ -1,6 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.map
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,33 +28,22 @@ import de.kassel.cc22023.roadtrip.R
 fun NoTripScreen() {
     val compositionSad by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.sad))
     val progressSad by animateLottieCompositionAsState(composition = compositionSad, iterations = LottieConstants.IterateForever)
-    val compositionNoData by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.no_data))
-    val progressNoData by animateLottieCompositionAsState(composition = compositionNoData, iterations = LottieConstants.IterateForever)
 
     Column(
         modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 32.dp).padding(top = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            LottieAnimation(
-                composition = compositionNoData,
-                progress = { progressNoData },
-                modifier = Modifier.padding(horizontal = 32.dp).scale(1.35f,1.35f)
-            )
+        LottieAnimation(
+            composition = compositionSad,
+            progress = { progressSad }
+        )
 
-            Text("Looks like you haven't created a trip yet...")
+        Box(modifier = Modifier.size(16.dp))
 
-            LottieAnimation(
-                composition = compositionSad,
-                progress = { progressSad },
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-        }
-
+        Text("Looks like you haven't created a trip yet...")
     }
 }
