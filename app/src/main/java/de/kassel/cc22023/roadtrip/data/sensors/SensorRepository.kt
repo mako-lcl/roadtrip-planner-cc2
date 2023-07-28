@@ -13,11 +13,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
+import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
 class SensorRepository(
-    private val locationProvider: FusedLocationProviderClient,
+    private val locationProvider: FusedLocationProviderClient
 ) {
     val locationFlow = MutableStateFlow<Location?>(null)
     private var hasRequestedLocationUpdates = false

@@ -4,22 +4,28 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
+import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
+import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
+import de.kassel.cc22023.roadtrip.ui.map.MapDataUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class PackingViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository,
     private val sensorRepository: SensorRepository,
+    private val geofenceManager: GeofenceManager
 ) : ViewModel() {
     val location: StateFlow<Location?> = sensorRepository.locationFlow
 
@@ -27,16 +33,57 @@ class PackingViewModel @Inject constructor(
     private var lat = 0.0f// Initialize the reference value to 0
     private var lon = 0.0f// Initialize the reference value to 0
 
+    private fun refreshGeofences(items: List<PackingItem>) {
+        if (items.isEmpty()) return
+
+        geofenceManager.clearGeofences()
+
+        items.forEach {item ->
+            addGeofence(item.id, location = Location("").apply {
+                latitude = item.lat
+                longitude = item.lon
+            })
+            Timber.d("added fence for ${item.name}, loc: ${item.lat}, ${item.lon}")
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            geofenceManager.deregisterGeofence()
+            geofenceManager.registerGeofence()
+        }
+    }
+
+    private fun addGeofence(key: Int, location: Location) {
+        geofenceManager.addGeofence(key, location)
+    }
 
     fun locationPermissionGranted() {
         sensorRepository.permissionsGranted()
+
+        startListeningGeofences()
+    }
+
+    var startedListeninggGeofences = false
+
+    private fun startListeningGeofences() {
+        if (!startedListeninggGeofences) {
+            startedListeninggGeofences = true
+            viewModelScope.launch(Dispatchers.IO) {
+                data.collect {data ->
+                    if (data is PackingDataUiState.Success) {
+                        val items = data.data.filter {
+                            it.notificationType == NotificationType.FLOOR || it.notificationType == NotificationType.LOCATION
+                        }
+                        refreshGeofences(items)
+                    }
+                }
+            }
+        }
     }
 
     fun setHeightAndLocation(value: Float, lat1: Float, lon1: Float) {
         height = value
         lat = lat1
         lon = lon1
-
     }
 
     fun getNotificationMessage(sensoralitude: Float, lat1: Float, lon1: Float): String {
@@ -59,6 +106,7 @@ class PackingViewModel @Inject constructor(
             roadtripRepository.deleteItem(selectedItem)
         }
     }
+
     val data: StateFlow<PackingDataUiState> =
         roadtripRepository
             .packingList
@@ -87,13 +135,6 @@ class PackingViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             roadtripRepository.insertIntoList(item)
         }
-    }
-
-    fun deleteItem(card: PackingItem) {
-        viewModelScope.launch(Dispatchers.IO) {
-            roadtripRepository.deleteItem(card)
-        }
-
     }
 
     fun onPermissionGranted() {

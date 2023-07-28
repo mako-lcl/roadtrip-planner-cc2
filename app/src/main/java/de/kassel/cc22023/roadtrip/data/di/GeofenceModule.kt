@@ -1,22 +1,20 @@
 package de.kassel.cc22023.roadtrip.data.di
 
-import com.google.android.gms.location.FusedLocationProviderClient
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object RepositoryModule {
+object GeofenceModule {
     @Provides
     @Singleton
-    fun providesSensorRepository(
-        locationProvider: FusedLocationProviderClient,
-    ): SensorRepository {
-        return SensorRepository(locationProvider)
+    fun providesGeofenceManager(@ApplicationContext context: Context) : GeofenceManager {
+        return GeofenceManager(context)
     }
 }

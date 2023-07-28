@@ -101,7 +101,6 @@ import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
     android.Manifest.permission.POST_NOTIFICATIONS,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
@@ -111,28 +110,24 @@ val notificationPermissions = listOf(
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     val context = LocalContext.current
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
+    val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
 
-        if (permissionState.allPermissionsGranted) {
-            viewModel.onPermissionGranted()
-        } else {
-            viewModel.onPermissionDenied()
-        }
-
-        if (permissionState.shouldShowRationale ||
-            !permissionState.allPermissionsGranted ||
-            permissionState.revokedPermissions.isNotEmpty()
-        ) {
-            PermissionsRejectedView()
-        } else {
-            LaunchedEffect(Unit) {
-                createNotificationChannel(context)
-            }
-
-            PackingListScaffold()
-        }
+    if (permissionState.allPermissionsGranted) {
+        viewModel.onPermissionGranted()
     } else {
+        viewModel.onPermissionDenied()
+    }
+
+    if (permissionState.shouldShowRationale ||
+        !permissionState.allPermissionsGranted ||
+        permissionState.revokedPermissions.isNotEmpty()
+    ) {
+        PermissionsRejectedView()
+    } else {
+        LaunchedEffect(Unit) {
+            createNotificationChannel(context)
+        }
+
         PackingListScaffold()
     }
 }
@@ -140,15 +135,6 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingListScaffold() {
-    val coroutineScope = rememberCoroutineScope()
-    val bottomSheetState: SheetState = rememberStandardBottomSheetState(
-        initialValue = SheetValue.Hidden,
-        skipHiddenState = false
-    )
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
-        bottomSheetState = bottomSheetState
-    )
-
     PackingListView()
 }
 
@@ -531,6 +517,11 @@ fun PackingItemCard(
                                         item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
                                     )
                                     selectItem(newItem)
+                                } else {
+                                    val newItem = PackingItem(
+                                        item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                    )
+                                    viewModel.updateItem(newItem)
                                 }
                                 expanded = false
                             },
