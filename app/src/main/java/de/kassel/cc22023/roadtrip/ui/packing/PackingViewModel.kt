@@ -32,7 +32,12 @@ class PackingViewModel @Inject constructor(
     private var lon = 0.0f// Initialize the reference value to 0
 
     private fun refreshGeofences(items: List<PackingItem>) {
-        if (items.isEmpty()) return
+        if (items.isEmpty()) {
+            viewModelScope.launch(Dispatchers.IO) {
+                geofenceManager.deregisterGeofence()
+            }
+            return
+        }
 
         geofenceManager.clearGeofences()
 
@@ -68,7 +73,8 @@ class PackingViewModel @Inject constructor(
                 data.collect {data ->
                     if (data is PackingDataUiState.Success) {
                         val items = data.data.filter {
-                            it.notificationType == NotificationType.FLOOR || it.notificationType == NotificationType.LOCATION
+                            //only geofence FLOOR or LOCATION items which are not CHECKED
+                            it.notificationType == NotificationType.FLOOR || it.notificationType == NotificationType.LOCATION && !it.isChecked
                         }
                         refreshGeofences(items)
                     }
@@ -157,11 +163,11 @@ class PackingViewModel @Inject constructor(
     }
 
     fun onPermissionGranted() {
-
+        sensorRepository.permissionsGranted()
     }
 
     fun onPermissionDenied() {
-
+        sensorRepository.permissionDenied()
     }
 }
 

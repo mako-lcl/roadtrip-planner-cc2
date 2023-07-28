@@ -16,6 +16,8 @@
 
 package de.kassel.cc22023.roadtrip.data
 
+import android.content.Context
+import android.location.Location
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
@@ -30,6 +32,7 @@ import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
+import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.util.combineRoadtrip
 import de.kassel.cc22023.roadtrip.util.convertCleanedStringToTrip
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
@@ -60,8 +63,12 @@ interface RoadtripRepository {
     )
 
     fun getRoadtrip() : CombinedRoadtrip
+
     fun deleteItem(card: PackingItem)
 
+    fun getPackingList() : List<PackingItem>
+
+    fun getLocation() : Location?
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -69,7 +76,8 @@ class DefaultRoadtripRepository @Inject constructor(
     private val packingItemDao: PackingItemDao,
     private val roadtripLocationDao: RoadtripLocationDao,
     private val roadtripActivityDao: RoadtripActivityDao,
-    private val openAiApi: OpenAiApi
+    private val openAiApi: OpenAiApi,
+    private val sensorRepository: SensorRepository
 ) : RoadtripRepository {
     override val packingList: Flow<List<PackingItem>?> =
         packingItemDao.getPackingItemsAsFlow()
@@ -164,11 +172,17 @@ class DefaultRoadtripRepository @Inject constructor(
         packingItemDao.deleteItem(card)
     }
 
+    override fun getPackingList(): List<PackingItem> {
+        return packingItemDao.getPackingItems()
+    }
+
+    override fun getLocation(): Location? {
+        return sensorRepository.getLocation()
+    }
+
     override suspend fun updateItem(item: PackingItem) {
         packingItemDao.updateItem(item)
     }
-
-
 
     override suspend fun insertIntoList(item: PackingItem) {
         packingItemDao.insertIntoList(item)

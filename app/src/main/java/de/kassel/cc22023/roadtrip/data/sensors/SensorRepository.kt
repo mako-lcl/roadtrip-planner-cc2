@@ -1,11 +1,15 @@
 package de.kassel.cc22023.roadtrip.data.sensors
 
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.location.Location
 import android.os.Looper
+import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Granularity
@@ -29,6 +33,11 @@ class SensorRepository(
             locationFlow.value = location
         }
     }
+
+    fun getLocation() : Location? {
+        return locationFlow.value
+    }
+
 
     fun permissionsGranted() {
         if(hasRequestedLocationUpdates) return
