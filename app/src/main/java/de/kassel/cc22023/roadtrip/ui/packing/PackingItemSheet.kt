@@ -143,8 +143,6 @@ fun TimeInputView(
 
     var selectedStartDate by remember { mutableStateOf(startDate) }
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
-    val selectedClock by remember { mutableStateOf(LocalDateTime.now().format(formatter)) }
-    var clock by remember { mutableStateOf(selectedClock.toString()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
 
     Column(
@@ -176,25 +174,29 @@ fun TimeInputView(
             )
         }
 
-        //val mContext = LocalContext.current
 
         var time = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
         item.time?.let {
             time = it
         }
         var showTimePicker by remember { mutableStateOf(false) }
-        val timeState = rememberTimePickerState()
-        timeState
-        val formatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+
+
+
 
 
         var selectedDateSeconds by remember { mutableStateOf(time) }
+        val timeState = rememberTimePickerState(
+            initialHour = LocalDateTime.ofEpochSecond(selectedDateSeconds, 0, ZoneOffset.UTC).hour ,
+            initialMinute = LocalDateTime.ofEpochSecond(selectedDateSeconds, 0, ZoneOffset.UTC).minute,
+            is24Hour = true
+        )
         var hour by remember { mutableStateOf(Calendar.HOUR) }
         var minute by remember { mutableStateOf(Calendar.MINUTE) }
 
 
 
-        //val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
 
         Box {
             TextField(
@@ -212,17 +214,14 @@ fun TimeInputView(
             TimePickerDialog(
                 onCancel = { showTimePicker = false },
                 onConfirm = {
-                    val cal = Calendar.getInstance()
-                    cal.set(Calendar.HOUR_OF_DAY, timeState.hour)
-                    cal.set(Calendar.MINUTE, timeState.minute)
-                    cal.isLenient = false
+
                     hour = timeState.hour
                     minute = timeState.minute
                     val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
                     selectedDateSeconds = newTime.toEpochSecond(ZoneOffset.UTC)
                     showTimePicker = false
 
-                },
+                }
             ) {
                 TimePicker(state = timeState,
                 )
@@ -428,7 +427,7 @@ fun TimePickerDialog(
     onConfirm: () -> Unit,
     toggle: @Composable () -> Unit = {},
     content: @Composable () -> Unit,
-) {
+    ) {
     Dialog(
         onDismissRequest = onCancel,
         properties = DialogProperties(
