@@ -4,11 +4,14 @@ import android.Manifest
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,8 +19,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,6 +67,7 @@ fun MapScreen() {
 @Composable
 fun MapLoadingScreen(
     usePreciseLocation: Boolean,
+
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val location by viewModel.location.collectAsState()
@@ -91,19 +99,26 @@ fun MapLoadingScreen(
                             title = loc.name,
                             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
                         ) {
-                            Card(
+                            Box( contentAlignment = TopEnd,
+                            modifier = Modifier.wrapContentSize(TopEnd)) {
+
+                        Card(
                                 modifier = Modifier
-                                    .background(Color.White)
-                                    .width(250.dp)
+                                    .background(Color.Transparent)
+                                    .width(250.dp),
+                                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp, bottomStart = 0.dp, bottomEnd = 25.dp)
                             ) {
                                 Column(
                                     horizontalAlignment = CenterHorizontally,
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    modifier = Modifier.padding(0.dp)
+                                        .background(Brush.linearGradient(listOf( Color(0xFFF4E0B9),Color(0xFFDFA878)))),
+                                    verticalArrangement = Arrangement.spacedBy(16.dp),
+
                                 ) {
-                                    Text(loc.name, fontSize = 20.sp)
-                                    Text("Activities:\n$activities")
+                                    Text(loc.name, fontSize = 20.sp, color = Color(0xFFBA704F), fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                                    Text("Activities:\n$activities", color = Color.Black, fontWeight = FontWeight.Normal)
                                 }
+                            }
                             }
                         }
                     }

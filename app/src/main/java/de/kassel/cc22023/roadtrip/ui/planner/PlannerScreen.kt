@@ -2,6 +2,22 @@ package de.kassel.cc22023.roadtrip.ui.planner
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FiniteAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.slideIn
+import androidx.compose.animation.slideOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +68,7 @@ import androidx.compose.material3.rememberDatePickerState
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 
@@ -72,8 +89,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,6 +107,7 @@ import de.kassel.cc22023.roadtrip.ui.util.CoolLoadingScreen
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
+import kotlinx.coroutines.delay
 
 
 import kotlinx.coroutines.launch
@@ -93,7 +115,7 @@ import timber.log.Timber
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
-
+import kotlin.reflect.KProperty
 
 
 @ExperimentalMaterial3Api
@@ -135,11 +157,15 @@ fun PlannerScreen(
 
 
 
+@OptIn(ExperimentalAnimationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun PlannerInputScreen(
+
     viewModel: PlannerViewModel = hiltViewModel()
 ) {
+
+
     val context = LocalContext.current
 
 
@@ -164,6 +190,19 @@ fun PlannerInputScreen(
     val currentDate = remember { LocalDate.now() }
     //val trip by viewModel.trip.collectAsState()
     val image: Painter = painterResource(R.drawable.map_pin)
+
+
+    var isContentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isContentVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isContentVisible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
@@ -182,6 +221,10 @@ fun PlannerInputScreen(
                 .padding(all = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(50.dp))
+            AnimatedVisibility(
+                visible = isContentVisible,
+                enter = scaleIn( animationSpec = tween(500 ), transformOrigin = TransformOrigin(0f, 0f))   ) {
             Surface(
                 color = Color.Transparent,
                 shadowElevation = 3.dp,
@@ -191,26 +234,31 @@ fun PlannerInputScreen(
                     .fillMaxWidth(0.8f),
                 shape = RoundedCornerShape(5.dp)
             ) {
+
                 Box(modifier = Modifier
-                    .size(width = 200.dp, height = 50.dp)
-                    .padding(5.dp),
+                    .size(width = 200.dp, height = 100.dp)
+                    .padding(5.dp)
+                    .animateContentSize(animationSpec = spring( dampingRatio = Spring.DampingRatioLowBouncy, stiffness = Spring.StiffnessLow )),
                     contentAlignment = Alignment.Center
                 )
                 {
 
                     Text(
                         "Enroute to find Yourself",
-                        fontSize = 20.sp, fontFamily = FontFamily.Serif
+                        fontSize = 25.sp, fontFamily = FontFamily.Serif, textAlign = TextAlign.Center
                     )
                 }
             }
+            }
+            Spacer(modifier = Modifier.height(50.dp))
 
-        Spacer(modifier = Modifier.width(250.dp))
             // First Date Selection
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth(1f)
+                modifier = Modifier
+                    .fillMaxWidth(1f)
+                    .padding(0.dp)
             ) {
                 Surface(
                     color = Color.Transparent,
@@ -311,8 +359,8 @@ fun PlannerInputScreen(
                     }
                 }
 
-            }
 
+            }
 
             if (showStartDatePicker) {
                 DatePickerDialogSample(
@@ -340,7 +388,7 @@ fun PlannerInputScreen(
                     onCloseDialog = { showStartDatePicker = false }
                 )
             }
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Second Date Selection
 
@@ -360,6 +408,7 @@ fun PlannerInputScreen(
 
                 ) {
                 TextField(
+                    shape = RoundedCornerShape(15.dp),
                     value = endLocation,
                     onValueChange = {
                         endLocation = it
@@ -401,6 +450,7 @@ fun PlannerInputScreen(
 
                     ) {
                     TextField(
+                        shape = RoundedCornerShape(15.dp),
                         value = endDate,
                         onValueChange = {},
                         singleLine = true,
@@ -548,6 +598,7 @@ fun PlannerInputScreen(
 
     }
 
+}
 }
 
 @SuppressLint("UnrememberedMutableState")

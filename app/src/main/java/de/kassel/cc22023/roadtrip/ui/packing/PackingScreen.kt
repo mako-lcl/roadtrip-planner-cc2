@@ -4,6 +4,25 @@ import HeightPreferences
 import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,8 +30,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.Checkbox
+
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -46,6 +69,8 @@ import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 import timber.log.Timber
+import androidx.compose.material3.Surface
+import androidx.compose.ui.text.input.ImeAction
 
 
 val notificationPermissions = listOf(
@@ -85,7 +110,7 @@ fun PackingListScaffold() {
     PackingListView()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
@@ -126,6 +151,16 @@ fun PackingListView(
             }
         }
     }
+    var isContentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isContentVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isContentVisible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -304,6 +339,7 @@ fun PackingListView(
         }
 
     }
+    }
 }
 
 
@@ -369,7 +405,7 @@ fun PackingItemCard(
                             value = selectedName,
                             onValueChange = {newvalue -> selectedName = newvalue
                             },
-                            keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
                                 onDone = {
                                     val saveName = selectedName
