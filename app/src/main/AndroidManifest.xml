@@ -18,6 +18,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -36,6 +37,7 @@
         android:theme="@style/Theme.RoadtripPlanner"
         android:name=".RoadtripApp"
         >
+        <receiver android:name=".alarm.AlarmReceiver"/>
 
         <receiver android:name=".geofence.GeofenceBroadcastReceiver"/>
 
