@@ -1,8 +1,20 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+import android.content.Context
+import PackingItemSheet
 import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -30,6 +42,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.*
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -64,8 +77,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
-
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -81,6 +96,10 @@ import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import com.mutualmobile.composesensors.rememberPressureSensorState
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.text.style.TextAlign
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
+
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 val notificationPermissions = listOf(
@@ -192,107 +211,125 @@ fun PackingListView(
             modifier = Modifier
                 .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {Button(
-            onClick = {
-                // Parse the user input to a Double and update the sensoralitude value
-                //viewModel.setHeightAndLocation(sensoralitude)
-            },
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+
+            Row{
+                // Text input field to enter the new item name
+
+            }
+            Button(
+                onClick = {
+                    // Parse the user input to a Double and update the sensoralitude value
+                    //viewModel.setHeightAndLocation(sensoralitude)
+                },
 
             ) {
             Text("Set Height")
         }
-            Box(
-                modifier = Modifier
-                    .size(width = 400.dp, height = 100.dp)
-                    .padding(16.dp)
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFF4E0B9),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
 
-                Text(
-                    text = if (notificationMessage.isNotBlank()) "Notification: $notificationMessage" else "",
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(16.dp)
-                )
-                Text(
-                    "Packing list",
-                    fontSize = 20.sp
-                )
+
+            Surface(
+                color = Color.Transparent,
+                shadowElevation = 3.dp,
+                tonalElevation = 10.dp,
+                modifier = Modifier
+                    .padding(1.dp)
+                    .fillMaxWidth(0.8f),
+                shape = RoundedCornerShape(5.dp)
+            ) {
+            Box(modifier = Modifier
+                .size(width = 200.dp, height = 50.dp)
+                .padding(5.dp),
+                contentAlignment = Alignment.Center
+            )
+            {
+
+            Text(
+                "Pack Your Bags",
+                fontSize = 30.sp, fontFamily = FontFamily.Serif
+            )
+            }
             }
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically, // Center the children vertically
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
+                    .height(32.dp) // Set the height of the row
             ) {
+                // Add the TextField with weight to take the available space
                 TextField(
                     value = newItemName,
                     onValueChange = { newItemName = it },
                     label = { Text("Enter new item name") },
-                    modifier = Modifier.weight(0.7f)
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.weight(0.7f) // Take 70% of the available width
                 )
-                Box(
-                    modifier = Modifier
-                        .weight(0.3f)
-                        .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
-                        .height(32.dp) // Set the height of the button
-                ){
-                    Box{Button(
-                        onClick = {
-                            // Add a new PackingItem to the packingList
-                            val newItem = PackingItem(
-                                id = 0,
-                                name = newItemName,
-                                notificationType = newItemNotificationType,
-                                isChecked = false,
-                                null,
-                                0.0,
-                                0.0,
-                                0.0
-                            )
-                            viewModel.insertIntoList(newItem)
-                            newItemName = ""
-                            newItemNotificationType = NotificationType.NONE
 
-                        },
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text("Add")
-                    }}
-
+                // Add the Button with weight to align to the end of the row
+                Button(
+                    onClick = {
+                        // Add a new PackingItem to the packingList
+                        val newItem = PackingItem(
+                            id = 0,
+                            name = newItemName,
+                            notificationType = newItemNotificationType,
+                            isChecked = false,
+                            null,
+                            0.0,
+                            0.0,
+                            0.0
+                        )
+                        viewModel.insertIntoList(newItem)
+                        newItemName = ""
+                        newItemNotificationType = NotificationType.NONE
+                    },
+                    shape = CircleShape,
+                    modifier = Modifier.weight(0.3f) // Take 30% of the available width
+                ) {
+                    Text("Add")
                 }
             }
 
             Row {
+                Surface(
+                    color = Color(0xFFDFA878),
+                    shadowElevation = 5.dp,
+                    tonalElevation = 10.dp,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .fillMaxWidth(0.5f),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
                 Box(modifier = Modifier
                     .fillMaxSize(0.1f)
                     .weight(0.5f)
-                    .padding(1.dp)
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFF4E0B9),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
+                    .padding(1.dp),
                     contentAlignment = Alignment.Center){
 
-                    Text(text = "Carry Me", fontSize = 15.sp)
+                    Text(text = "Carry Me", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
                 }
+                }
+                Surface(
+                    color = Color(0xFFDFA878),
+                    shadowElevation = 5 .dp,
+                    tonalElevation = 10.dp,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .fillMaxWidth(1f),
+                    shape = RoundedCornerShape(4.dp)
+
+                ) {
                 Box(modifier = Modifier
                     .fillMaxSize(0.1f)
                     .weight(0.5f)
-                    .padding(1.dp)
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFF4E0B9),
-                        shape = RoundedCornerShape(20.dp)
-                    ),
+                    .padding(1.dp),
+
                     contentAlignment = Alignment.Center){
-                    Text(text = "Remind Me", fontSize = 15.sp)
+                    Text(text = "Remind Me At", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                }
                 }
             }
             if (data is PackingDataUiState.Success) {
@@ -305,17 +342,27 @@ fun PackingListView(
                         key = { index, item -> item.hashCode() }) { index, item ->
                         val currentItem by rememberUpdatedState(newValue = item)
 
-                        val dismissState = rememberDismissState(confirmValueChange = {
-                            viewModel.deleteItem(currentItem)
-                            true
-                        })
-                        SwipeToDismiss(state = dismissState, background = {
-                            SwipeBackground(dismissState)
-                        }, dismissContent = {
-                            PackingItemCard(item) {
-                                selectedItem = it
-                            }
-                        })
+                        val delete = SwipeAction(
+                            onSwipe = {
+                                viewModel.onSwipeToDelete(item)
+                            },
+                            icon = {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete chat",
+                                    modifier = Modifier.padding(16.dp),
+                                    tint = Color.White
+                                )
+                            }, background = Color.Red.copy(alpha = 0.5f),
+                            isUndo = true
+                        )
+                        SwipeableActionsBox(
+                            modifier = Modifier,
+                            swipeThreshold = 200.dp,
+                            endActions = listOf(delete)
+                        ) {
+                            PackingItemCard(item, ){selectedItem = it}
+                        }
                     }
                 }
             } else {
@@ -395,11 +442,27 @@ fun PackingItemCard(
     val selectedText by remember {
         mutableStateOf(item.notificationType.value)
     }
+    Surface(
+        color = Color.Transparent,
+        shadowElevation = 1.dp,
+        tonalElevation = 10.dp,
+        modifier = Modifier
+            .padding(1.dp)
+            .fillMaxWidth(1f),
+        shape = RoundedCornerShape(5    .dp)
+
+    ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(50.dp)
+            .padding(1.dp)
     ) {
         Row(
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier
+                .weight(0.5f)
+                .height(50.dp)
+                .wrapContentSize(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Checkbox(checked = checked, onCheckedChange = {
@@ -408,16 +471,23 @@ fun PackingItemCard(
                 viewModel.updateItem(item)
 
             })
-
-            Text(item.name,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFFDFA878)
-            )
-
+            Surface(
+                color = Color(0xFFCDC2AE),
+                shape = RoundedCornerShape(5.dp),
+                modifier = Modifier
+                    .padding(0.dp)
+                    .fillMaxSize(1f),
+            ) {
+                Box(contentAlignment = Alignment.Center){
+            Text(item.name, color = Color(0xFFBA704F), textAlign = TextAlign.Center, fontWeight = FontWeight.Medium )
         }
-
+            }
+        }
         Row(
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier
+                .weight(0.5f)
+                .height(50.dp)
+                .wrapContentSize(Alignment.TopCenter)
         ) {
             ExposedDropdownMenuBox(
                 expanded = expanded,
@@ -425,13 +495,28 @@ fun PackingItemCard(
                     expanded = it
                 }
             ) {
+                Surface(
+                    color = Color.Transparent,
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier
+                        .padding(0.dp)
+                        .fillMaxSize(1f)
+                ) {
                 TextField(
                     value = selectedText,
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier.menuAnchor()
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxHeight(1f),
+                    textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                    colors = TextFieldDefaults.colors(
+                        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 )
+                }
 
                 ExposedDropdownMenu(
                     expanded = expanded,
@@ -457,7 +542,7 @@ fun PackingItemCard(
         }
     }
 }
-
+}
 
 @Preview
 @Composable
