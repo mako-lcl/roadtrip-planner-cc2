@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package de.kassel.cc22023.roadtrip.ui.packing
 
 import androidx.compose.foundation.layout.*
@@ -18,8 +20,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -150,7 +157,7 @@ fun PackingListScaffold() {
     PackingListView()
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
@@ -191,6 +198,16 @@ fun PackingListView(
             }
         }
     }
+    var isContentVisible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        isContentVisible = true
+    }
+
+    AnimatedVisibility(
+        visible = isContentVisible,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -352,9 +369,16 @@ fun PackingListView(
                 LazyColumn(state = listState) {
                     itemsIndexed(
                         items = reversedList,
+
                         key = { index, item -> item.hashCode() }) { index, item ->
                         val currentItem by rememberUpdatedState(newValue = item)
-
+                        val isVisible by remember { mutableStateOf(true) }
+                        AnimatedVisibility(
+                            visible = isVisible, // Change this to control the visibility of the item
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                            initiallyVisible = false
+                        ) {
                         val dismissState = rememberDismissState(confirmValueChange = {
                             viewModel.deleteItem(currentItem)
                             true
@@ -364,6 +388,7 @@ fun PackingListView(
                         }, dismissContent = { PackingItemCard(item) {
                             selectedItem = it
                         } })
+                    }
                     }
                 }
             } else {
@@ -382,6 +407,7 @@ fun PackingListView(
             //TODO
         }
 
+    }
     }
 }
 
@@ -480,7 +506,7 @@ fun PackingItemCard(
                     .fillMaxSize(1f),
             ) {
                 Box(contentAlignment = Alignment.Center){
-            Text(item.name, color = Color(0xFFBA704F), textAlign = TextAlign.Center, fontWeight = FontWeight.Medium )
+            Text(item.name, color = Color(0xFFBA704F), textAlign = TextAlign.Center, fontWeight = FontWeight.Medium)
         }
             }
         }

@@ -96,8 +96,8 @@ fun WeatherNavBar(navController: NavController) {
             .background(color = Color.Transparent))
     {
 
-
-    NavigationBar(containerColor = MaterialTheme.colorScheme.primary, contentColor = Color.Red,
+//        var selectedTab by remember { mutableStateOf(Screen.Planner)}
+    NavigationBar(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     modifier = Modifier.fillMaxWidth(1f)
         .fillMaxHeight(0.1f)) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -108,18 +108,21 @@ fun WeatherNavBar(navController: NavController) {
             Screen.Packing,
         ).forEach { screen ->
 
+            val isSelected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
             NavigationBarItem(
 
                 icon = {
                     Icon(
                         painter = painterResource(id = screen.iconResId),
-                        contentDescription = null
+                        contentDescription = null,
+                        tint = if (isSelected) Color(0xFFDFA878) else Color(0xFFF4E0B9)
                     )
                 },
 //                label = { Text(text=stringResource(screen.titleResId),
 //                    style= androidx.compose.ui.text.TextStyle(shadow=null))},
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                onClick = {
+                selected = isSelected ,
+                onClick =  {
+
                     navController.navigate(screen.route) {
                         // Pop up to the start destination of the graph to
                         // avoid building up a large stack of destinations
