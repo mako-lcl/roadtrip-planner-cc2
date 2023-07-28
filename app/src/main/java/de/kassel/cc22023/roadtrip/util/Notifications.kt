@@ -27,11 +27,13 @@ fun createNotificationChannel(context: Context) {
     notificationManager.createNotificationChannel(channel)
 }
 
-fun sendNotification(title: String, content: String, context: Context) {
+fun sendNotification(title: String, content: String, longText: String, context: Context) {
     val builder = NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
         .setContentTitle(title)
         .setContentText(content)
+        .setStyle(NotificationCompat.BigTextStyle()
+            .bigText(longText))
         .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
     with(NotificationManagerCompat.from(context)) {

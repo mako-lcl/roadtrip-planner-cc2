@@ -37,6 +37,7 @@ import de.kassel.cc22023.roadtrip.util.sendNotification
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val geofenceReceiver: GeofenceBroadcastReceiver = GeofenceBroadcastReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +53,11 @@ class MainActivity : ComponentActivity() {
         }
 
         val intentFilter = IntentFilter(CUSTOM_INTENT_GEOFENCE)
-        this.registerReceiver(GeofenceBroadcastReceiver, intentFilter)
+        this.registerReceiver(geofenceReceiver, intentFilter)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        this.unregisterReceiver(GeofenceBroadcastReceiver)
+        this.unregisterReceiver(geofenceReceiver)
     }
 }
