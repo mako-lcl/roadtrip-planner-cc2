@@ -57,6 +57,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import de.kassel.cc22023.roadtrip.alarm.setAlarm
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.planner.DatePickerDialogSample
@@ -70,6 +71,7 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun PermissionBeforeItemSheet(
@@ -118,7 +120,18 @@ fun PackingItemSheet(
             }
 
             "Time" -> {
-                TimeInputView(item, closeDialog)
+                val permissions = listOf(
+                    Manifest.permission.SCHEDULE_EXACT_ALARM,
+                )
+
+                PermissionBox(
+                    permissions = permissions,
+                    requiredPermissions = listOf(permissions.first()),
+                    description = "App needs permission to set alarm",
+                    onGranted = {
+                        TimeInputView(item, closeDialog)
+                    },
+                )
             }
         }
     }
@@ -131,6 +144,8 @@ fun TimeInputView(
     closeDialog: () -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     Text(
         "Add Time Notification",
         fontSize = 30.sp
@@ -233,6 +248,8 @@ fun TimeInputView(
             val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
             item.time = newTime.toEpochSecond(ZoneOffset.UTC)
             viewModel.updateItem(item)
+            setAlarm(item, context)
+
             closeDialog()
             // Use the formattedDateTime for further processing or save it as required
         }) {
