@@ -1,5 +1,6 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import HeightPreferences
 import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,6 +45,7 @@ import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
+import timber.log.Timber
 
 
 val notificationPermissions = listOf(
@@ -103,8 +106,8 @@ fun PackingListView(
     val pressureState = rememberPressureSensorState()
     val notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
-    val height by remember { mutableStateOf(0.0f) }
-
+    var isDialogVisible by remember { mutableStateOf(false) }
+    var heightValue by remember { mutableStateOf(0f) }
     var selectedItem: PackingItem? by remember {
         mutableStateOf(null)
     }
@@ -140,7 +143,7 @@ fun PackingListView(
         ) {
             Button(
                 onClick = {
-
+                    isDialogVisible = true
                 },
             ) {
                 Icon(Icons.Default.Settings, contentDescription = null)
@@ -169,6 +172,17 @@ fun PackingListView(
                 Icon(Icons.Default.Add, contentDescription = null)
             }
         }
+        if (isDialogVisible) {
+            HeightInputDialog(
+                onHeightSubmitted = { height ->
+                    heightValue = height
+                    isDialogVisible = false
+                },
+                onDismiss = {
+                    isDialogVisible = false
+                }
+            )
+        }
 
         Column(
             modifier = Modifier
@@ -187,18 +201,18 @@ fun PackingListView(
                     .fillMaxWidth(0.8f),
                 shape = RoundedCornerShape(5.dp)
             ) {
-            Box(modifier = Modifier
-                .size(width = 200.dp, height = 50.dp)
-                .padding(5.dp),
-                contentAlignment = Alignment.Center
-            )
-            {
+                Box(modifier = Modifier
+                    .size(width = 200.dp, height = 50.dp)
+                    .padding(5.dp),
+                    contentAlignment = Alignment.Center
+                )
+                {
 
-            Text(
-                "Pack Your Bags",
-                fontSize = 30.sp, fontFamily = FontFamily.Serif
-            )
-            }
+                    Text(
+                        "Pack Your Bags",
+                        fontSize = 30.sp, fontFamily = FontFamily.Serif
+                    )
+                }
             }
 
 
@@ -212,14 +226,14 @@ fun PackingListView(
                         .fillMaxWidth(0.5f),
                     shape = RoundedCornerShape(4.dp)
                 ) {
-                Box(modifier = Modifier
-                    .fillMaxSize(0.1f)
-                    .weight(0.5f)
-                    .padding(1.dp),
-                    contentAlignment = Alignment.Center){
+                    Box(modifier = Modifier
+                        .fillMaxSize(0.1f)
+                        .weight(0.5f)
+                        .padding(1.dp),
+                        contentAlignment = Alignment.Center){
 
-                    Text(text = "Carry Me", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
-                }
+                        Text(text = "Carry Me", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                    }
                 }
                 Surface(
                     color = Color(0xFFDFA878),
@@ -231,14 +245,14 @@ fun PackingListView(
                     shape = RoundedCornerShape(4.dp)
 
                 ) {
-                Box(modifier = Modifier
-                    .fillMaxSize(0.1f)
-                    .weight(0.5f)
-                    .padding(1.dp),
+                    Box(modifier = Modifier
+                        .fillMaxSize(0.1f)
+                        .weight(0.5f)
+                        .padding(1.dp),
 
-                    contentAlignment = Alignment.Center){
-                    Text(text = "Remind Me At", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
-                }
+                        contentAlignment = Alignment.Center){
+                        Text(text = "Remind Me At", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                    }
                 }
             }
             if (data is PackingDataUiState.Success) {
@@ -324,129 +338,170 @@ fun PackingItemCard(
         shape = RoundedCornerShape(5    .dp)
 
     ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .height(50.dp)
-            .padding(1.dp)
-    ) {
         Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .weight(0.5f)
                 .height(50.dp)
-                .wrapContentSize(Alignment.Center),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(1.dp)
         ) {
-            Checkbox(checked = checked, onCheckedChange = {
-                checked = it
-                item.isChecked = it
-                viewModel.updateItem(item)
-
-            })
-            Surface(
-                color = Color(0xFFCDC2AE),
-                shape = RoundedCornerShape(5.dp),
+            Row(
                 modifier = Modifier
-                    .padding(0.dp)
-                    .fillMaxSize(1f),
+                    .weight(0.5f)
+                    .height(50.dp)
+                    .wrapContentSize(Alignment.Center),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Box(contentAlignment = Alignment.Center){
-                    TextField(
-                        value = selectedName,
-                        onValueChange = {newvalue -> selectedName = newvalue
-                        },
-                        keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                val saveName = selectedName
-                                viewModel.saveItem(
-                                    item.id,
-                                    saveName, // Save the updated text here
-                                    item.notificationType,
-                                    item.isChecked,
-                                    item.time,
-                                    item.height,
-                                    item.lat,
-                                    item.lon,
-                                    item
-                                )
-                            }),
+                Checkbox(checked = checked, onCheckedChange = {
+                    checked = it
+                    item.isChecked = it
+                    viewModel.updateItem(item)
 
-                        modifier = Modifier
-                            .fillMaxHeight(1f),
-                        textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
-                        colors = TextFieldDefaults.colors(
-                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        ))
-
-        }
-            }
-        }
-        Row(
-            modifier = Modifier
-                .weight(0.5f)
-                .height(50.dp)
-                .wrapContentSize(Alignment.TopCenter)
-        ) {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = {
-                    expanded = it
-                }
-            ) {
+                })
                 Surface(
-                    color = Color.Transparent,
-                    shape = RoundedCornerShape(20.dp),
+                    color = Color(0xFFCDC2AE),
+                    shape = RoundedCornerShape(5.dp),
                     modifier = Modifier
                         .padding(0.dp)
-                        .fillMaxSize(1f)
+                        .fillMaxSize(1f),
                 ) {
-                TextField(
-                    value = selectedText,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .menuAnchor()
-                        .fillMaxHeight(1f),
-                    textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
-                    colors = TextFieldDefaults.colors(
-                        disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
-                )
-                }
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                ) {
-                    NotificationType.values().forEach { type ->
-                        DropdownMenuItem(
-                            text = { Text(type.value) },
-                            onClick = {
-                                if (type.value != NotificationType.NONE.value) {
-                                    val newItem = PackingItem(
-                                        item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
-                                    )
-                                    selectItem(newItem)
-                                } else {
-                                    val newItem = PackingItem(
-                                        item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
-                                    )
-                                    viewModel.updateItem(newItem)
-                                }
-                                expanded = false
+                    Box(contentAlignment = Alignment.Center){
+                        TextField(
+                            value = selectedName,
+                            onValueChange = {newvalue -> selectedName = newvalue
                             },
-                            contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    val saveName = selectedName
+                                    viewModel.saveItem(
+                                        item.id,
+                                        saveName, // Save the updated text here
+                                        item.notificationType,
+                                        item.isChecked,
+                                        item.time,
+                                        item.height,
+                                        item.lat,
+                                        item.lon,
+                                        item
+                                    )
+                                }),
+
+                            modifier = Modifier
+                                .fillMaxHeight(1f),
+                            textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            ))
+
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .weight(0.5f)
+                    .height(50.dp)
+                    .wrapContentSize(Alignment.TopCenter)
+            ) {
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = {
+                        expanded = it
+                    }
+                ) {
+                    Surface(
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(20.dp),
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .fillMaxSize(1f)
+                    ) {
+                        TextField(
+                            value = selectedText,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxHeight(1f),
+                            textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                            colors = TextFieldDefaults.colors(
+                                disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         )
+                    }
+
+                    ExposedDropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                    ) {
+                        NotificationType.values().forEach { type ->
+                            DropdownMenuItem(
+                                text = { Text(type.value) },
+                                onClick = {
+                                    if (type.value != NotificationType.NONE.value) {
+                                        val newItem = PackingItem(
+                                            item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                        )
+                                        selectItem(newItem)
+                                    } else {
+                                        val newItem = PackingItem(
+                                            item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                        )
+                                        viewModel.updateItem(newItem)
+                                    }
+                                    expanded = false
+                                },
+                                contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+@Composable
+fun HeightInputDialog(
+    onHeightSubmitted: (Float) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var heightText by remember { mutableStateOf(TextFieldValue()) }
+    val context = LocalContext.current
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(text = "Enter Height") },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    val height = heightText.text.toFloatOrNull()
+                    if (height != null) {
+                        onHeightSubmitted(height)
+                        // Save the height in SharedPreferences
+                        HeightPreferences.saveHeight(context, height)}
+                    onDismiss()
+                }
+            ) {
+                Text("Submit")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        },
+        text = {
+            TextField(
+                value = heightText,
+                onValueChange = {
+                    heightText = it
+                },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    )
 }
 
 @Preview
