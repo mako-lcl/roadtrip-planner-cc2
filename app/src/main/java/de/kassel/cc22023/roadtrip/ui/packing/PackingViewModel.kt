@@ -47,8 +47,7 @@ class PackingViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            geofenceManager.deregisterGeofence()
-            geofenceManager.registerGeofence()
+            geofenceManager.deregisterGeofenceAndReregisterFences()
         }
     }
 

@@ -46,7 +46,7 @@ class GeofenceManager(context: Context) {
     fun addGeofence(
         key: Int,
         location: Location,
-        radiusInMeters: Float = 100.0f,
+        radiusInMeters: Float = 20.0f,
         expirationTimeInMillis: Long = 24 * 60 * 60 * 1000,
     ) {
         geofenceList[key] = createGeofence(key, location, radiusInMeters, expirationTimeInMillis)
@@ -62,8 +62,9 @@ class GeofenceManager(context: Context) {
             }
     }
 
-    suspend fun deregisterGeofence() = kotlin.runCatching {
+    suspend fun deregisterGeofenceAndReregisterFences() = kotlin.runCatching {
         client.removeGeofences(geofencingPendingIntent).await()
+        registerGeofence()
     }
 
     private fun createGeofencingRequest(): GeofencingRequest {
