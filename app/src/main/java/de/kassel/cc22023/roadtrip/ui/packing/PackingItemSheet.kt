@@ -318,6 +318,37 @@ fun FloorInputView(
         }
     }
 }
+@Composable
+fun HeightSettings(
+    closeDialog: () -> Unit,
+    viewModel: PackingViewModel = hiltViewModel()
+) {
+    //val location by viewModel.location.collectAsState()
+    var height by remember { mutableStateOf("") }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextField(
+                value = height,
+                onValueChange = { newValue -> height = newValue },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = { Text(text = "Height (in sealevel)") },
+            )
+
+            // Button to submit location
+            Button(onClick = {
+
+                closeDialog()
+
+            }) {
+                Text(text = "Submit Height")
+            }
+        }
+    }
 
 @Composable
 fun LocationInputView(

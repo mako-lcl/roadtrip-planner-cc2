@@ -8,12 +8,10 @@ import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
-import de.kassel.cc22023.roadtrip.ui.map.MapDataUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,8 +45,7 @@ class PackingViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            geofenceManager.deregisterGeofence()
-            geofenceManager.registerGeofence()
+            geofenceManager.deregisterGeofenceAndReregisterFences()
         }
     }
 
@@ -85,7 +82,29 @@ class PackingViewModel @Inject constructor(
         lat = lat1
         lon = lon1
     }
-
+    fun saveItem(
+        id: Int,
+        selectedName: String,
+        notificationType: NotificationType,
+        checked: Boolean,
+        time: Long?,
+        height: Double,
+        lat: Double,
+        lon: Double,
+        item: PackingItem
+    ) {
+        val newItem = PackingItem(
+            id = id,
+            name = selectedName,
+            notificationType = notificationType,
+            isChecked = checked,
+            time = time,
+            height = height,
+            lat = lat,
+            lon = lon
+        )
+        updateItem(newItem)
+    }
     fun getNotificationMessage(sensoralitude: Float, lat1: Float, lon1: Float): String {
         val difference = sensoralitude - height
         return when {
