@@ -40,7 +40,7 @@ enum class NotificationType(val value: String) {
 data class PackingItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
-    val name: String,
+    var name: String,
     var notificationType: NotificationType,
     var isChecked: Boolean,
     var time: Long?,

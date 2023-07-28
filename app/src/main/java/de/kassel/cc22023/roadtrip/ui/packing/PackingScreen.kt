@@ -1,102 +1,46 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-import android.content.Context
-import PackingItemSheet
 import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.material3.SwipeToDismiss
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberDismissState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.mutualmobile.composesensors.rememberPressureSensorState
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.rememberBottomSheetScaffoldState
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberStandardBottomSheetState
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
-import com.mutualmobile.composesensors.rememberPressureSensorState
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.text.style.TextAlign
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -191,30 +135,48 @@ fun PackingListView(
             modifier = Modifier.fillMaxSize()
         )
 
+        Row(
+            horizontalArrangement = Arrangement.End,
+        ) {
+            Button(
+                onClick = {
 
+                },
+            ) {
+                Icon(Icons.Default.Settings, contentDescription = null)
+
+            }
+
+            Button(
+                onClick = {
+                    // Add a new PackingItem to the packingList
+                    val newItem = PackingItem(
+                        id = 0,
+                        name = newItemName,
+                        notificationType = newItemNotificationType,
+                        isChecked = false,
+                        null,
+                        0.0,
+                        0.0,
+                        0.0
+                    )
+                    viewModel.insertIntoList(newItem)
+                    newItemName = ""
+                    newItemNotificationType = NotificationType.NONE
+                },
+                shape = CircleShape,
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+            }
+        }
 
         Column(
             modifier = Modifier
-                .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp)
+                .padding(start = 16.dp, top = 50.dp, end = 16.dp, bottom = 16.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-
-            Row{
-                // Text input field to enter the new item name
-
-            }
-            Button(
-                onClick = {
-                    // Parse the user input to a Double and update the sensoralitude value
-                    //viewModel.setHeightAndLocation(sensoralitude)
-                },
-
-            ) {
-            Text("Set Height")
-        }
-
 
             Surface(
                 color = Color.Transparent,
@@ -238,46 +200,7 @@ fun PackingListView(
             )
             }
             }
-            Row(
-                verticalAlignment = Alignment.CenterVertically, // Center the children vertically
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 4.dp) // Add padding
-                    .height(32.dp) // Set the height of the row
-            ) {
-                // Add the TextField with weight to take the available space
-                TextField(
-                    value = newItemName,
-                    onValueChange = { newItemName = it },
-                    label = { Text("Enter new item name") },
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.weight(0.7f) // Take 70% of the available width
-                )
 
-                // Add the Button with weight to align to the end of the row
-                Button(
-                    onClick = {
-                        // Add a new PackingItem to the packingList
-                        val newItem = PackingItem(
-                            id = 0,
-                            name = newItemName,
-                            notificationType = newItemNotificationType,
-                            isChecked = false,
-                            null,
-                            0.0,
-                            0.0,
-                            0.0
-                        )
-                        viewModel.insertIntoList(newItem)
-                        newItemName = ""
-                        newItemNotificationType = NotificationType.NONE
-                    },
-                    shape = CircleShape,
-                    modifier = Modifier.weight(0.3f) // Take 30% of the available width
-                ) {
-                    Text("Add")
-                }
-            }
 
             Row {
                 Surface(
@@ -326,7 +249,6 @@ fun PackingListView(
                     itemsIndexed(
                         items = reversedList,
                         key = { index, item -> item.hashCode() }) { index, item ->
-                        val currentItem by rememberUpdatedState(newValue = item)
 
                         val delete = SwipeAction(
                             onSwipe = {
@@ -344,7 +266,7 @@ fun PackingListView(
                         )
                         SwipeableActionsBox(
                             modifier = Modifier,
-                            swipeThreshold = 200.dp,
+                            swipeThreshold = 100.dp,
                             endActions = listOf(delete)
                         ) {
                             PackingItemCard(item, ){selectedItem = it}
@@ -370,45 +292,6 @@ fun PackingListView(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SwipeBackground(dismissState: DismissState) {
-    val direction = dismissState.dismissDirection ?: return
-
-    val color by animateColorAsState(
-        when (dismissState.targetValue) {
-            DismissValue.Default -> Color.LightGray
-            DismissValue.DismissedToEnd -> Color(0xFFDFA878)
-            DismissValue.DismissedToStart -> Color(0xFFDFA878)
-        }
-    )
-    val alignment = when (direction) {
-        DismissDirection.StartToEnd -> Alignment.CenterStart
-        DismissDirection.EndToStart -> Alignment.CenterEnd
-    }
-    val icon = when (direction) {
-        DismissDirection.StartToEnd -> Icons.Default.Delete
-        DismissDirection.EndToStart -> Icons.Default.Delete
-    }
-    val scale by animateFloatAsState(
-        if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f
-    )
-
-    Box(
-        Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(horizontal = 20.dp),
-        contentAlignment = alignment
-    ) {
-        Icon(
-            icon,
-            contentDescription = "Localized description",
-            modifier = Modifier.scale(scale)
-        )
-    }
-
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -425,8 +308,11 @@ fun PackingItemCard(
         mutableStateOf(false)
     }
 
-    val selectedText by remember {
+    var selectedText by remember {
         mutableStateOf(item.notificationType.value)
+    }
+    var selectedName by remember {
+        mutableStateOf(item.name)
     }
     Surface(
         color = Color.Transparent,
@@ -465,7 +351,35 @@ fun PackingItemCard(
                     .fillMaxSize(1f),
             ) {
                 Box(contentAlignment = Alignment.Center){
-            Text(item.name, color = Color(0xFFBA704F), textAlign = TextAlign.Center, fontWeight = FontWeight.Medium )
+                    TextField(
+                        value = selectedName,
+                        onValueChange = {newvalue -> selectedName = newvalue
+                        },
+                        keyboardOptions = KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                val saveName = selectedName
+                                viewModel.saveItem(
+                                    item.id,
+                                    saveName, // Save the updated text here
+                                    item.notificationType,
+                                    item.isChecked,
+                                    item.time,
+                                    item.height,
+                                    item.lat,
+                                    item.lon,
+                                    item
+                                )
+                            }),
+
+                        modifier = Modifier
+                            .fillMaxHeight(1f),
+                        textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
+                        colors = TextFieldDefaults.colors(
+                            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ))
+
         }
             }
         }
