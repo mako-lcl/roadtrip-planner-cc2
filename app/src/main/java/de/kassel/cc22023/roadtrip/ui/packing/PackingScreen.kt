@@ -139,6 +139,7 @@ fun PackingListView(
         )
 
         Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
         ) {
             Button(
@@ -467,15 +468,15 @@ fun HeightInputDialog(
     onHeightSubmitted: (Float) -> Unit,
     onDismiss: () -> Unit
 ) {
-    var heightText by remember { mutableStateOf(TextFieldValue()) }
     val context = LocalContext.current
+    var heightText by remember { mutableStateOf(HeightPreferences.getHeight(context).toString()) }
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = "Enter Height") },
         confirmButton = {
             TextButton(
                 onClick = {
-                    val height = heightText.text.toFloatOrNull()
+                    val height = heightText.toFloatOrNull()
                     if (height != null) {
                         onHeightSubmitted(height)
                         // Save the height in SharedPreferences
@@ -493,7 +494,7 @@ fun HeightInputDialog(
         },
         text = {
             TextField(
-                value = heightText,
+                value = heightText.toString(),
                 onValueChange = {
                     heightText = it
                 },
