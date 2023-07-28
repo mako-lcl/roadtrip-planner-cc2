@@ -20,7 +20,7 @@
     <string name="tab_map">Map</string>
     <string name="tab_packing">Packing</string>
     <string name="permissions_title">Permissions required</string>
-    <string name="notification_permission_description">To use the reminder function, the app requires notification permissions</string>
+    <string name="notification_permission_description">To use the reminder function, the app requires notification and background location permissions</string>
     <string name="notification_permission_button_description">Settings</string>
     <string name="notification_channel_name">Packing List Channel</string>
     <string name="channel_description">Packing list notifications!</string>

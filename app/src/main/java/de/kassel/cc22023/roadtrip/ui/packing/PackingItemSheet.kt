@@ -1,23 +1,46 @@
 import android.Manifest
-import android.app.TimePickerDialog
+import android.annotation.SuppressLint
+import androidx.compose.foundation.background
+
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TimePicker
+
+import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,6 +48,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -32,11 +57,13 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import de.kassel.cc22023.roadtrip.alarm.setAlarm
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.planner.DatePickerDialogSample
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.PermissionBox
+import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -44,6 +71,7 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun PermissionBeforeItemSheet(
@@ -92,7 +120,18 @@ fun PackingItemSheet(
             }
 
             "Time" -> {
-                TimeInputView(item, closeDialog)
+                val permissions = listOf(
+                    Manifest.permission.SCHEDULE_EXACT_ALARM,
+                )
+
+                PermissionBox(
+                    permissions = permissions,
+                    requiredPermissions = listOf(permissions.first()),
+                    description = "App needs permission to set alarm",
+                    onGranted = {
+                        TimeInputView(item, closeDialog)
+                    },
+                )
             }
         }
     }
@@ -105,6 +144,8 @@ fun TimeInputView(
     closeDialog: () -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     Text(
         "Add Time Notification",
         fontSize = 30.sp
@@ -117,8 +158,6 @@ fun TimeInputView(
 
     var selectedStartDate by remember { mutableStateOf(startDate) }
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
-    val selectedClock by remember { mutableStateOf(LocalDateTime.now().format(formatter)) }
-    var clock by remember { mutableStateOf(selectedClock.toString()) }
     var showStartDatePicker by remember { mutableStateOf(false) }
 
     Column(
@@ -150,31 +189,29 @@ fun TimeInputView(
             )
         }
 
-        val mContext = LocalContext.current
 
         var time = LocalDateTime.now().toEpochSecond(ZoneOffset.UTC)
         item.time?.let {
             time = it
         }
+        var showTimePicker by remember { mutableStateOf(false) }
 
-        val mCalendar = Calendar.getInstance()
-        var mHour = remember { mCalendar[Calendar.HOUR_OF_DAY] }
-        var mMinute = remember { mCalendar[Calendar.MINUTE] }
-        val defaultDateTime = LocalDateTime.now()
-        val dateTime by remember { mutableStateOf(defaultDateTime) }
+
+
+
+
         var selectedDateSeconds by remember { mutableStateOf(time) }
-
-        val mTimePickerDialog = TimePickerDialog(
-            mContext,
-            { _, hour: Int, minute: Int ->
-                mHour = hour
-                mMinute = minute
-                val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(mHour, mMinute))
-                selectedDateSeconds = newTime.toEpochSecond(ZoneOffset.UTC)
-            }, mHour, mMinute, false
+        val timeState = rememberTimePickerState(
+            initialHour = LocalDateTime.ofEpochSecond(selectedDateSeconds, 0, ZoneOffset.UTC).hour ,
+            initialMinute = LocalDateTime.ofEpochSecond(selectedDateSeconds, 0, ZoneOffset.UTC).minute,
+            is24Hour = true
         )
+        var hour by remember { mutableStateOf(Calendar.HOUR) }
+        var minute by remember { mutableStateOf(Calendar.MINUTE) }
 
-        val formatter = DateTimeFormatter.ofPattern("HH:mm")
+
+
+
 
         Box {
             TextField(
@@ -182,15 +219,37 @@ fun TimeInputView(
                 onValueChange = {},
                 singleLine = true,
                 enabled = false,
-                modifier = Modifier.clickable(onClick = { mTimePickerDialog.show(); clock = dateTime.toString() }),
+                modifier = Modifier.clickable(onClick = { showTimePicker = true }),
                 label = { Text(text = "Time") },
             )
         }
+
+
+        if (showTimePicker) {
+            TimePickerDialog(
+                onCancel = { showTimePicker = false },
+                onConfirm = {
+
+                    hour = timeState.hour
+                    minute = timeState.minute
+                    val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
+                    selectedDateSeconds = newTime.toEpochSecond(ZoneOffset.UTC)
+                    showTimePicker = false
+
+                }
+            ) {
+                TimePicker(state = timeState,
+                )
+            }
+        }
+
         // Display selected date and time
         Button(onClick = {
-            val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(mHour, mMinute))
+            val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
             item.time = newTime.toEpochSecond(ZoneOffset.UTC)
             viewModel.updateItem(item)
+            setAlarm(item, context)
+
             closeDialog()
             // Use the formattedDateTime for further processing or save it as required
         }) {
@@ -212,10 +271,10 @@ fun FloorInputView(
     }
     location?.let {
         // State variables to hold latitude and longitude
-        var latitude by remember { mutableStateOf(if (item.lat == 0f) it.latitude.toString() else item.lat.toString()) }
-        var longitude by remember { mutableStateOf(if (item.lon == 0f) it.longitude.toString() else item.lon.toString()) }
+        var latitude by remember { mutableStateOf(if (item.lat == 0.0) it.latitude.toString() else item.lat.toString()) }
+        var longitude by remember { mutableStateOf(if (item.lon == 0.0) it.longitude.toString() else item.lon.toString()) }
         // State variables to hold latitude and longitude
-        var height by remember { mutableStateOf(if (item.height == 0f) it.altitude.toString() else item.height.toString()) }
+        var height by remember { mutableStateOf(if (item.height == 0.0) it.altitude.toString() else item.height.toString()) }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -251,9 +310,9 @@ fun FloorInputView(
             Button(onClick = {
                 // Process the latitude and longitude values here (e.g., save to database)
                 // For example, you can convert them to Double values like this:
-                val lat = latitude.toFloatOrNull()
-                val lon = longitude.toFloatOrNull()
-                val h = height.toFloatOrNull()
+                val lat = latitude.toDoubleOrNull()
+                val lon = longitude.toDoubleOrNull()
+                val h = height.toDoubleOrNull()
 
                 if (lat != null && lon != null && h != null) {
                     // Do something with the latitude and longitude values, e.g., save to the item
@@ -276,6 +335,37 @@ fun FloorInputView(
         }
     }
 }
+@Composable
+fun HeightSettings(
+    closeDialog: () -> Unit,
+    viewModel: PackingViewModel = hiltViewModel()
+) {
+    //val location by viewModel.location.collectAsState()
+    var height by remember { mutableStateOf("") }
+
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            TextField(
+                value = height,
+                onValueChange = { newValue -> height = newValue },
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = { Text(text = "Height (in sealevel)") },
+            )
+
+            // Button to submit location
+            Button(onClick = {
+
+                closeDialog()
+
+            }) {
+                Text(text = "Submit Height")
+            }
+        }
+    }
 
 @Composable
 fun LocationInputView(
@@ -290,8 +380,8 @@ fun LocationInputView(
     }
     location?.let {
         // State variables to hold latitude and longitude
-        var latitude by remember { mutableStateOf(if (item.lat == 0f) it.latitude.toString() else item.lat.toString()) }
-        var longitude by remember { mutableStateOf(if (item.lon == 0f) it.longitude.toString() else item.lon.toString()) }
+        var latitude by remember { mutableStateOf(if (item.lat == 0.0) it.latitude.toString() else item.lat.toString()) }
+        var longitude by remember { mutableStateOf(if (item.lon == 0.0) it.longitude.toString() else item.lon.toString()) }
 
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -323,8 +413,8 @@ fun LocationInputView(
 
                 if (lat != null && lon != null) {
                     // Do something with the latitude and longitude values, e.g., save to the item
-                    item.lat = lat.toFloat()
-                    item.lon = lon.toFloat()
+                    item.lat = lat.toDouble()
+                    item.lon = lon.toDouble()
 
                     // Update the item using the viewModel
                     viewModel.updateItem(item)
@@ -378,4 +468,61 @@ fun LocationSelector(
         CircularProgressIndicator()
     }
 }
+@Composable
+fun TimePickerDialog(
+    title: String = "Select Time",
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
+    toggle: @Composable () -> Unit = {},
+    content: @Composable () -> Unit,
+    ) {
+    Dialog(
+        onDismissRequest = onCancel,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
+        ),
+    ) {
+        Surface(
+            shape = MaterialTheme.shapes.extraLarge,
+            tonalElevation = 6.dp,
+            modifier = Modifier
+                .width(IntrinsicSize.Min)
+                .height(IntrinsicSize.Min)
+                .background(
+                    shape = MaterialTheme.shapes.extraLarge,
+                    color = MaterialTheme.colorScheme.surface
+                ),
+        ) {
+            toggle()
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 20.dp),
+                    text = title,
+                    style = MaterialTheme.typography.labelMedium
+                )
+                content()
+                Row(
+                    modifier = Modifier
+                        .height(40.dp)
+                        .fillMaxWidth()
+                ) {
+                    Spacer(modifier = Modifier.weight(1f))
+                    TextButton(
+                        onClick = onCancel
+                    ) { Text("Cancel") }
+                    TextButton(
+                        onClick = onConfirm
+                    ) { Text("OK") }
+                }
+            }
+        }
+    }
+}
+
+
 

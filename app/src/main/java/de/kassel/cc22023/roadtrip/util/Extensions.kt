@@ -56,11 +56,6 @@ suspend fun <T> Deferred<Response<T>>.launch(
 
 }
 
-fun String.cleanJsonString(): String {
-    // Replace newline characters, double quotes, and consecutive whitespaces with a single space
-    return this.replace(Regex("\\\\n|\\\\(?=\")"), " ")
-}
-
 fun List<RoadtripActivity>.makeActivityList() : String {
     return this.map{ it.name }.joinToString("\n") {
         "• $it"

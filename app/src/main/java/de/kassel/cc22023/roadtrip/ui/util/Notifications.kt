@@ -47,7 +47,8 @@ fun PermissionsRejectedView() {
                 )
                 Text(
                     modifier = Modifier.padding(4.dp),
-                    text = stringResource(R.string.notification_permission_description),
+                    text = stringResource(R.string.notification_permission_description)
+                    ,
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Justify
                 )

@@ -23,6 +23,7 @@ plugins {
     alias(libs.plugins.kotlin.kapt)
     alias(libs.plugins.hilt.gradle)
     alias(libs.plugins.ksp)
+
 }
 
 android {
@@ -31,7 +32,7 @@ android {
 
     defaultConfig {
         applicationId = "de.kassel.cc22023.roadtrip"
-        minSdk = 26
+        minSdk = 33
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -102,7 +103,8 @@ dependencies {
 
     // Optionally, you can include the widgets library for ScaleBar, etc.
     implementation("com.google.maps.android:maps-compose-widgets:2.11.2")
-
+    //Swipe
+    implementation("me.saket.swipe:swipe:1.1.1")
 
     implementation("androidx.compose.material3:material3:1.1.1")
     implementation("androidx.compose.material3:material3-window-size-class:1.1.1")

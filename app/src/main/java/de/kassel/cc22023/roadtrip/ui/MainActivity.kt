@@ -16,6 +16,8 @@
 
 package de.kassel.cc22023.roadtrip.ui
 
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -23,11 +25,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofenceStatusCodes
+import com.google.android.gms.location.GeofencingEvent
 import dagger.hilt.android.AndroidEntryPoint
+import de.kassel.cc22023.roadtrip.geofence.CUSTOM_INTENT_GEOFENCE
+import de.kassel.cc22023.roadtrip.geofence.GeofenceBroadcastReceiver
 import de.kassel.cc22023.roadtrip.ui.theme.MyApplicationTheme
+import de.kassel.cc22023.roadtrip.util.sendNotification
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val geofenceReceiver: GeofenceBroadcastReceiver = GeofenceBroadcastReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -40,5 +51,13 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+        val intentFilter = IntentFilter(CUSTOM_INTENT_GEOFENCE)
+        this.registerReceiver(geofenceReceiver, intentFilter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        this.unregisterReceiver(geofenceReceiver)
     }
 }

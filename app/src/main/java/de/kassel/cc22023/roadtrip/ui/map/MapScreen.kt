@@ -92,8 +92,10 @@ fun MapLoadingScreen(
                     val locations = (data as MapDataUiState.Success).data.locations.toImmutableList()
                     locations.forEach {loc ->
                         val activities = loc.activities.makeActivityList()
+                        val markerState = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude))
+                        markerState.position = LatLng(loc.latitude, loc.longitude)
                         MarkerInfoWindow(
-                            state = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude)),
+                            state = markerState,
                             title = loc.name,
                             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
                         ) {
