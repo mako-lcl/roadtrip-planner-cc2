@@ -1,11 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import PermissionBeforeItemSheet
+import PermissionBeforeItemDialog
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -127,7 +126,7 @@ fun PackingListView(
                     .wrapContentHeight(),
                 shape = MaterialTheme.shapes.large
             ) {
-                PermissionBeforeItemSheet(item = it, closeDialog = {
+                PermissionBeforeItemDialog(item = it, closeDialog = {
                     selectedItem = null
                 })
             }

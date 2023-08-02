@@ -60,7 +60,7 @@ class DatabaseModule {
         return Room.databaseBuilder(
             appContext,
             AppDatabase::class.java,
-            "WeatherData"
+            "RoadtripPlannerCC2"
         ).build()
     }
 }

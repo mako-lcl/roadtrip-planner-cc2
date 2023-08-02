@@ -56,7 +56,7 @@ fun MapScreen() {
         requiredPermissions = listOf(permissions.first()),
         description = "App needs location data",
         onGranted = {
-            MapLoadingScreen(usePreciseLocation = it.contains(Manifest.permission.ACCESS_FINE_LOCATION))
+            MapLoadingScreen()
         },
     )
 }
@@ -66,8 +66,6 @@ fun MapScreen() {
 )
 @Composable
 fun MapLoadingScreen(
-    usePreciseLocation: Boolean,
-
     viewModel: MapViewModel = hiltViewModel()
 ) {
     val location by viewModel.location.collectAsState()
@@ -78,60 +76,7 @@ fun MapLoadingScreen(
     if (location != null) {
         when (data) {
             is MapDataUiState.Success -> {
-                val currentLatLng = LatLng(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
-
-                val cameraPositionState = rememberCameraPositionState {
-                    position = CameraPosition.fromLatLngZoom(currentLatLng, 10f)
-                }
-
-                GoogleMap(
-                    modifier = Modifier.fillMaxSize(),
-                    cameraPositionState = cameraPositionState
-                ) {
-                    Timber.d("locations: ${(data as MapDataUiState.Success).data.locations.count()}")
-                    val locations = (data as MapDataUiState.Success).data.locations.toImmutableList()
-                    locations.forEach {loc ->
-                        val activities = loc.activities.makeActivityList()
-                        val markerState = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude))
-                        markerState.position = LatLng(loc.latitude, loc.longitude)
-                        MarkerInfoWindow(
-                            state = markerState,
-                            title = loc.name,
-                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
-                        ) {
-                            Box( contentAlignment = TopEnd,
-                            modifier = Modifier.wrapContentSize(TopEnd)) {
-
-                        Card(
-                                modifier = Modifier
-                                    .background(Color.Transparent)
-                                    .width(250.dp),
-                                shape = RoundedCornerShape(topStart = 25.dp, topEnd = 25.dp, bottomStart = 0.dp, bottomEnd = 25.dp)
-                            ) {
-                                Column(
-                                    horizontalAlignment = CenterHorizontally,
-                                    modifier = Modifier.padding(0.dp)
-                                        .background(Brush.linearGradient(listOf( Color(0xFFF4E0B9),Color(0xFFDFA878)))),
-                                    verticalArrangement = Arrangement.spacedBy(16.dp),
-
-                                ) {
-                                    Text(loc.name, fontSize = 20.sp, color = Color(0xFFBA704F), fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
-                                    Text("Activities:\n$activities", color = Color.Black, fontWeight = FontWeight.Normal)
-                                }
-                            }
-                            }
-                        }
-                    }
-
-                    val markerCoords = (data as MapDataUiState.Success).data.locations.map {
-                        LatLng(it.latitude, it.longitude)
-                    }
-
-                    Polyline(
-                        points = markerCoords,
-                        color = Color.Magenta
-                    )
-                }
+                TripMapView()
             }
 
             MapDataUiState.Loading -> {
