@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
 import kotlinx.coroutines.Dispatchers
@@ -23,13 +24,11 @@ import javax.inject.Inject
 class PackingViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository,
     private val sensorRepository: SensorRepository,
-    private val geofenceManager: GeofenceManager
+    private val geofenceManager: GeofenceManager,
+    private val preferences: PreferenceStore
 ) : ViewModel() {
+    val height = preferences.height
     val location: StateFlow<Location?> = sensorRepository.locationFlow
-
-    private var height = 0.0f// Initialize the reference value to 0
-    private var lat = 0.0f// Initialize the reference value to 0
-    private var lon = 0.0f// Initialize the reference value to 0
 
     private fun refreshGeofences(items: List<PackingItem>) {
         if (items.isEmpty()) {
@@ -83,11 +82,6 @@ class PackingViewModel @Inject constructor(
         }
     }
 
-    fun setHeightAndLocation(value: Float, lat1: Float, lon1: Float) {
-        height = value
-        lat = lat1
-        lon = lon1
-    }
     fun saveItem(
         id: Int,
         selectedName: String,
@@ -97,7 +91,6 @@ class PackingViewModel @Inject constructor(
         height: Double,
         lat: Double,
         lon: Double,
-        item: PackingItem
     ) {
         val newItem = PackingItem(
             id = id,
@@ -110,14 +103,6 @@ class PackingViewModel @Inject constructor(
             lon = lon
         )
         updateItem(newItem)
-    }
-    fun getNotificationMessage(sensoralitude: Float, lat1: Float, lon1: Float): String {
-        val difference = sensoralitude - height
-        return when {
-            difference > 5.0 && lat == lat1 && lon == lon1 -> "Up and in Location" // Notify "up" if you are 5 meters above the set value
-            difference < -5.0 && lat == lat1 && lon == lon1 -> "Down and in Location" // Notify "down" if you are under the set value
-            else -> "" // Empty message if you are within the 5-meter range
-        }
     }
 
     fun onSwipeToDelete(selectedItem: PackingItem) {
@@ -168,6 +153,12 @@ class PackingViewModel @Inject constructor(
 
     fun onPermissionDenied() {
         sensorRepository.permissionDenied()
+    }
+
+    fun saveHeight(height: Double) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferences.setHeight(height)
+        }
     }
 }
 

@@ -1,21 +1,13 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
-import HeightPreferences
 import PermissionBeforeItemSheet
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,10 +40,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -68,7 +58,6 @@ import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
-import timber.log.Timber
 import androidx.compose.material3.Surface
 import androidx.compose.ui.text.input.ImeAction
 
@@ -104,13 +93,11 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PackingListScaffold() {
     PackingListView()
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
@@ -120,19 +107,14 @@ fun PackingListView(
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
     val image: Painter = painterResource(R.drawable.packbg_dark)
 
-    var expanded by remember {
-        mutableStateOf(false)
-    }
     var sensoralitude by remember {mutableStateOf ( SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
         Sensor.TYPE_PRESSURE.toFloat()
     ))}
 
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
-    val notificationMessage by remember { mutableStateOf("") }
     sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
     var isDialogVisible by remember { mutableStateOf(false) }
-    var heightValue by remember { mutableStateOf(0f) }
     var selectedItem: PackingItem? by remember {
         mutableStateOf(null)
     }
@@ -210,8 +192,7 @@ fun PackingListView(
         }
         if (isDialogVisible) {
             HeightInputDialog(
-                onHeightSubmitted = { height ->
-                    heightValue = height
+                onHeightSubmitted = {
                     isDialogVisible = false
                 },
                 onDismiss = {
@@ -418,8 +399,7 @@ fun PackingItemCard(
                                         item.time,
                                         item.height,
                                         item.lat,
-                                        item.lon,
-                                        item
+                                        item.lon
                                     )
                                 }),
 
@@ -498,47 +478,6 @@ fun PackingItemCard(
             }
         }
     }
-}
-@Composable
-fun HeightInputDialog(
-    onHeightSubmitted: (Float) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val context = LocalContext.current
-    var heightText by remember { mutableStateOf(HeightPreferences.getHeight(context).toString()) }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = "Enter Height") },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val height = heightText.toFloatOrNull()
-                    if (height != null) {
-                        onHeightSubmitted(height)
-                        // Save the height in SharedPreferences
-                        HeightPreferences.saveHeight(context, height)}
-                    onDismiss()
-                }
-            ) {
-                Text("Submit")
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        },
-        text = {
-            TextField(
-                value = heightText.toString(),
-                onValueChange = {
-                    heightText = it
-                },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-    )
 }
 
 @Preview
