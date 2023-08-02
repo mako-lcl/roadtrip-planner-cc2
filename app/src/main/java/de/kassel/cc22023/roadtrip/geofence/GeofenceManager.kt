@@ -9,6 +9,7 @@ import android.location.Location
 import android.os.Build
 import android.util.Log
 import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_DWELL
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER
 import com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT
 import com.google.android.gms.location.GeofencingRequest
@@ -24,20 +25,9 @@ class GeofenceManager(context: Context) {
     private val client = LocationServices.getGeofencingClient(context)
     private val geofenceList = mutableMapOf<Int, Geofence>()
 
-/*    private val geofencingPendingIntent: PendingIntent by lazy {
+    private val geofencingPendingIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
-        PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_MUTABLE)
-    }*/
-
-    private val geofencingPendingIntent by lazy {
-        PendingIntent.getBroadcast(
-            context,
-            CUSTOM_REQUEST_CODE_GEOFENCE,
-            Intent(CUSTOM_INTENT_GEOFENCE),
-            PendingIntent.FLAG_MUTABLE
-        )
+        PendingIntent.getBroadcast(context, CUSTOM_REQUEST_CODE_GEOFENCE, intent, PendingIntent.FLAG_MUTABLE)
     }
 
     fun clearGeofences() =
