@@ -1,14 +1,10 @@
 package de.kassel.cc22023.roadtrip.ui.planner
 
-import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
-import de.kassel.cc22023.roadtrip.data.RoadtripRepository
-import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
-import de.kassel.cc22023.roadtrip.data.local.database.TransportationType
+import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
+import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

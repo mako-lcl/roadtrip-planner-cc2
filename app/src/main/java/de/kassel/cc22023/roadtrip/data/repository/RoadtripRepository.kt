@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package de.kassel.cc22023.roadtrip.data
+package de.kassel.cc22023.roadtrip.data.repository
 
 import android.location.Location
-import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
-import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
-import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
-import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivityDao
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
-import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItemDao
+import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivityDao
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripData
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocation
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationDao
+import de.kassel.cc22023.roadtrip.data.repository.database.STATIC_UID
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
@@ -62,11 +62,8 @@ interface RoadtripRepository {
     )
 
     fun getRoadtrip() : CombinedRoadtrip
-
     fun deleteItem(card: PackingItem)
-
     fun getPackingList() : List<PackingItem>
-
     fun getLocation() : Location?
 }
 

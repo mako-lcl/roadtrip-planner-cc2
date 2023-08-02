@@ -1,4 +1,4 @@
-package de.kassel.cc22023.roadtrip.data.di
+package de.kassel.cc22023.roadtrip.data.dependencies
 
 import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient

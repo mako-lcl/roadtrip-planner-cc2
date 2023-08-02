@@ -1,4 +1,4 @@
-package de.kassel.cc22023.roadtrip.data.local.database
+package de.kassel.cc22023.roadtrip.data.repository.database
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
-import java.util.Date
 
 enum class NotificationType(val value: String) {
     NONE("None"),

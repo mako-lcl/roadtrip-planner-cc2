@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import de.kassel.cc22023.roadtrip.data.local.database.AppDatabase
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
+import de.kassel.cc22023.roadtrip.data.repository.database.AppDatabase
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
 import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 import org.hamcrest.CoreMatchers.equalTo
