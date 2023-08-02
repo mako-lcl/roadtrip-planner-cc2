@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.kassel.cc22023.roadtrip.data.local.di
+package de.kassel.cc22023.roadtrip.data.dependencies
 
 import android.content.Context
 import androidx.room.Room
@@ -23,11 +23,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import de.kassel.cc22023.roadtrip.data.local.database.AppDatabase
-import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivityDao
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripDataDao
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocationDao
+import de.kassel.cc22023.roadtrip.data.repository.database.AppDatabase
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItemDao
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivityDao
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationDao
 import javax.inject.Singleton
 
 

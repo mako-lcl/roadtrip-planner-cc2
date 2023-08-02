@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package de.kassel.cc22023.roadtrip.data.local.database
+package de.kassel.cc22023.roadtrip.data.repository.database
 
 import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.PrimaryKey
 import androidx.room.Query
-import androidx.room.Relation
-import androidx.room.Transaction
 import com.squareup.moshi.Json
-import com.squareup.moshi.JsonClass
 import kotlinx.coroutines.flow.Flow
 
 const val STATIC_UID = 0

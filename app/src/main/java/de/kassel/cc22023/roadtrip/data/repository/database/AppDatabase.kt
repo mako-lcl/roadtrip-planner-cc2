@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.kassel.cc22023.roadtrip.data.local.database
+package de.kassel.cc22023.roadtrip.data.repository.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

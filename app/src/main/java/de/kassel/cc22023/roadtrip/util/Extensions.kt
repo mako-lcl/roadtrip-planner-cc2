@@ -2,7 +2,7 @@ package de.kassel.cc22023.roadtrip.util
 
 import androidx.compose.ui.graphics.Color
 import de.kassel.cc22023.roadtrip.R
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

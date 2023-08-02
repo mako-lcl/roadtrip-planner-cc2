@@ -5,14 +5,12 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
-import de.kassel.cc22023.roadtrip.data.local.database.CombinedLocation
-import de.kassel.cc22023.roadtrip.data.local.database.CombinedRoadtrip
-import de.kassel.cc22023.roadtrip.data.local.database.NotificationType
-import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripActivity
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripData
-import de.kassel.cc22023.roadtrip.data.local.database.RoadtripLocation
-import de.kassel.cc22023.roadtrip.data.local.database.STATIC_UID
+import de.kassel.cc22023.roadtrip.data.repository.database.CombinedLocation
+import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripData
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocation
 import timber.log.Timber
 import java.io.IOException
 

@@ -5,13 +5,11 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.MainActivity
 import de.kassel.cc22023.roadtrip.util.sendNotification
 import timber.log.Timber
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneOffset
 
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
