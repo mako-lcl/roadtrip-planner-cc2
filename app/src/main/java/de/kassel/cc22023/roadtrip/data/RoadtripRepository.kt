@@ -16,7 +16,6 @@
 
 package de.kassel.cc22023.roadtrip.data
 
-import android.content.Context
 import android.location.Location
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.local.database.PackingItemDao
@@ -137,7 +136,7 @@ class DefaultRoadtripRepository @Inject constructor(
         val contentType = "application/json"
         val prompt = createRoadtripPrompt(startLocation, endLocation, startDate, endDate, transportation)
         val request = RoadtripRequest(messages = listOf(RoadtripRequestMessage(content = prompt)))
-        openAiApi.getRoadtrip( contentType, request)
+        openAiApi.getRoadtripAsync( contentType, request)
             .launch(
                 onSuccess = {resp ->
                                 val content = resp.choices.firstOrNull()?.message?.content
