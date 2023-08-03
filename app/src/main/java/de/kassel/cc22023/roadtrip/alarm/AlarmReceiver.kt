@@ -11,6 +11,8 @@ import de.kassel.cc22023.roadtrip.util.sendNotification
 import timber.log.Timber
 import java.time.Instant
 
+const val ALARM_INTENT = 393482
+
 class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val itemName = intent.extras?.getString("name") ?: return
@@ -26,10 +28,10 @@ fun setAlarm(item: PackingItem, context: Context) {
     // adding intent and pending intent to go to AlarmReceiver Class in future
     val intent = Intent(context, AlarmReceiver::class.java)
     intent.putExtra("name", item.name)
-    val pendingIntent = PendingIntent.getBroadcast(context, item.id, intent, PendingIntent.FLAG_IMMUTABLE)
+    val pendingIntent = PendingIntent.getBroadcast(context, ALARM_INTENT, intent, PendingIntent.FLAG_IMMUTABLE)
     // when using setAlarmClock() it displays a notification until alarm rings and when pressed it takes us to mainActivity
     val mainActivityIntent = Intent(context, MainActivity::class.java)
-    val basicPendingIntent = PendingIntent.getActivity(context, item.id, mainActivityIntent, PendingIntent.FLAG_IMMUTABLE)
+    val basicPendingIntent = PendingIntent.getActivity(context, ALARM_INTENT, mainActivityIntent, PendingIntent.FLAG_IMMUTABLE)
     val date = Instant.ofEpochSecond(time)
     Timber.d("epoch millis: ${date.toEpochMilli()}")
     // creating clockInfo instance

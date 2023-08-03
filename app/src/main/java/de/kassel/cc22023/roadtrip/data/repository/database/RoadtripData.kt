@@ -17,69 +17,64 @@
 package de.kassel.cc22023.roadtrip.data.repository.database
 
 import androidx.room.Dao
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Relation
+import androidx.room.Transaction
 import com.squareup.moshi.Json
 import kotlinx.coroutines.flow.Flow
 
-const val STATIC_UID = 0
 enum class TransportationType(val value: String) {
     CAR("by car"),
     BIKE("by bike"),
     BICYCLE("by bicycle"),
     HIKING("on foot")
 }
+
 @Entity
 data class RoadtripData(
     @PrimaryKey
-    val uid: Int = STATIC_UID,
+    val id: Long = 0,
     @Json(name = "start_date")
     val startDate: String?,
     @Json(name = "end_date")
     val endDate: String?,
     val startLocation: String?,
     val endLocation: String?,
-) {
-    companion object {
-        val exampleData = RoadtripData(
-            STATIC_UID,
-            "today",
-            "tomorrow",
-            "Kassel",
-            "Not Kassel",
-        )
-    }
-}
-
-data class CombinedRoadtrip(
-    val startDate: String,
-    val endDate: String,
-    val startLocation: String,
-    val endLocation: String,
-    val packingList: List<String>,
-    val locations: List<CombinedLocation>
 )
 
-data class CombinedLocation(
-    val latitude: Double,
-    val longitude: Double,
-    val name: String,
-    val activities: List<RoadtripActivity>
+data class RoadtripAndLocationsAndList(
+    @Embedded val trip: RoadtripData,
+    @Relation(
+        entity = RoadtripLocation::class,
+        parentColumn = "id",
+        entityColumn = "tripId"
+    )
+    val locations: List<RoadtripLocationAndActivity>,
+    @Relation(
+        entity = PackingItem::class,
+        parentColumn = "id",
+        entityColumn = "tripId"
+    )
+    val packingItems: List<PackingItem>
 )
 
 @Dao
 interface RoadtripDataDao {
-    @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
-    fun getRoadtripData(): RoadtripData
+    @Transaction
+    @Query("SELECT * FROM RoadtripData WHERE roadtripdata.id == 0")
+    fun getRoadtripAndLocations(): RoadtripAndLocationsAndList
 
-    @Query("SELECT * FROM roadtripdata WHERE roadtripdata.uid == $STATIC_UID")
-    fun getRoadtripDataAsFlow(): Flow<RoadtripData>
+    @Transaction
+    @Query("SELECT * FROM RoadtripData WHERE roadtripdata.id == 0")
+    fun getRoadtripAndLocationsAsFlow(): Flow<RoadtripAndLocationsAndList>
 
     @Insert
-    fun insertRoadtripData(item: RoadtripData)
+    fun insertRoadtripData(item: RoadtripData) : Long
 
-    @Query("DELETE FROM roadtripdata WHERE roadtripdata.uid = $STATIC_UID")
+    @Query("DELETE FROM roadtripdata WHERE roadtripdata.id = 0")
     suspend fun deleteRoadtrip()
 }

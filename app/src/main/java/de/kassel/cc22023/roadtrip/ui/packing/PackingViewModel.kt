@@ -7,6 +7,7 @@ import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
 import kotlinx.coroutines.Dispatchers
@@ -53,7 +54,7 @@ class PackingViewModel @Inject constructor(
         }
     }
 
-    private fun addGeofence(key: Int, location: Location) {
+    private fun addGeofence(key: Long, location: Location) {
         geofenceManager.addGeofence(key, location)
     }
 
@@ -71,7 +72,7 @@ class PackingViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 data.collect {data ->
                     if (data is PackingDataUiState.Success) {
-                        val items = data.data.filter {
+                        val items = data.data.packingItems.filter {
                             //only geofence FLOOR or LOCATION items which are not CHECKED
                             it.notificationType == NotificationType.FLOOR || it.notificationType == NotificationType.LOCATION && !it.isChecked
                         }
@@ -83,7 +84,7 @@ class PackingViewModel @Inject constructor(
     }
 
     fun saveItem(
-        id: Int,
+        id: Long,
         selectedName: String,
         notificationType: NotificationType,
         checked: Boolean,
@@ -91,9 +92,11 @@ class PackingViewModel @Inject constructor(
         height: Double,
         lat: Double,
         lon: Double,
+        tripId: Long
     ) {
         val newItem = PackingItem(
             id = id,
+            tripId = tripId,
             name = selectedName,
             notificationType = notificationType,
             isChecked = checked,
@@ -119,10 +122,10 @@ class PackingViewModel @Inject constructor(
 
     val data: StateFlow<PackingDataUiState> =
         roadtripRepository
-            .packingList
+            .roadtrip
             .map {
                 if (it == null) {
-                    PackingDataUiState.Loading
+                    PackingDataUiState.NoList
                 } else {
                     PackingDataUiState.Success(it)
                 }
@@ -164,5 +167,8 @@ class PackingViewModel @Inject constructor(
 
 sealed interface PackingDataUiState {
     object Loading : PackingDataUiState
-    data class Success(val data: List<PackingItem>) : PackingDataUiState
+
+    object NoList : PackingDataUiState
+
+    data class Success(val data: RoadtripAndLocationsAndList) : PackingDataUiState
 }

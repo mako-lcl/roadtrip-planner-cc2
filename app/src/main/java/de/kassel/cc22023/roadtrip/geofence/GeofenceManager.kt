@@ -23,7 +23,7 @@ const val CUSTOM_INTENT_GEOFENCE = "CUSTOM_INTENT_GEOFENCE"
 class GeofenceManager(context: Context) {
     private val TAG = "GeofenceManager"
     private val client = LocationServices.getGeofencingClient(context)
-    private val geofenceList = mutableMapOf<Int, Geofence>()
+    private val geofenceList = mutableMapOf<Long, Geofence>()
 
     private val geofencingPendingIntent: PendingIntent by lazy {
         val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
@@ -34,7 +34,7 @@ class GeofenceManager(context: Context) {
         geofenceList.clear()
 
     fun addGeofence(
-        key: Int,
+        key: Long,
         location: Location,
         radiusInMeters: Float = 100.0f,
         expirationTimeInMillis: Long = 24 * 60 * 60 * 1000,
@@ -69,7 +69,7 @@ class GeofenceManager(context: Context) {
     }
 
     private fun createGeofence(
-        key: Int,
+        key: Long,
         location: Location,
         radiusInMeters: Float,
         expirationTimeInMillis: Long,

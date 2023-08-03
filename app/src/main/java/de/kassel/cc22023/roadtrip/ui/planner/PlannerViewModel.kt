@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
-import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,12 +17,6 @@ class PlannerViewModel @Inject constructor(
 ) : ViewModel() {
     private val _trip = MutableStateFlow<PlannerDataUiState?>(PlannerDataUiState.Idle)
     val trip: StateFlow<PlannerDataUiState?> = _trip
-
-    fun getRoadtrip() {
-        viewModelScope.launch(Dispatchers.IO) {
-            //_trip.value = roadtripRepository.getRoadtrip()
-        }
-    }
 
     fun resetToIdle() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -52,13 +46,13 @@ class PlannerViewModel @Inject constructor(
         }
     }
 
-    fun insertRoadtrip(combinedRoadtrip: CombinedRoadtrip) {
+    fun insertRoadtrip(trip: RoadtripAndLocationsAndList) {
         viewModelScope.launch(Dispatchers.IO) {
-            roadtripRepository.insertNewRoadtrip(combinedRoadtrip)
+            roadtripRepository.insertNewRoadtrip(trip)
         }
     }
 
-    fun insertNewRoadtrip(trip: CombinedRoadtrip) {
+    fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) {
         viewModelScope.launch(Dispatchers.IO) {
             _trip.value = PlannerDataUiState.Success(trip)
             roadtripRepository.insertNewRoadtrip(trip)
@@ -69,7 +63,7 @@ class PlannerViewModel @Inject constructor(
 sealed interface PlannerDataUiState {
     object Idle : PlannerDataUiState
     object Loading : PlannerDataUiState
-    data class Success(val data: CombinedRoadtrip) : PlannerDataUiState
+    data class Success(val data: RoadtripAndLocationsAndList) : PlannerDataUiState
 
     object Error : PlannerDataUiState
 }

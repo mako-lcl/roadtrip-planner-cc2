@@ -5,12 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
-import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
-import de.kassel.cc22023.roadtrip.util.combineRoadtrip
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -21,25 +20,21 @@ class MapViewModel @Inject constructor(
 ) : ViewModel() {
     val location: StateFlow<Location?> = sensorRepository.locationFlow
 
-    val data: StateFlow<MapDataUiState> = combine(
-        roadtripRepository.roadtrip,
-        roadtripRepository.locations,
-        roadtripRepository.activities,
-        roadtripRepository.packingList
-    ) { trip, locations, activities, packingList ->
-        if (trip != null && locations != null && activities != null && packingList != null) {
-            MapDataUiState.Success(
-                combineRoadtrip(trip, locations, activities, packingList)
+    val data: StateFlow<MapDataUiState> =
+        roadtripRepository
+            .roadtrip
+            .map {
+                if (it == null) {
+                    MapDataUiState.NoTrip
+                } else {
+                    MapDataUiState.Success(it)
+                }
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5_000),
+                initialValue = MapDataUiState.Loading
             )
-        } else {
-            MapDataUiState.NoTrip
-        }
-    }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = MapDataUiState.Loading
-        )
 
     fun locationPermissionGranted() {
         sensorRepository.permissionsGranted()
@@ -48,7 +43,7 @@ class MapViewModel @Inject constructor(
 
 sealed interface MapDataUiState {
     object Loading : MapDataUiState
-    data class Success(val data: CombinedRoadtrip) : MapDataUiState
+    data class Success(val data: RoadtripAndLocationsAndList) : MapDataUiState
 
     object NoTrip : MapDataUiState
 }
