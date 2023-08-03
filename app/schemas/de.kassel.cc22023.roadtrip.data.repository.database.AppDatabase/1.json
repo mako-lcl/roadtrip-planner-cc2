@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "b8a0ab648fe9551063e3cc7120576ed1",
+    "identityHash": "675c5a5c5b429c8439acc4623528a773",
     "entities": [
       {
         "tableName": "RoadtripData",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`uid` INTEGER NOT NULL, `startDate` TEXT, `endDate` TEXT, `startLocation` TEXT, `endLocation` TEXT, PRIMARY KEY(`uid`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `startDate` TEXT, `endDate` TEXT, `startLocation` TEXT, `endLocation` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
-            "fieldPath": "uid",
-            "columnName": "uid",
+            "fieldPath": "id",
+            "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -42,7 +42,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "uid"
+            "id"
           ]
         },
         "indices": [],
@@ -50,11 +50,17 @@
       },
       {
         "tableName": "RoadtripLocation",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `lat` REAL, `lon` REAL, `name` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tripId` INTEGER NOT NULL, `lat` REAL, `lon` REAL, `name` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tripId",
+            "columnName": "tripId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -78,7 +84,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -88,7 +94,7 @@
       },
       {
         "tableName": "RoadtripActivity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `locId` INTEGER NOT NULL, `name` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `locationId` INTEGER NOT NULL, `name` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -97,8 +103,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "locId",
-            "columnName": "locId",
+            "fieldPath": "locationId",
+            "columnName": "locationId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -110,7 +116,7 @@
           }
         ],
         "primaryKey": {
-          "autoGenerate": false,
+          "autoGenerate": true,
           "columnNames": [
             "id"
           ]
@@ -120,11 +126,17 @@
       },
       {
         "tableName": "PackingItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL, `time` INTEGER, `height` REAL NOT NULL, `lat` REAL NOT NULL, `lon` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tripId` INTEGER NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL, `time` INTEGER, `height` REAL NOT NULL, `lat` REAL NOT NULL, `lon` REAL NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
             "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tripId",
+            "columnName": "tripId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -184,7 +196,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b8a0ab648fe9551063e3cc7120576ed1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '675c5a5c5b429c8439acc4623528a773')"
     ]
   }
 }

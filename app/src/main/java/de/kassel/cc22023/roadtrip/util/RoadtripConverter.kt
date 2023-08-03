@@ -5,12 +5,13 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
-import de.kassel.cc22023.roadtrip.data.repository.database.CombinedLocation
-import de.kassel.cc22023.roadtrip.data.repository.database.CombinedRoadtrip
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripData
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocation
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationAndActivity
 import timber.log.Timber
 import java.io.IOException
 
@@ -34,33 +35,24 @@ data class Loc(
     val activities: List<String>
 )
 
-fun combineRoadtrip(data: RoadtripData, locations: List<RoadtripLocation>, activities: List<RoadtripActivity>, packingList: List<PackingItem>) : CombinedRoadtrip {
-    val combinedLocations = locations.map {
-        CombinedLocation(
-            it.lat ?: 0.0, it.lon ?: 0.0, it.name ?: "",
-            activities.filter {activity ->
-                it.id == activity.locId
-            }
-        )
-    }
-
-    val combinedRoadtrip = CombinedRoadtrip(data.startDate ?: "", data.endDate ?: "", "", "", packingList.map { it.name }, combinedLocations)
-
-    return combinedRoadtrip
-}
-
-fun convertRoadtripFromTestTrip(trip: TestTrip) : CombinedRoadtrip {
+fun convertRoadtripFromTestTrip(trip: TestTrip) : RoadtripAndLocationsAndList {
     val locations = trip.locs.map {
         val activities = it.activities.map {
             RoadtripActivity(0, 0, it)
         }
 
-        CombinedLocation(it.latitude, it.longitude, it.name, activities)
+        val location = RoadtripLocation(0, 0, it.latitude, it.longitude, it.name)
+        RoadtripLocationAndActivity(location, activities)
     }
 
-    val roadtripCombined = CombinedRoadtrip(
-        trip.startDate, trip.endDate, "", "", trip.packingList,
-        locations
+    val roadtrip = RoadtripData(0, trip.startDate, trip.endDate, "Test", "Test2")
+
+    val packingList = trip.packingList.map {
+        PackingItem(0, 0, it, NotificationType.NONE, false, 0, 0.0,0.0,0.0)
+    }
+
+    val roadtripCombined = RoadtripAndLocationsAndList(
+        roadtrip, locations, packingList
     )
 
     return roadtripCombined

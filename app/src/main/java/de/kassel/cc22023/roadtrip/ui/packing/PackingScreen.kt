@@ -3,17 +3,9 @@ package de.kassel.cc22023.roadtrip.ui.packing
 import PermissionBeforeItemDialog
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,12 +13,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
-
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -39,8 +27,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -52,17 +42,17 @@ import com.mutualmobile.composesensors.rememberPressureSensorState
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.ui.util.PermissionsRejectedView
 import de.kassel.cc22023.roadtrip.util.createNotificationChannel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
-import androidx.compose.material3.Surface
-import androidx.compose.ui.text.input.ImeAction
 
 
 val notificationPermissions = listOf(
-    android.Manifest.permission.POST_NOTIFICATIONS,android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+    android.Manifest.permission.POST_NOTIFICATIONS,
+    android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 )
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -93,26 +83,45 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
 }
 
 @Composable
-fun PackingListScaffold() {
-    PackingListView()
+fun PackingListScaffold(
+    viewModel: PackingViewModel = hiltViewModel(),
+) {
+    val data by viewModel.data.collectAsState()
+
+    if (data is PackingDataUiState.Success) {
+        PackingListView((data as PackingDataUiState.Success).data)
+    } else if (data is PackingDataUiState.NoList) {
+        NoListScreen()
+    } else {
+        LoadingScreen()
+    }
 }
 
 @Composable
 fun PackingListView(
+    trip: RoadtripAndLocationsAndList,
     viewModel: PackingViewModel = hiltViewModel(),
 ) {
-    val data by viewModel.data.collectAsState()
+    val data = trip.packingItems
     var newItemName by remember { mutableStateOf("") }
     var newItemNotificationType by remember { mutableStateOf(NotificationType.NONE) }
     val image: Painter = painterResource(R.drawable.packbg_dark)
 
-    var sensoralitude by remember {mutableStateOf ( SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
-        Sensor.TYPE_PRESSURE.toFloat()
-    ))}
+    var sensoralitude by remember {
+        mutableStateOf(
+            SensorManager.getAltitude(
+                SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
+                Sensor.TYPE_PRESSURE.toFloat()
+            )
+        )
+    }
 
     val listState = rememberLazyListState()
     val pressureState = rememberPressureSensorState()
-    sensoralitude = SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, pressureState.pressure)
+    sensoralitude = SensorManager.getAltitude(
+        SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
+        pressureState.pressure
+    )
     var isDialogVisible by remember { mutableStateOf(false) }
     var selectedItem: PackingItem? by remember {
         mutableStateOf(null)
@@ -143,136 +152,152 @@ fun PackingListView(
         exit = fadeOut()
     ) {
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
-        // Background image
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxSize()
-        )
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
+        Box(
+            modifier = Modifier.fillMaxSize(),
         ) {
-            Button(
-                onClick = {
-                    isDialogVisible = true
-                },
-            ) {
-                Icon(Icons.Default.Settings, contentDescription = null)
-
-            }
-
-            Button(
-                onClick = {
-                    // Add a new PackingItem to the packingList
-                    val newItem = PackingItem(
-                        id = 0,
-                        name = newItemName,
-                        notificationType = newItemNotificationType,
-                        isChecked = false,
-                        null,
-                        0.0,
-                        0.0,
-                        0.0
-                    )
-                    viewModel.insertIntoList(newItem)
-                    newItemName = ""
-                    newItemNotificationType = NotificationType.NONE
-                },
-                shape = CircleShape,
-            ) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
-        }
-        if (isDialogVisible) {
-            HeightInputDialog(
-                onHeightSubmitted = {
-                    isDialogVisible = false
-                },
-                onDismiss = {
-                    isDialogVisible = false
-                }
+            // Background image
+            Image(
+                painter = image,
+                contentDescription = null,
+                contentScale = ContentScale.FillHeight,
+                modifier = Modifier.fillMaxSize()
             )
-        }
 
-        Column(
-            modifier = Modifier
-                .padding(start = 16.dp, top = 50.dp, end = 16.dp, bottom = 16.dp)
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-            Surface(
-                color = Color.Transparent,
-                shadowElevation = 3.dp,
-                tonalElevation = 10.dp,
-                modifier = Modifier
-                    .padding(1.dp)
-                    .fillMaxWidth(0.8f),
-                shape = RoundedCornerShape(5.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
             ) {
-                Box(modifier = Modifier
-                    .size(width = 200.dp, height = 50.dp)
-                    .padding(5.dp),
-                    contentAlignment = Alignment.Center
+                Button(
+                    onClick = {
+                        isDialogVisible = true
+                    },
+                ) {
+                    Icon(Icons.Default.Settings, contentDescription = null)
+
+                }
+
+                Button(
+                    onClick = {
+                        // Add a new PackingItem to the packingList
+                        val newItem = PackingItem(
+                            id = 0,
+                            trip.trip.id,
+                            name = newItemName,
+                            notificationType = newItemNotificationType,
+                            isChecked = false,
+                            null,
+                            0.0,
+                            0.0,
+                            0.0
+                        )
+                        viewModel.insertIntoList(newItem)
+                        newItemName = ""
+                        newItemNotificationType = NotificationType.NONE
+                    },
+                    shape = CircleShape,
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null)
+                }
+            }
+            if (isDialogVisible) {
+                HeightInputDialog(
+                    onHeightSubmitted = {
+                        isDialogVisible = false
+                    },
+                    onDismiss = {
+                        isDialogVisible = false
+                    }
                 )
-                {
+            }
 
-                    Text(
-                        "Pack Your Bags",
-                        fontSize = 30.sp, fontFamily = FontFamily.Serif
+            Column(
+                modifier = Modifier
+                    .padding(start = 16.dp, top = 50.dp, end = 16.dp, bottom = 16.dp)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+                Surface(
+                    color = Color.Transparent,
+                    shadowElevation = 3.dp,
+                    tonalElevation = 10.dp,
+                    modifier = Modifier
+                        .padding(1.dp)
+                        .fillMaxWidth(0.8f),
+                    shape = RoundedCornerShape(5.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(width = 200.dp, height = 50.dp)
+                            .padding(5.dp),
+                        contentAlignment = Alignment.Center
                     )
-                }
-            }
+                    {
 
-
-            Row {
-                Surface(
-                    color = Color(0xFFDFA878),
-                    shadowElevation = 5.dp,
-                    tonalElevation = 10.dp,
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .fillMaxWidth(0.5f),
-                    shape = RoundedCornerShape(4.dp)
-                ) {
-                    Box(modifier = Modifier
-                        .fillMaxSize(0.1f)
-                        .weight(0.5f)
-                        .padding(1.dp),
-                        contentAlignment = Alignment.Center){
-
-                        Text(text = "Carry Me", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                        Text(
+                            "Pack Your Bags",
+                            fontSize = 30.sp, fontFamily = FontFamily.Serif
+                        )
                     }
                 }
-                Surface(
-                    color = Color(0xFFDFA878),
-                    shadowElevation = 5 .dp,
-                    tonalElevation = 10.dp,
-                    modifier = Modifier
-                        .padding(1.dp)
-                        .fillMaxWidth(1f),
-                    shape = RoundedCornerShape(4.dp)
 
-                ) {
-                    Box(modifier = Modifier
-                        .fillMaxSize(0.1f)
-                        .weight(0.5f)
-                        .padding(1.dp),
 
-                        contentAlignment = Alignment.Center){
-                        Text(text = "Remind Me At", fontSize = 13.sp, fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                Row {
+                    Surface(
+                        color = Color(0xFFDFA878),
+                        shadowElevation = 5.dp,
+                        tonalElevation = 10.dp,
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .fillMaxWidth(0.5f),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(0.1f)
+                                .weight(0.5f)
+                                .padding(1.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+
+                            Text(
+                                text = "Carry Me",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = FontFamily.Serif
+                            )
+                        }
+                    }
+                    Surface(
+                        color = Color(0xFFDFA878),
+                        shadowElevation = 5.dp,
+                        tonalElevation = 10.dp,
+                        modifier = Modifier
+                            .padding(1.dp)
+                            .fillMaxWidth(1f),
+                        shape = RoundedCornerShape(4.dp)
+
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize(0.1f)
+                                .weight(0.5f)
+                                .padding(1.dp),
+
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Remind Me At",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = FontFamily.Serif
+                            )
+                        }
                     }
                 }
-            }
-            if (data is PackingDataUiState.Success) {
-                val list = (data as PackingDataUiState.Success).data
+
+                val list = data
                 val reversedList = list.reversed()
 
                 LazyColumn(state = listState) {
@@ -299,27 +324,19 @@ fun PackingListView(
                             swipeThreshold = 100.dp,
                             endActions = listOf(delete)
                         ) {
-                            PackingItemCard(item, ){selectedItem = it}
+                            PackingItemCard(item, trip.trip.id, selectItem = { selectedItem = it })
                         }
                     }
                 }
-            } else {
-                LoadingScreen()
             }
-
-
-        }
-        LaunchedEffect(key1 = viewModel.data.collectAsState().value) {
-            if (data is PackingDataUiState.Success) {
+            LaunchedEffect(key1 = data) {
                 listState.scrollToItem(0)
             }
+            LaunchedEffect(sensoralitude) {
+                //notificationMessage = viewModel.getNotificationMessage(sensoralitude)
+                //TODO
+            }
         }
-        LaunchedEffect(sensoralitude) {
-            //notificationMessage = viewModel.getNotificationMessage(sensoralitude)
-            //TODO
-        }
-
-    }
     }
 }
 
@@ -328,8 +345,9 @@ fun PackingListView(
 @Composable
 fun PackingItemCard(
     item: PackingItem,
-    viewModel: PackingViewModel = hiltViewModel(),
-    selectItem: (PackingItem) -> Unit
+    tripId: Long,
+    selectItem: (PackingItem) -> Unit,
+    viewModel: PackingViewModel = hiltViewModel()
 ) {
     var checked by remember {
         mutableStateOf(item.isChecked)
@@ -339,7 +357,7 @@ fun PackingItemCard(
         mutableStateOf(false)
     }
 
-    var selectedText by remember {
+    val selectedText by remember {
         mutableStateOf(item.notificationType.value)
     }
     var selectedName by remember {
@@ -352,7 +370,7 @@ fun PackingItemCard(
         modifier = Modifier
             .padding(1.dp)
             .fillMaxWidth(1f),
-        shape = RoundedCornerShape(5    .dp)
+        shape = RoundedCornerShape(5.dp)
 
     ) {
         Row(
@@ -381,10 +399,11 @@ fun PackingItemCard(
                         .padding(0.dp)
                         .fillMaxSize(1f),
                 ) {
-                    Box(contentAlignment = Alignment.Center){
+                    Box(contentAlignment = Alignment.Center) {
                         TextField(
                             value = selectedName,
-                            onValueChange = {newvalue -> selectedName = newvalue
+                            onValueChange = { newvalue ->
+                                selectedName = newvalue
                             },
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             keyboardActions = KeyboardActions(
@@ -398,7 +417,8 @@ fun PackingItemCard(
                                         item.time,
                                         item.height,
                                         item.lat,
-                                        item.lon
+                                        item.lon,
+                                        item.tripId
                                     )
                                 }),
 
@@ -408,7 +428,8 @@ fun PackingItemCard(
                             colors = TextFieldDefaults.colors(
                                 disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
                                 disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
-                            ))
+                            )
+                        )
 
                     }
                 }
@@ -458,12 +479,28 @@ fun PackingItemCard(
                                 onClick = {
                                     if (type.value != NotificationType.NONE.value) {
                                         val newItem = PackingItem(
-                                            item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                            item.id,
+                                            tripId,
+                                            item.name,
+                                            NotificationType.fromString(type.value),
+                                            item.isChecked,
+                                            item.time,
+                                            item.height,
+                                            item.lat,
+                                            item.lon
                                         )
                                         selectItem(newItem)
                                     } else {
                                         val newItem = PackingItem(
-                                            item.id, item.name, NotificationType.fromString(type.value), item.isChecked, item.time, item.height, item.lat, item.lon
+                                            item.id,
+                                            tripId,
+                                            item.name,
+                                            NotificationType.fromString(type.value),
+                                            item.isChecked,
+                                            item.time,
+                                            item.height,
+                                            item.lat,
+                                            item.lon
                                         )
                                         viewModel.updateItem(newItem)
                                     }

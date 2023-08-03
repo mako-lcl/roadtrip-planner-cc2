@@ -56,11 +56,11 @@ fun TripMapView(
         val locations = (data as MapDataUiState.Success).data.locations.toImmutableList()
         locations.forEach {loc ->
             val activities = loc.activities.makeActivityList()
-            val markerState = rememberMarkerState(position = LatLng(loc.latitude, loc.longitude))
-            markerState.position = LatLng(loc.latitude, loc.longitude)
+            val markerState = rememberMarkerState(position = LatLng(loc.location.lat ?: 0.0, loc.location.lon ?: 0.0))
+            markerState.position = LatLng(loc.location.lat ?: 0.0, loc.location.lon ?: 0.0)
             MarkerInfoWindow(
                 state = markerState,
-                title = loc.name,
+                title = loc.location.name ?: "Unknown",
                 icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)
             ) {
                 Box( contentAlignment = Alignment.TopEnd,
@@ -82,7 +82,7 @@ fun TripMapView(
                             verticalArrangement = Arrangement.spacedBy(16.dp),
 
                             ) {
-                            Text(loc.name, fontSize = 20.sp, color = Color(0xFFBA704F), fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
+                            Text(loc.location.name ?: "Unknown", fontSize = 20.sp, color = Color(0xFFBA704F), fontWeight = FontWeight.SemiBold, fontFamily = FontFamily.Serif)
                             Text("Activities:\n$activities", color = Color.Black, fontWeight = FontWeight.Normal)
                         }
                     }
@@ -91,7 +91,7 @@ fun TripMapView(
         }
 
         val markerCoords = (data as MapDataUiState.Success).data.locations.map {
-            LatLng(it.latitude, it.longitude)
+            LatLng(it.location.lat ?: 0.0, it.location.lon ?: 0.0)
         }
 
         Polyline(

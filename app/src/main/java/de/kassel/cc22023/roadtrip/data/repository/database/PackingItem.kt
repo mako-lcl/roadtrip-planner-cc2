@@ -38,7 +38,8 @@ enum class NotificationType(val value: String) {
 @Entity
 data class PackingItem(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Long,
+    val tripId: Long,
     var name: String,
     var notificationType: NotificationType,
     var isChecked: Boolean,
@@ -46,83 +47,7 @@ data class PackingItem(
     var height: Double,
     var lat: Double,
     var lon: Double
-) {
-    companion object {
-        val exampleData = listOf(
-            PackingItem(
-                0,
-                "Driver's License",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-
-            ),
-            PackingItem(
-                1,
-                "Bread",
-                NotificationType.FLOOR,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-            PackingItem(
-                2,
-                "Ham",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-            PackingItem(
-                3,
-                "Coke Zero",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-            PackingItem(
-                4,
-                "Yoshi Plush",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-            PackingItem(
-                5,
-                "Grissini",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-            PackingItem(
-                6,
-                "iPad",
-                NotificationType.NONE,
-                isChecked = false,
-                null,
-                0.0,
-                0.0,
-                0.0
-            ),
-        )
-    }
-}
+)
 
 @Dao
 interface PackingItemDao {
