@@ -72,9 +72,12 @@ interface RoadtripDataDao {
     @Query("SELECT * FROM RoadtripData WHERE roadtripdata.id == 0")
     fun getRoadtripAndLocationsAsFlow(): Flow<RoadtripAndLocationsAndList>
 
+    @Transaction
+    @Query("SELECT * FROM RoadtripData")
+    fun getAllRoadtripsAsFlow(): Flow<List<RoadtripAndLocationsAndList>>
+
     @Insert
     fun insertRoadtripData(item: RoadtripData) : Long
-
     @Query("DELETE FROM roadtripdata WHERE roadtripdata.id = 0")
     suspend fun deleteRoadtrip()
 }

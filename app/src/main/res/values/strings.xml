@@ -24,4 +24,10 @@
     <string name="notification_permission_button_description">Settings</string>
     <string name="notification_channel_name">Packing List Channel</string>
     <string name="channel_description">Packing list notifications!</string>
+    <string name="start_date_prompt">Start date</string>
+    <string name="end_date_prompt">End date</string>
+    <string name="start_location_prompt">Start location</string>
+    <string name="end_location_prompt">End location</string>
+    <string name="location_input_error">Can not be empty</string>
+    <string name="date_input_error">Can not be in the past</string>
 </resources>

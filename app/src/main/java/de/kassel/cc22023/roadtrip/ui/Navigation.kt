@@ -16,28 +16,28 @@
 
 package de.kassel.cc22023.roadtrip.ui
 
-import android.Manifest
 import android.annotation.SuppressLint
-import androidx.annotation.RequiresPermission
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -49,13 +49,14 @@ import de.kassel.cc22023.roadtrip.ui.map.MapScreen
 import de.kassel.cc22023.roadtrip.ui.navigation.Screen
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import de.kassel.cc22023.roadtrip.ui.planner.NewTripPlannerScreen
+import de.kassel.cc22023.roadtrip.ui.planner.PlannerTopBar
 
 
 @SuppressLint("MissingPermission")
@@ -63,15 +64,56 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
+    var topBarState by rememberSaveable { (mutableStateOf(true)) }
+
+    var newTripDialogOpen by remember {
+        mutableStateOf(false)
+    }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    // Control TopBar
+    when (navBackStackEntry?.destination?.route) {
+        Screen.Planner.route -> {
+            topBarState = true
+        }
+        else -> {
+            topBarState = false
+        }
+    }
+
+    if (newTripDialogOpen) {
+        AlertDialog(onDismissRequest = { newTripDialogOpen = false }) {
+            Surface(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .wrapContentHeight(),
+                shape = MaterialTheme.shapes.large
+            ) {
+                NewTripPlannerScreen() {}
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
-            WeatherNavBar(navController)
+            RoadtripNavBar(navController)
+        },
+        topBar = {
+            AnimatedVisibility(
+                visible = topBarState,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it }),
+            ) {
+                PlannerTopBar {
+                    newTripDialogOpen = true
+                }
+            }
         }
     ) {innerPadding ->
         NavHost(navController = navController, startDestination = Screen.Planner.route, modifier = Modifier.padding(innerPadding)) {
             composable(Screen.Planner.route) {
-                PlannerScreen() {
+                PlannerScreen() /*{
                     navController.navigate(Screen.Map.route) {
                         popUpTo(navController.graph.findStartDestination().id) {
                             saveState = true
@@ -82,7 +124,7 @@ fun MainNavigation() {
                         // Restore state when reselecting a previously selected item
                         restoreState = true
                     }
-                }
+                }*/
             }
             composable(Screen.Map.route) { MapScreen() }
             composable(Screen.Packing.route) { PackingScreen() }
@@ -91,7 +133,7 @@ fun MainNavigation() {
 }
 
 @Composable
-fun WeatherNavBar(navController: NavController) {
+fun RoadtripNavBar(navController: NavController) {
     Surface(shape = RoundedCornerShape(20.dp),
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         modifier = Modifier.size(width = 400.dp, height = 50.dp)

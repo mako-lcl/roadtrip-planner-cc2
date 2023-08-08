@@ -41,6 +41,8 @@ import javax.inject.Inject
 interface RoadtripRepository {
     val roadtrip: Flow<RoadtripAndLocationsAndList?>
 
+    val allRoadtrips: Flow<List<RoadtripAndLocationsAndList>?>
+
     suspend fun updateItem(item: PackingItem)
     suspend fun insertIntoList(item: PackingItem)
     suspend fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList)
@@ -72,6 +74,9 @@ class DefaultRoadtripRepository @Inject constructor(
 ) : RoadtripRepository {
     override val roadtrip: Flow<RoadtripAndLocationsAndList?>
         get() = roadtripDataDao.getRoadtripAndLocationsAsFlow()
+
+    override val allRoadtrips: Flow<List<RoadtripAndLocationsAndList>>
+        get() = roadtripDataDao.getAllRoadtripsAsFlow()
 
     override suspend fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) {
         roadtripDataDao.deleteRoadtrip()
