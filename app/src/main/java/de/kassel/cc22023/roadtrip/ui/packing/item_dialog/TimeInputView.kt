@@ -33,6 +33,8 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
+import java.util.Date
+import java.util.TimeZone
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -133,7 +135,10 @@ fun TimeInputView(
         // Display selected date and time
         Button(onClick = {
             val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
-            item.time = newTime.toEpochSecond(ZoneOffset.UTC)
+            val tz: TimeZone = TimeZone.getDefault()
+            val now = Date()
+            val offsetFromUtc: Int = tz.getOffset(now.getTime()) / 1000
+            item.time = newTime.toEpochSecond(ZoneOffset.ofTotalSeconds(offsetFromUtc))
             viewModel.updateItem(item)
             setAlarm(item, context)
 
