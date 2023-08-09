@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,8 @@ import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 
 @Composable
 fun PlannerTripSelection(
+    onNavigateToMap: () -> Unit,
+    onNavigateToList: () -> Unit,
     viewModel: PlannerViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -41,7 +44,7 @@ fun PlannerTripSelection(
                 columns = GridCells.Fixed(2),
             ) {
                 items(trips) { trip ->
-                    TripSelectionCard(trip)
+                    TripSelectionCard(trip, onNavigateToMap, onNavigateToList)
                 }
             }
         }
@@ -51,10 +54,14 @@ fun PlannerTripSelection(
 }
 
 @Composable
-fun TripSelectionCard(trip: RoadtripAndLocationsAndList) {
+fun TripSelectionCard(
+    trip: RoadtripAndLocationsAndList,
+    onNavigateToMap: () -> Unit,
+    onNavigateToList: () -> Unit,
+    viewModel: PlannerViewModel = hiltViewModel()
+) {
     Card(
         modifier = Modifier
-            .background(Color.Red)
             .padding(16.dp)
     ) {
         Box(modifier = Modifier.height(50.dp))
@@ -62,5 +69,20 @@ fun TripSelectionCard(trip: RoadtripAndLocationsAndList) {
         Text("End: ${trip.trip.endLocation}")
         Text("Begin: ${trip.trip.startDate}")
         Text("Until: ${trip.trip.endDate}")
+        Button(onClick = {
+            viewModel.setTrip(trip.trip.id)
+            onNavigateToMap()
+        }) {
+            Text("Map")
+        }
+        Button(onClick = {
+            viewModel.setTrip(trip.trip.id)
+            onNavigateToList()
+        }) {
+            Text("List")
+        }
+        Button(onClick = { viewModel.deleteTrip(trip) }) {
+            Text("Delete")
+        }
     }
 }

@@ -133,7 +133,7 @@ fun PlannerInputScreen(
                 Button(onClick = {
                     val testTrip = loadRoadtripFromAssets(context)
                     val trip = convertRoadtripFromTestTrip(testTrip)
-                    viewModel.insertNewRoadtrip(trip)
+                    viewModel.insertTestRoadtrip(trip)
                 }) {
                     Text(text = "Load from Disk")
                 }

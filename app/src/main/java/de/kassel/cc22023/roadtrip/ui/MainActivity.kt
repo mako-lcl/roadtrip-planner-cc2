@@ -25,7 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import de.kassel.cc22023.roadtrip.ui.navigation.MainNavigation
-import de.kassel.cc22023.roadtrip.ui.theme.MyApplicationTheme
+import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 
 
 @AndroidEntryPoint
@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MyApplicationTheme() {
+            RoadtripTheme() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background

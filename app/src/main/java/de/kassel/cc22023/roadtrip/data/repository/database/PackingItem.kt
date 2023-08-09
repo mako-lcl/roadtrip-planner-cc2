@@ -58,7 +58,7 @@ interface PackingItemDao {
     fun getPackingItemsAsFlow(): Flow<List<PackingItem>>
 
     @Insert
-    suspend fun insertPackingItems(items: List<PackingItem>)
+    fun insertPackingItems(items: List<PackingItem>)
 
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
@@ -74,4 +74,7 @@ interface PackingItemDao {
 
     @Insert
     suspend fun insertPackingItem(item: PackingItem)
+
+    @Query("DELETE FROM PackingItem")
+    fun nukeDB()
 }

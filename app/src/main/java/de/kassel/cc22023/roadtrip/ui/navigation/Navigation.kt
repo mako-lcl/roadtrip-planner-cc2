@@ -81,9 +81,9 @@ fun MainNavigation() {
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it }),
             ) {
-                PlannerTopBar {
+                PlannerTopBar(openDialog = {
                     newTripDialogOpen.value = true
-                }
+                })
             }
         }
     ) { innerPadding ->
@@ -92,9 +92,22 @@ fun MainNavigation() {
             startDestination = Screen.Planner.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Planner.route) { PlannerScreen() }
+            composable(Screen.Planner.route) { PlannerScreen(onNavigateToMap = { NavigateToRoute(Screen.Map.route, navController) }, onNavigateToList = { NavigateToRoute(Screen.Packing.route, navController) }) }
             composable(Screen.Map.route) { MapScreen() }
             composable(Screen.Packing.route) { PackingScreen() }
         }
+    }
+}
+
+fun NavigateToRoute(route: String, navController: NavController) {
+    navController.navigate(route) {
+        popUpTo(navController.graph.findStartDestination().id) {
+            saveState = true
+        }
+        // Avoid multiple copies of the same destination when
+        // reselecting the same item
+        launchSingleTop = true
+        // Restore state when reselecting a previously selected item
+        restoreState = true
     }
 }

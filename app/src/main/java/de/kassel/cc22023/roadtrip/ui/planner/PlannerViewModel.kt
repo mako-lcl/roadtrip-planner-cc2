@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,12 +18,12 @@ import javax.inject.Inject
 @HiltViewModel
 class PlannerViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository,
-    preferences: PreferenceStore
+    private val preferences: PreferenceStore
 ) : ViewModel() {
     private val _requestStatus: MutableStateFlow<PlannerRequestStatus> = MutableStateFlow(PlannerRequestStatus.Idle)
     val requestStatus: StateFlow<PlannerRequestStatus> = _requestStatus
 
-    val uiState = combine(
+    val uiState: StateFlow<PlannerDataUiState> = combine(
         roadtripRepository.allRoadtrips,
         preferences.currentTrip
     ) { trips, currentTripIndex ->
@@ -61,8 +60,12 @@ class PlannerViewModel @Inject constructor(
                 endDate,
                 transportationType,
                 onSuccess = {
-                    insertRoadtrip(it)
-                    _requestStatus.value = PlannerRequestStatus.Success
+                    viewModelScope.launch(Dispatchers.IO) {
+                        val tripId = roadtripRepository.insertNewRoadtrip(it)
+                        preferences.setCurrentTrip(tripId)
+
+                        _requestStatus.value = PlannerRequestStatus.Success
+                    }
                 },
                 onLoading = {
                     _requestStatus.value = PlannerRequestStatus.Loading
@@ -74,16 +77,30 @@ class PlannerViewModel @Inject constructor(
         }
     }
 
-    fun insertRoadtrip(trip: RoadtripAndLocationsAndList) {
-        viewModelScope.launch(Dispatchers.IO) {
-            roadtripRepository.insertNewRoadtrip(trip)
-        }
-    }
-
-    fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) {
+    fun insertTestRoadtrip(trip: RoadtripAndLocationsAndList) {
         viewModelScope.launch(Dispatchers.IO) {
             _requestStatus.value = PlannerRequestStatus.Success
             roadtripRepository.insertNewRoadtrip(trip)
+            preferences.setCurrentTrip(trip.trip.id)
+        }
+    }
+
+    fun deleteAllTrips() {
+        viewModelScope.launch(Dispatchers.IO) {
+            roadtripRepository.deleteAllTrips()
+            preferences.setCurrentTrip(-1)
+        }
+    }
+
+    fun setTrip(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
+            preferences.setCurrentTrip(id)
+        }
+    }
+
+    fun deleteTrip(trip: RoadtripAndLocationsAndList) {
+        viewModelScope.launch(Dispatchers.IO) {
+            roadtripRepository.deleteTrip(trip)
         }
     }
 }
@@ -91,7 +108,7 @@ class PlannerViewModel @Inject constructor(
 sealed interface PlannerDataUiState {
     object FetchingDatabase : PlannerDataUiState
 
-    data class Success(val data: List<RoadtripAndLocationsAndList>, val current: Int) :
+    data class Success(val data: List<RoadtripAndLocationsAndList>, val current: Long) :
         PlannerDataUiState
 }
 

@@ -1,6 +1,7 @@
 package de.kassel.cc22023.roadtrip.data.repository.database
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Insert
@@ -36,4 +37,10 @@ interface RoadtripLocationDao {
 
     @Query("DELETE FROM RoadtripLocation")
     fun deleteAll()
+
+    @Query("DELETE FROM RoadtripLocation")
+    fun nukeDB()
+
+    @Delete
+    fun deleteLocation(location: RoadtripLocation)
 }

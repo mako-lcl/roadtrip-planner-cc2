@@ -5,6 +5,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.JsonClass
 import com.squareup.moshi.Moshi
+import de.kassel.cc22023.roadtrip.data.network.model.OpenAiTrip
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
@@ -15,27 +16,7 @@ import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationAndAc
 import timber.log.Timber
 import java.io.IOException
 
-@JsonClass(generateAdapter = true)
-data class TestTrip(
-    @Json(name = "start_date")
-    val startDate: String,
-    @Json(name = "end_date")
-    val endDate: String,
-    @Json(name = "packing_list")
-    val packingList: List<String>,
-    @Json(name = "locations")
-    val locs: List<Loc>
-)
-
-@JsonClass(generateAdapter = true)
-data class Loc(
-    val name: String,
-    val latitude: Double,
-    val longitude: Double,
-    val activities: List<String>
-)
-
-fun convertRoadtripFromTestTrip(trip: TestTrip) : RoadtripAndLocationsAndList {
+fun convertRoadtripFromTestTrip(trip: OpenAiTrip) : RoadtripAndLocationsAndList {
     val locations = trip.locs.map {
         val activities = it.activities.map {
             RoadtripActivity(0, 0, it)
@@ -45,7 +26,7 @@ fun convertRoadtripFromTestTrip(trip: TestTrip) : RoadtripAndLocationsAndList {
         RoadtripLocationAndActivity(location, activities)
     }
 
-    val roadtrip = RoadtripData(0, trip.startDate, trip.endDate, "Test", "Test2")
+    val roadtrip = RoadtripData(0, trip.startDate, trip.endDate, trip.startLocation, trip.endLocation)
 
     val packingList = trip.packingList.map {
         PackingItem(0, 0, it, NotificationType.NONE, false, 0, 0.0,0.0,0.0)
@@ -58,13 +39,13 @@ fun convertRoadtripFromTestTrip(trip: TestTrip) : RoadtripAndLocationsAndList {
     return roadtripCombined
 }
 
-fun loadRoadtripFromAssets(context: Context) : TestTrip {
+fun loadRoadtripFromAssets(context: Context) : OpenAiTrip {
     val string = context.assets.open("roadtrip.txt").bufferedReader().use{
         it.readText()
     }
 
     val moshi: Moshi = Moshi.Builder().build()
-    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
+    val jsonAdapter: JsonAdapter<OpenAiTrip> = moshi.adapter(OpenAiTrip::class.java)
     val trip = jsonAdapter.fromJson(string)
 
     trip?.let {
@@ -74,10 +55,10 @@ fun loadRoadtripFromAssets(context: Context) : TestTrip {
     throw IOException()
 }
 
-fun convertCleanedStringToTrip(json: String) : TestTrip? {
+fun convertCleanedStringToTrip(json: String) : OpenAiTrip? {
     Timber.d(json)
     val moshi: Moshi = Moshi.Builder().build()
-    val jsonAdapter: JsonAdapter<TestTrip> = moshi.adapter(TestTrip::class.java)
+    val jsonAdapter: JsonAdapter<OpenAiTrip> = moshi.adapter(OpenAiTrip::class.java)
     try {
         val trip = jsonAdapter.fromJson(json)
         trip?.let {

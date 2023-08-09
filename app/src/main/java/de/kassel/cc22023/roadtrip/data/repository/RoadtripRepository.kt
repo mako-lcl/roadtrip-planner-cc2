@@ -1,19 +1,3 @@
-/*
- * Copyright (C) 2022 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 package de.kassel.cc22023.roadtrip.data.repository
 
 import android.location.Location
@@ -23,6 +7,7 @@ import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
+import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivityDao
@@ -39,14 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 interface RoadtripRepository {
-    val roadtrip: Flow<RoadtripAndLocationsAndList?>
-
     val allRoadtrips: Flow<List<RoadtripAndLocationsAndList>?>
-
-    suspend fun updateItem(item: PackingItem)
-    suspend fun insertIntoList(item: PackingItem)
-    suspend fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList)
-
     suspend fun createRoadtrip(
         startLocation: String,
         endLocation: String,
@@ -57,11 +35,15 @@ interface RoadtripRepository {
         onLoading: () -> Unit,
         onError: () -> Unit
     )
-
+    suspend fun updateItem(item: PackingItem)
+    suspend fun insertIntoList(item: PackingItem)
+    fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) : Long
     fun getRoadtrip() : RoadtripAndLocationsAndList
     fun deleteItem(card: PackingItem)
     fun getPackingList() : List<PackingItem>
     fun getLocation() : Location?
+    fun deleteAllTrips()
+    fun deleteTrip(trip: RoadtripAndLocationsAndList)
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -70,20 +52,13 @@ class DefaultRoadtripRepository @Inject constructor(
     private val roadtripActivityDao: RoadtripActivityDao,
     private val packingItemDao: PackingItemDao,
     private val openAiApi: OpenAiApi,
-    private val sensorRepository: SensorRepository
+    private val sensorRepository: SensorRepository,
+    private val preferenceStore: PreferenceStore
 ) : RoadtripRepository {
-    override val roadtrip: Flow<RoadtripAndLocationsAndList?>
-        get() = roadtripDataDao.getRoadtripAndLocationsAsFlow()
-
     override val allRoadtrips: Flow<List<RoadtripAndLocationsAndList>>
         get() = roadtripDataDao.getAllRoadtripsAsFlow()
 
-    override suspend fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) {
-        roadtripDataDao.deleteRoadtrip()
-        roadtripLocationDao.deleteAll()
-        roadtripActivityDao.deleteAll()
-        packingItemDao.deleteAllItems()
-
+    override fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) : Long {
         val tripId = roadtripDataDao.insertRoadtripData(RoadtripData(0, trip.trip.startDate, trip.trip.endDate, trip.trip.startLocation, trip.trip.endLocation))
 
         val locations = roadtripLocationDao.insertLocations(
@@ -116,6 +91,8 @@ class DefaultRoadtripRepository @Inject constructor(
                 )
             }
         )
+
+        return tripId
     }
 
     override suspend fun createRoadtrip(
@@ -164,6 +141,30 @@ class DefaultRoadtripRepository @Inject constructor(
 
     override fun getLocation(): Location? =
         sensorRepository.getLocation()
+
+    override fun deleteAllTrips() {
+        roadtripDataDao.nukeDB()
+        roadtripLocationDao.nukeDB()
+        roadtripActivityDao.nukeDB()
+        packingItemDao.nukeDB()
+    }
+
+    override fun deleteTrip(trip: RoadtripAndLocationsAndList) {
+        trip.packingItems.forEach { item ->
+            //delete all connected packing items
+            packingItemDao.deleteItem(item)
+        }
+        trip.locations.forEach { location ->
+            //delete all connected activities
+            location.activities.forEach { activity ->
+                roadtripActivityDao.deleteActivity(activity)
+            }
+            //delete all connected locations
+            roadtripLocationDao.deleteLocation(location.location)
+        }
+        //delete trip
+        roadtripDataDao.deleteRoadtrip(trip.trip)
+    }
 
     override suspend fun updateItem(item: PackingItem) =
         packingItemDao.updateItem(item)

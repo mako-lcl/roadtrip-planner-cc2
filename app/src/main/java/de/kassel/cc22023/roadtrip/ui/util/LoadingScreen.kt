@@ -16,7 +16,7 @@ import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
 import de.kassel.cc22023.roadtrip.R
-import de.kassel.cc22023.roadtrip.ui.theme.MyApplicationTheme
+import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 
 @Composable
 fun LoadingScreen() {
@@ -33,7 +33,7 @@ fun LoadingScreen() {
 @Preview(showBackground = true)
 @Composable
 private fun DefaultPreview() {
-    MyApplicationTheme {
+    RoadtripTheme {
         CoolLoadingScreen()
     }
 }
