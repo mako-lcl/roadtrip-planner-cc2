@@ -19,20 +19,16 @@ import javax.inject.Inject
 @HiltViewModel
 class PlannerViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository,
-    private val preferences: PreferenceStore
+    preferences: PreferenceStore
 ) : ViewModel() {
-    private val _requestStatus = MutableStateFlow(PlannerRequestStatus.Idle)
-    private val requestStatus: StateFlow<PlannerRequestStatus> = _requestStatus
+    private val _requestStatus: MutableStateFlow<PlannerRequestStatus> = MutableStateFlow(PlannerRequestStatus.Idle)
+    val requestStatus: StateFlow<PlannerRequestStatus> = _requestStatus
 
     val uiState = combine(
         roadtripRepository.allRoadtrips,
-        preferences.currentTrip,
-        requestStatus
-    ) { trips, currentTripIndex, status ->
-        if (status == PlannerRequestStatus.Loading) {
-            PlannerDataUiState.Loading
-        }
-        else if (trips != null) {
+        preferences.currentTrip
+    ) { trips, currentTripIndex ->
+        if (trips != null) {
             PlannerDataUiState.Success(trips, currentTripIndex)
         } else {
             PlannerDataUiState.FetchingDatabase
@@ -46,7 +42,7 @@ class PlannerViewModel @Inject constructor(
 
     fun resetToIdle() {
         viewModelScope.launch(Dispatchers.IO) {
-            //_trip.value = PlannerDataUiState.Idle
+            _requestStatus.value = PlannerRequestStatus.Idle
         }
     }
 
@@ -66,13 +62,13 @@ class PlannerViewModel @Inject constructor(
                 transportationType,
                 onSuccess = {
                     insertRoadtrip(it)
-                    //_trip.value = PlannerDataUiState.Success(it)
+                    _requestStatus.value = PlannerRequestStatus.Success
                 },
                 onLoading = {
-                    //_trip.value = PlannerDataUiState.Loading
+                    _requestStatus.value = PlannerRequestStatus.Loading
                 },
                 onError = {
-                    //_trip.value = PlannerDataUiState.Error
+                    _requestStatus.value = PlannerRequestStatus.Error
                 }
             )
         }
@@ -86,22 +82,17 @@ class PlannerViewModel @Inject constructor(
 
     fun insertNewRoadtrip(trip: RoadtripAndLocationsAndList) {
         viewModelScope.launch(Dispatchers.IO) {
-            //_trip.value = PlannerDataUiState.Success(trip)
+            _requestStatus.value = PlannerRequestStatus.Success
             roadtripRepository.insertNewRoadtrip(trip)
         }
     }
 }
 
 sealed interface PlannerDataUiState {
-    object Idle : PlannerDataUiState
-    object Loading : PlannerDataUiState
-
     object FetchingDatabase : PlannerDataUiState
 
     data class Success(val data: List<RoadtripAndLocationsAndList>, val current: Int) :
         PlannerDataUiState
-
-    object Error : PlannerDataUiState
 }
 
 sealed interface PlannerRequestStatus {

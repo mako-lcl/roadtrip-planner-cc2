@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package de.kassel.cc22023.roadtrip.ui
+package de.kassel.cc22023.roadtrip.ui.navigation
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -41,7 +41,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.ui.map.MapScreen
-import de.kassel.cc22023.roadtrip.ui.navigation.Screen
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
 import de.kassel.cc22023.roadtrip.ui.planner.NewTripDialog
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
@@ -96,57 +95,6 @@ fun MainNavigation() {
             composable(Screen.Planner.route) { PlannerScreen() }
             composable(Screen.Map.route) { MapScreen() }
             composable(Screen.Packing.route) { PackingScreen() }
-        }
-    }
-}
-
-@Composable
-fun RoadtripNavBar(navController: NavController) {
-    Surface(
-        shape = RoundedCornerShape(20.dp),
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-        modifier = Modifier
-            .size(width = 400.dp, height = 50.dp)
-            .background(color = Color.Transparent)
-    ) {
-        NavigationBar(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier
-                .fillMaxWidth(1f)
-                .fillMaxHeight(0.1f)
-        ) {
-            val navBackStackEntry by navController.currentBackStackEntryAsState()
-            val currentDestination = navBackStackEntry?.destination
-            listOf(
-                Screen.Planner,
-                Screen.Map,
-                Screen.Packing,
-            ).forEach { screen ->
-                val isSelected =
-                    currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                NavigationBarItem(
-                    icon = {
-                        Icon(
-                            painter = painterResource(id = screen.iconResId),
-                            contentDescription = null,
-                            tint = if (isSelected) Color(0xFFDFA878) else Color(0xFFF4E0B9)
-                        )
-                    },
-                    selected = isSelected,
-                    onClick = {
-                        navController.navigate(screen.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-
-                )
-            }
         }
     }
 }
