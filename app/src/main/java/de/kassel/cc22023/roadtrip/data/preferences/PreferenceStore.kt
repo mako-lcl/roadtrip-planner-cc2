@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.doublePreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import de.kassel.cc22023.roadtrip.data.preferences.PreferencesKeys.CURRENT_TRIP
 import de.kassel.cc22023.roadtrip.data.preferences.PreferencesKeys.KEY_HEIGHT
@@ -17,7 +18,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = PRE
 
 object PreferencesKeys {
     val KEY_HEIGHT = doublePreferencesKey("height")
-    val CURRENT_TRIP = intPreferencesKey("currentTrip")
+    val CURRENT_TRIP = longPreferencesKey("currentTrip")
 }
 
 class PreferenceStore(
@@ -28,7 +29,7 @@ class PreferenceStore(
             preferences[KEY_HEIGHT] ?: 0.0
         }
 
-    val currentTrip: Flow<Int> = context.dataStore.data
+    val currentTrip: Flow<Long> = context.dataStore.data
         .map { preferences ->
             preferences[CURRENT_TRIP] ?: -1
         }
@@ -39,7 +40,7 @@ class PreferenceStore(
         }
     }
 
-    suspend fun setCurrentTrip(trip: Int) {
+    suspend fun setCurrentTrip(trip: Long) {
         context.dataStore.edit {
             it[CURRENT_TRIP] = trip
         }

@@ -10,10 +10,13 @@ import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
+import de.kassel.cc22023.roadtrip.ui.map.MapDataUiState
+import de.kassel.cc22023.roadtrip.ui.planner.PlannerDataUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -26,10 +29,31 @@ class PackingViewModel @Inject constructor(
     private val roadtripRepository: RoadtripRepository,
     private val sensorRepository: SensorRepository,
     private val geofenceManager: GeofenceManager,
-    private val preferences: PreferenceStore
+    private val preferences: PreferenceStore,
 ) : ViewModel() {
     val height = preferences.height
     val location: StateFlow<Location?> = sensorRepository.locationFlow
+
+    val data: StateFlow<PackingDataUiState> = combine(
+        roadtripRepository.allRoadtrips,
+        preferences.currentTrip
+    ) { trips, currentTripIndex ->
+        if (trips != null) {
+            val currentTrip = trips.firstOrNull { it.trip.id == currentTripIndex }
+            if (currentTrip != null) {
+                PackingDataUiState.Success(currentTrip)
+            } else {
+                PackingDataUiState.NoList
+            }
+        } else {
+            PackingDataUiState.Loading
+        }
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = PackingDataUiState.Loading
+        )
 
     private fun refreshGeofences(items: List<PackingItem>) {
         if (items.isEmpty()) {
@@ -119,22 +143,6 @@ class PackingViewModel @Inject constructor(
             roadtripRepository.deleteItem(selectedItem)
         }
     }
-
-    val data: StateFlow<PackingDataUiState> =
-        roadtripRepository
-            .roadtrip
-            .map {
-                if (it == null) {
-                    PackingDataUiState.NoList
-                } else {
-                    PackingDataUiState.Success(it)
-                }
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = PackingDataUiState.Loading
-            )
 
     private val _packing = MutableStateFlow<List<PackingItem>?>(null)
     val packing: StateFlow<List<PackingItem>?> = _packing
