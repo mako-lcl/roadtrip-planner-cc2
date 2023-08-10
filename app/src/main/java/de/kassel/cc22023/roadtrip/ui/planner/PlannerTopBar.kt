@@ -9,8 +9,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -19,8 +21,10 @@ fun PlannerTopBar(
     openDialog: () -> Unit,
     viewModel: PlannerViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     TopAppBar(
-        title = { Text("Roadtrip Planner") },
+        title = { Text(context.getString(R.string.planner_top_title)) },
 
         actions = {
             //Add new trip
@@ -39,12 +43,4 @@ fun PlannerTopBar(
             }
         },
     )
-}
-
-@Preview
-@Composable
-fun TopBarPreview() {
-    RoadtripTheme {
-        PlannerTopBar(openDialog = {})
-    }
 }
