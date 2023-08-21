@@ -1,4 +1,4 @@
-package de.kassel.cc22023.roadtrip.ui.packing.item_dialog
+package de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog
 
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable

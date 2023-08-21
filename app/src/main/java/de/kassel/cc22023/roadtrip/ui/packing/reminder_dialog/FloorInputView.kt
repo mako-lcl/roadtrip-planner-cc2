@@ -1,4 +1,4 @@
-package de.kassel.cc22023.roadtrip.ui.packing.item_dialog
+package de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
@@ -83,6 +84,7 @@ fun FloorInputView(
                     item.lat = lat
                     item.lon = lon
                     item.height = h
+                    item.notificationType = NotificationType.FLOOR
                     // Update the item using the viewModel
                     viewModel.updateItem(item)
                     closeDialog()

@@ -30,4 +30,6 @@
     <string name="end_location_prompt">End location</string>
     <string name="location_input_error">Can not be empty</string>
     <string name="date_input_error">Can not be in the past</string>
+    <string name="packing_top_title">Packing list</string>
+    <string name="planner_top_title">Roadtrip Planner</string>
 </resources>
