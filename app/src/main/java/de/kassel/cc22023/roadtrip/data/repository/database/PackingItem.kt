@@ -47,7 +47,28 @@ data class PackingItem(
     var height: Double,
     var lat: Double,
     var lon: Double
-)
+) {
+
+
+    override fun equals(other: Any?): Boolean {
+        return super.equals(other)
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + tripId.hashCode()
+        result = 31 * result + name.hashCode()
+        result = 31 * result + notificationType.hashCode()
+        result = 31 * result + isChecked.hashCode()
+        result = 31 * result + (time?.hashCode() ?: 0)
+        result = 31 * result + height.hashCode()
+        result = 31 * result + lat.hashCode()
+        result = 31 * result + lon.hashCode()
+        return result
+    }
+}
+
+
 
 @Dao
 interface PackingItemDao {

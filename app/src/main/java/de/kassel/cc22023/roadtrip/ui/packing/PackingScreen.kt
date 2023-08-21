@@ -56,7 +56,9 @@ fun PackingListScreen(
 
     when (data) {
         is PackingDataUiState.Success -> {
-            PackingListView((data as PackingDataUiState.Success).data)
+            val trip= (data as PackingDataUiState.Success).data
+
+            PackingListView(trip)
         }
 
         is PackingDataUiState.NoList -> {

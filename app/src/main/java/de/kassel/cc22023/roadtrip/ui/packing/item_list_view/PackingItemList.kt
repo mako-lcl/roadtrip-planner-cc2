@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -47,6 +48,7 @@ import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsA
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
+import okhttp3.internal.toImmutableList
 
 @Composable
 fun PackingListView(
@@ -89,10 +91,7 @@ fun PackingListView(
                 val reversedList = data.reversed()
 
                 LazyVerticalGrid(columns = GridCells.Fixed(2), state = gridListState) {
-                    itemsIndexed(
-                        items = reversedList,
-                        key = { _, item -> item.hashCode() }) { _, item ->
-
+                    items(reversedList, key = {item -> item.hashCode()}) {item ->
                         val delete = SwipeAction(
                             onSwipe = {
                                 viewModel.onSwipeToDelete(item)
@@ -112,7 +111,7 @@ fun PackingListView(
                             swipeThreshold = 100.dp,
                             endActions = listOf(delete)
                         ) {
-                            PackingItemCard(item, trip.trip.id, selectItem = { selectedItem.value = it })
+                            PackingItemCard(item, selectItem = { selectedItem.value = it })
                         }
                     }
                 }

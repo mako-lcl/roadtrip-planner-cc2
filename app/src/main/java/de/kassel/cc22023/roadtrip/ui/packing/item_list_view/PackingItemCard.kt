@@ -61,14 +61,18 @@ import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
+import de.kassel.cc22023.roadtrip.util.hasNoNotifications
 
 @Composable
 fun PackingItemCard (
     item: PackingItem,
-    tripId: Long,
     selectItem: (PackingItem) -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
+    val timer: Painter = painterResource(R.drawable.timer)
+    val location: Painter = painterResource(R.drawable.location)
+    val height: Painter = painterResource(R.drawable.height)
+
     var isChecked by remember {
         mutableStateOf(item.isChecked)
     }
@@ -95,6 +99,7 @@ fun PackingItemCard (
                     .fillMaxWidth()
             )
             ItemCardNameField(selectedName, item)
+
             if (!isChecked) {
                 Row(
                     modifier = Modifier
@@ -109,16 +114,43 @@ fun PackingItemCard (
                             isChecked = true
                         }, Icons.Filled.CheckCircle, contentDescription = "Check item"
                     )
-                    ItemCardButton(
-                        onClick = {
-
-                        }, Icons.Filled.Notifications, contentDescription = "Notify item"
-                    )
-                    /*ItemCardButton(
-                        onClick = {
-
-                        }, Icons.Filled.Delete, contentDescription = "Delete item"
-                    )*/
+                    if (item.hasNoNotifications()) {
+                        ItemCardButton(
+                            onClick = {
+                                      selectItem(item)
+                            }, Icons.Filled.Notifications, contentDescription = "Notify item"
+                        )
+                    } else {
+                        when (item.notificationType) {
+                            NotificationType.TIME -> {
+                                Image(
+                                    painter = timer,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.FillHeight,
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                )
+                            }
+                            NotificationType.LOCATION -> {
+                                Image(
+                                    painter = location,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.FillHeight,
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                )
+                            }
+                            else -> {
+                                Image(
+                                    painter = height,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.FillHeight,
+                                    modifier = Modifier
+                                        .height(24.dp)
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -1,4 +1,6 @@
 import android.Manifest
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 
 
 import androidx.compose.foundation.layout.Arrangement
@@ -13,12 +15,18 @@ import androidx.compose.material3.Text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
+import de.kassel.cc22023.roadtrip.ui.packing.ChooseNotificationTypeDialog
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog.FloorInputView
 import de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog.LocationInputView
@@ -34,21 +42,65 @@ fun PackingItemDialogSurface(
         Dialog(onDismissRequest = { selectedItem.value = null }) {
             Surface(
                 modifier = Modifier
-                    .wrapContentWidth()
-                    .wrapContentHeight(),
+                    .fillMaxSize(),
                 shape = MaterialTheme.shapes.large
             ) {
-                PackingItemDialog(item = it, closeDialog = {
-                    selectedItem.value = null
-                })
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    PackingItemDialog(item = it, closeDialog = {
+                        selectedItem.value = null
+                    })
+                }
             }
         }
     }
 }
 
+enum class PackingItemDialogState {
+    CHOOSING_TYPE,
+    INPUT
+}
+
 @Composable
 fun PackingItemDialog(
     item: PackingItem,
+    closeDialog: () -> Unit,
+) {
+    var state by remember {
+        mutableStateOf(PackingItemDialogState.CHOOSING_TYPE)
+    }
+
+    var notificationType by remember {
+        mutableStateOf(NotificationType.NONE)
+    }
+
+    Crossfade(targetState = state, animationSpec = tween(500)) {screen ->
+        if (screen == PackingItemDialogState.CHOOSING_TYPE) {
+            ChooseNotificationTypeDialog(
+                chooseTimer = {
+                    notificationType = NotificationType.TIME
+                    state = PackingItemDialogState.INPUT
+                },
+                chooseLocation = { 
+                    notificationType = NotificationType.LOCATION
+                    state = PackingItemDialogState.INPUT
+                },
+                chooseFloor = {
+                    notificationType = NotificationType.FLOOR
+                    state = PackingItemDialogState.INPUT
+                })
+        } else {
+            PackingNotificationDialog(item = item, notificationType, closeDialog = closeDialog)
+        }
+    }
+}
+
+@Composable
+fun PackingNotificationDialog(
+    item: PackingItem,
+    notificationType: NotificationType,
     closeDialog: () -> Unit,
 ) {
     Column(
@@ -60,7 +112,7 @@ fun PackingItemDialog(
     ) {
         Text(item.name)
 
-        when (item.notificationType.value) {
+        when (notificationType.value) {
             "Floor" -> {
                 FloorInputView(item, closeDialog)
             }
