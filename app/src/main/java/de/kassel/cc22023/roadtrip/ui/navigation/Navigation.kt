@@ -110,7 +110,7 @@ fun MainNavigation() {
             startDestination = Screen.Planner.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Planner.route) { PlannerScreen(onNavigateToMap = { navigateToRoute(Screen.Map.route, navController) }, onNavigateToList = { navigateToRoute(Screen.Packing.route, navController) }) }
+            composable(Screen.Planner.route) { PlannerScreen(onNavigateToMap = { navigateToRoute(Screen.Map.route, navController) }) }
             composable(Screen.Map.route) { MapScreen() }
             composable(Screen.Packing.route) { PackingScreen() }
         }
