@@ -1,4 +1,4 @@
-package de.kassel.cc22023.roadtrip.ui.packing.item_dialog
+package de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.alarm.setAlarm
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.util.DatePickerDialog
@@ -139,6 +140,7 @@ fun TimeInputView(
             val now = Date()
             val offsetFromUtc: Int = tz.getOffset(now.getTime()) / 1000
             item.time = newTime.toEpochSecond(ZoneOffset.ofTotalSeconds(offsetFromUtc))
+            item.notificationType = NotificationType.TIME
             viewModel.updateItem(item)
             setAlarm(item, context)
 

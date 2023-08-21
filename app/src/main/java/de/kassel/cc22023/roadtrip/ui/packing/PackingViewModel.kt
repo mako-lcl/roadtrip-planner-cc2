@@ -31,6 +31,7 @@ class PackingViewModel @Inject constructor(
     private val geofenceManager: GeofenceManager,
     private val preferences: PreferenceStore,
 ) : ViewModel() {
+    val currentTripId = preferences.currentTrip
     val height = preferences.height
     val location: StateFlow<Location?> = sensorRepository.locationFlow
 

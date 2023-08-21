@@ -8,6 +8,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,8 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
 fun HeightInputDialog(
-    onHeightSubmitted: () -> Unit,
-    onDismiss: () -> Unit,
+    heightDialogOpen: MutableState<Boolean>,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
     val height by viewModel.height.collectAsState(initial = 0.0)
@@ -34,37 +34,38 @@ fun HeightInputDialog(
         heightText = height.toString()
     }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(text = "Enter Height in meters") },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val convertedHeight = heightText.toDoubleOrNull() ?: return@TextButton
-                    // Save the height in SharedPreferences
-                    onHeightSubmitted()
-                    viewModel.saveHeight(convertedHeight)
-                    onDismiss()
+    if (heightDialogOpen.value) {
+        AlertDialog(
+            onDismissRequest = { heightDialogOpen.value = false },
+            title = { Text(text = "Enter Height in meters") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val convertedHeight = heightText.toDoubleOrNull() ?: return@TextButton
+                        // Save the height in SharedPreferences
+                        viewModel.saveHeight(convertedHeight)
+                        heightDialogOpen.value = false
+                    }
+                ) {
+                    Text("Submit")
                 }
-            ) {
-                Text("Submit")
+            },
+            dismissButton = {
+                TextButton(onClick = { heightDialogOpen.value = false }) {
+                    Text("Cancel")
+                }
+            },
+            text = {
+                TextField(
+                    value = heightText,
+                    onValueChange = {
+                        heightText = it
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                )
             }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Cancel")
-            }
-        },
-        text = {
-            TextField(
-                value = heightText,
-                onValueChange = {
-                    heightText = it
-                },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            )
-        }
-    )
+        )
+    }
 }

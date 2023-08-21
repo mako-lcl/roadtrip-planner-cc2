@@ -2,6 +2,8 @@ package de.kassel.cc22023.roadtrip.util
 
 import androidx.compose.ui.graphics.Color
 import de.kassel.cc22023.roadtrip.R
+import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
@@ -13,6 +15,10 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+fun PackingItem.hasNoNotifications() : Boolean {
+    return this.notificationType == NotificationType.NONE
+}
 
 suspend fun <T> Deferred<Response<T>>.launch(
     onLoading: (suspend () -> Unit)? = null,

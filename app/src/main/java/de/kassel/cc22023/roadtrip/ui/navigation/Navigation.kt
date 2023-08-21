@@ -20,56 +20,63 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.ui.map.MapScreen
+import de.kassel.cc22023.roadtrip.ui.packing.HeightInputDialog
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
+import de.kassel.cc22023.roadtrip.ui.packing.PackingTopBar
 import de.kassel.cc22023.roadtrip.ui.planner.NewTripDialog
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerTopBar
+
+enum class TopBarState {
+    PLANNER,
+    PACKING,
+    NONE
+}
 
 @SuppressLint("MissingPermission")
 @Composable
 fun MainNavigation() {
     val navController = rememberNavController()
-    var topBarState by rememberSaveable { (mutableStateOf(true)) }
-
-    val newTripDialogOpen = remember {
-        mutableStateOf(false)
-    }
+    var topBarState by rememberSaveable { (mutableStateOf(TopBarState.NONE)) }
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     // Control TopBar
     topBarState = when (navBackStackEntry?.destination?.route) {
         Screen.Planner.route -> {
-            true
+            TopBarState.PLANNER
+        }
+
+        Screen.Packing.route -> {
+            TopBarState.PACKING
         }
 
         else -> {
-            false
+            TopBarState.NONE
         }
     }
 
+    val newTripDialogOpen = remember {
+        mutableStateOf(false)
+    }
     NewTripDialog(newTripDialogOpen)
+
+    val heightSettingsDialogOpen = remember {
+        mutableStateOf(false)
+    }
+    HeightInputDialog(heightSettingsDialogOpen)
 
     Scaffold(
         bottomBar = {
@@ -77,13 +84,24 @@ fun MainNavigation() {
         },
         topBar = {
             AnimatedVisibility(
-                visible = topBarState,
+                visible = topBarState != TopBarState.NONE,
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it }),
             ) {
-                PlannerTopBar(openDialog = {
-                    newTripDialogOpen.value = true
-                })
+                when (topBarState) {
+                    TopBarState.PLANNER -> {
+                        PlannerTopBar(openDialog = {
+                            newTripDialogOpen.value = true
+                        })
+                    }
+                    TopBarState.PACKING -> {
+                        PackingTopBar(openSettings = {
+                            heightSettingsDialogOpen.value = true
+                        })
+                    }
+
+                    else -> {}
+                }
             }
         }
     ) { innerPadding ->
@@ -92,14 +110,14 @@ fun MainNavigation() {
             startDestination = Screen.Planner.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable(Screen.Planner.route) { PlannerScreen(onNavigateToMap = { NavigateToRoute(Screen.Map.route, navController) }, onNavigateToList = { NavigateToRoute(Screen.Packing.route, navController) }) }
+            composable(Screen.Planner.route) { PlannerScreen(onNavigateToMap = { navigateToRoute(Screen.Map.route, navController) }, onNavigateToList = { navigateToRoute(Screen.Packing.route, navController) }) }
             composable(Screen.Map.route) { MapScreen() }
             composable(Screen.Packing.route) { PackingScreen() }
         }
     }
 }
 
-fun NavigateToRoute(route: String, navController: NavController) {
+fun navigateToRoute(route: String, navController: NavController) {
     navController.navigate(route) {
         popUpTo(navController.graph.findStartDestination().id) {
             saveState = true
