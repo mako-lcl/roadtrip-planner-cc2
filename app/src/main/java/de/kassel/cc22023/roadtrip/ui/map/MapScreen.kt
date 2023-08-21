@@ -2,6 +2,7 @@ package de.kassel.cc22023.roadtrip.ui.map
 
 import android.Manifest
 import androidx.annotation.RequiresPermission
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,9 @@ import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,6 +40,7 @@ import com.google.maps.android.compose.MarkerInfoWindow
 import com.google.maps.android.compose.Polyline
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 import de.kassel.cc22023.roadtrip.util.PermissionBox
 import de.kassel.cc22023.roadtrip.util.makeActivityList
@@ -47,18 +52,32 @@ import timber.log.Timber
 )
 @Composable
 fun MapScreen() {
+    val image: Painter = painterResource(R.drawable.travelbg_2)
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
-    PermissionBox(
-        permissions = permissions,
-        requiredPermissions = listOf(permissions.first()),
-        description = "App needs location data",
-        onGranted = {
-            MapLoadingScreen()
-        },
-    )
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        // Background image
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.fillMaxSize()
+        )
+        PermissionBox(
+            permissions = permissions,
+            requiredPermissions = listOf(permissions.first()),
+            description = "App needs location data",
+            onGranted = {
+                MapLoadingScreen()
+            },
+        )
+    }
 }
 
 @RequiresPermission(

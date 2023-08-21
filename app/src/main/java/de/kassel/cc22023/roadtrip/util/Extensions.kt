@@ -1,5 +1,6 @@
 package de.kassel.cc22023.roadtrip.util
 
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
@@ -18,6 +19,14 @@ import java.time.format.DateTimeFormatter
 
 fun PackingItem.hasNoNotifications() : Boolean {
     return this.notificationType == NotificationType.NONE
+}
+
+fun Modifier.conditional(condition : Boolean, modifier : Modifier.() -> Modifier) : Modifier {
+    return if (condition) {
+        then(modifier(Modifier))
+    } else {
+        this
+    }
 }
 
 suspend fun <T> Deferred<Response<T>>.launch(

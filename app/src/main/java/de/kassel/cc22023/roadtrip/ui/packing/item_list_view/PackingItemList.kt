@@ -56,7 +56,6 @@ fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
 ) {
     val data = trip.packingItems
-    val image: Painter = painterResource(R.drawable.packbg_dark)
     val gridListState = rememberLazyGridState()
 
     val selectedItem: MutableState<PackingItem?> = remember {
@@ -73,14 +72,6 @@ fun PackingListView(
         Box(
             modifier = Modifier.fillMaxSize(),
         ) {
-            // Background image
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.fillMaxSize()
-            )
-
             Column(
                 modifier = Modifier
                     .padding(start = 16.dp, top = 50.dp, end = 16.dp, bottom = 16.dp)
