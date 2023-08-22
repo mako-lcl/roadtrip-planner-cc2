@@ -38,7 +38,7 @@ enum class NotificationType(val value: String) {
 @Entity
 data class PackingItem(
     @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    var id: Long,
     val tripId: Long,
     var name: String,
     var notificationType: NotificationType,
@@ -46,7 +46,8 @@ data class PackingItem(
     var time: Long?,
     var height: Double,
     var lat: Double,
-    var lon: Double
+    var lon: Double,
+    var image: String? = null
 ) {
 
 
@@ -64,6 +65,7 @@ data class PackingItem(
         result = 31 * result + height.hashCode()
         result = 31 * result + lat.hashCode()
         result = 31 * result + lon.hashCode()
+        result = 31 * result + image.hashCode()
         return result
     }
 }
@@ -79,7 +81,7 @@ interface PackingItemDao {
     fun getPackingItemsAsFlow(): Flow<List<PackingItem>>
 
     @Insert
-    fun insertPackingItems(items: List<PackingItem>)
+    fun insertPackingItems(items: List<PackingItem>) : List<Long>
 
     @Query("DELETE FROM PackingItem")
     fun deleteAllItems()
@@ -88,10 +90,13 @@ interface PackingItemDao {
     fun deleteItem(item: PackingItem)
 
     @Insert
-    fun insertIntoList(item: PackingItem)
+    fun insertIntoList(item: PackingItem) : Long
 
     @Update
     fun updateItem(item: PackingItem)
+
+    @Update
+    fun updateItems(items: List<PackingItem>)
 
     @Insert
     suspend fun insertPackingItem(item: PackingItem)

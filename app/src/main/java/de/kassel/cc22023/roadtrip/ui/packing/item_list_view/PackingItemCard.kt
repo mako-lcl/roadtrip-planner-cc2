@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
@@ -81,7 +82,7 @@ fun PackingItemCard (
         mutableStateOf(item.name)
     }
 
-    val image: Painter = painterResource(R.drawable.packbg_dark)
+    val image: Painter = painterResource(R.drawable.no_image)
     Card(modifier = Modifier
         .padding(8.dp)
         .fillMaxWidth()
@@ -90,14 +91,25 @@ fun PackingItemCard (
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier
-                    .height(150.dp)
-                    .fillMaxWidth()
-            )
+            if (item.image != null) {
+                AsyncImage(
+                    model = item.image,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
+                )
+            } else {
+                Image(
+                    painter = image,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier
+                        .height(150.dp)
+                        .fillMaxWidth()
+                )
+            }
+
             ItemCardNameField(selectedName, item)
 
             if (!isChecked) {
