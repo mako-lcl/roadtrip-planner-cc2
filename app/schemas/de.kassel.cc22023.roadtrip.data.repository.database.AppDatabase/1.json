@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "fadbc077688c29ec7fd33a207123f7a3",
+    "identityHash": "d28c225b6592c9e18db4cc00b2d8548f",
     "entities": [
       {
         "tableName": "RoadtripData",
@@ -126,7 +126,7 @@
       },
       {
         "tableName": "PackingItem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tripId` INTEGER NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL, `time` INTEGER, `height` REAL NOT NULL, `lat` REAL NOT NULL, `lon` REAL NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `tripId` INTEGER NOT NULL, `name` TEXT NOT NULL, `notificationType` TEXT NOT NULL, `isChecked` INTEGER NOT NULL, `time` INTEGER, `height` REAL NOT NULL, `lat` REAL NOT NULL, `lon` REAL NOT NULL, `image` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -181,6 +181,12 @@
             "columnName": "lon",
             "affinity": "REAL",
             "notNull": true
+          },
+          {
+            "fieldPath": "image",
+            "columnName": "image",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -196,7 +202,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fadbc077688c29ec7fd33a207123f7a3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd28c225b6592c9e18db4cc00b2d8548f')"
     ]
   }
 }

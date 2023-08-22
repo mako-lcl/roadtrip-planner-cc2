@@ -41,7 +41,6 @@ suspend fun <T> Deferred<Response<T>>.launch(
         try {
             val response = this@launch.await()
             if (response.isSuccessful) {
-
                 val body = response.body()
                 if (body == null) {
                     withContext(Dispatchers.Main) {
@@ -53,7 +52,7 @@ suspend fun <T> Deferred<Response<T>>.launch(
                     }
                 }
             } else {
-                Timber.e("OpenAi API Error", response.message())
+                Timber.e("API Error", response.message())
                 // TODO: We can attach the error code to the onError callback.
                 withContext(Dispatchers.Main) {
                     onError?.invoke(response.message())

@@ -50,6 +50,7 @@ android {
         gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
         manifestPlaceholders["googleMapsApiKey"] = gradleLocalProperties(rootDir).getProperty("MAPS_API_KEY")
         buildConfigField("String", "GPT_KEY", "\"" + gradleLocalProperties(rootDir).getProperty("GPT_KEY") + "\"")
+        buildConfigField("String", "UNSPLASH_KEY", "\"" + gradleLocalProperties(rootDir).getProperty("UNSPLASH_KEY") + "\"")
     }
 
     buildTypes {
@@ -89,6 +90,10 @@ android {
 }
 
 dependencies {
+    //coil
+    implementation("io.coil-kt:coil:2.4.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 

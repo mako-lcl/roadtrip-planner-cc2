@@ -61,7 +61,11 @@ class PlannerViewModel @Inject constructor(
                 transportationType,
                 onSuccess = {
                     viewModelScope.launch(Dispatchers.IO) {
-                        val tripId = roadtripRepository.insertNewRoadtrip(it)
+                        val tripId = roadtripRepository.insertNewRoadtrip(it) {
+                            viewModelScope.launch(Dispatchers.IO) {
+                                roadtripRepository.updatePhotos(it)
+                            }
+                        }
                         preferences.setCurrentTrip(tripId)
 
                         _requestStatus.value = PlannerRequestStatus.Success
@@ -80,7 +84,11 @@ class PlannerViewModel @Inject constructor(
     fun insertTestRoadtrip(trip: RoadtripAndLocationsAndList) {
         viewModelScope.launch(Dispatchers.IO) {
             _requestStatus.value = PlannerRequestStatus.Success
-            roadtripRepository.insertNewRoadtrip(trip)
+            roadtripRepository.insertNewRoadtrip(trip) {// insert roadtrip
+                viewModelScope.launch(Dispatchers.IO) {
+                    roadtripRepository.updatePhotos(it)
+                }
+            }
             preferences.setCurrentTrip(trip.trip.id)
         }
     }
