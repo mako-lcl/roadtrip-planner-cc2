@@ -1,6 +1,5 @@
 package de.kassel.cc22023.roadtrip.ui.packing.item_list_view
 
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
@@ -9,10 +8,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,12 +38,10 @@ fun ItemCardNameField(
                     item.height,
                     item.lat,
                     item.lon,
-                    item.tripId
+                    item.tripId,
+                    item.image
                 )
             }),
-
-        modifier = Modifier
-            .fillMaxHeight(1f),
         textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
         colors = TextFieldDefaults.colors(
             disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,

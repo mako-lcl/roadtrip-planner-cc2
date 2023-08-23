@@ -2,9 +2,16 @@ package de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -27,6 +34,7 @@ import de.kassel.cc22023.roadtrip.ui.util.LoadingScreen
 fun FloorInputView(
     item: PackingItem,
     closeDialog: () -> Unit,
+    onSettings: () -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
     val location by viewModel.location.collectAsState()
@@ -42,10 +50,28 @@ fun FloorInputView(
         var height by remember { mutableStateOf(if (item.height == 0.0) it.altitude.toString() else item.height.toString()) }
 
         Column(
-            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Row(
+                horizontalArrangement = Arrangement.End,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                IconButton(
+                    onClick = {
+                        onSettings()
+                    },
+                    modifier = Modifier.size(32.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = null
+                    )
+                }
+            }
+
+            Text(item.name)
+
             // TextField for entering latitude
             TextField(
                 value = latitude,

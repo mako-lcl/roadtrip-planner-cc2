@@ -13,14 +13,18 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,30 +55,34 @@ fun PlannerTripSelection(
         if (trips.isEmpty()) {
             NoTripScreen()
         } else {
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                items(trips) { trip ->
-                    val delete = SwipeAction(
-                        onSwipe = {
-                            viewModel.deleteTrip(trip)
-                        },
-                        icon = {
-                            Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "Delete chat",
-                                modifier = Modifier.padding(16.dp),
-                                tint = Color.White
-                            )
-                        }, background = Color.Red.copy(alpha = 0.5f),
-                        isUndo = true
-                    )
-                    SwipeableActionsBox(
-                        modifier = Modifier,
-                        swipeThreshold = 100.dp,
-                        endActions = listOf(delete)
-                    ) {
-                        TripSelectionCard(trip, trip.trip.id == current, onNavigateToMap)
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                ) {
+                    items(trips) { trip ->
+                        val delete = SwipeAction(
+                            onSwipe = {
+                                viewModel.deleteTrip(trip)
+                            },
+                            icon = {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete chat",
+                                    modifier = Modifier.padding(16.dp),
+                                    tint = Color.White
+                                )
+                            }, background = Color.Red.copy(alpha = 0.5f),
+                            isUndo = true
+                        )
+                        SwipeableActionsBox(
+                            modifier = Modifier,
+                            swipeThreshold = 100.dp,
+                            endActions = listOf(delete)
+                        ) {
+                            TripSelectionCard(trip, trip.trip.id == current, onNavigateToMap)
+                        }
                     }
                 }
             }

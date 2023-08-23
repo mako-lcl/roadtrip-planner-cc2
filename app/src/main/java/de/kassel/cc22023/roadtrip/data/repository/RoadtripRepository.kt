@@ -159,9 +159,9 @@ class DefaultRoadtripRepository @Inject constructor(
                 if (body != null) {
                     val photo = body.results.firstOrNull()
                     if (photo != null) {
-                        if (photo.urls.thumb.isEmpty())
+                        if (photo.urls.regular.isEmpty())
                             return null
-                        return photo.urls.thumb
+                        return photo.urls.regular
                     }
                 } else {
                     return null

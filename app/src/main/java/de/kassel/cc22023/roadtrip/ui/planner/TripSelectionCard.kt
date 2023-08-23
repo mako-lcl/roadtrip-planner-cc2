@@ -88,7 +88,7 @@ fun TripSelectionCard(
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     Column {
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_marker),
                                 contentDescription = null,
@@ -101,7 +101,7 @@ fun TripSelectionCard(
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_marker),
                                 contentDescription = null,
@@ -111,7 +111,7 @@ fun TripSelectionCard(
                         }
                     }
                     Column {
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_date),
                                 contentDescription = null,
@@ -124,7 +124,7 @@ fun TripSelectionCard(
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
-                        Row {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_date),
                                 contentDescription = null,
@@ -144,7 +144,7 @@ fun TripSelectionImage(image: Painter) {
     Image(
         painter = image,
         contentDescription = null,
-        contentScale = ContentScale.FillBounds,
+        contentScale = ContentScale.Crop,
         modifier = Modifier.fillMaxSize()
     )
 }

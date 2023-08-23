@@ -117,7 +117,8 @@ class PackingViewModel @Inject constructor(
         height: Double,
         lat: Double,
         lon: Double,
-        tripId: Long
+        tripId: Long,
+        image: String?
     ) {
         val newItem = PackingItem(
             id = id,
@@ -128,7 +129,8 @@ class PackingViewModel @Inject constructor(
             time = time,
             height = height,
             lat = lat,
-            lon = lon
+            lon = lon,
+            image = image
         )
         updateItem(newItem)
     }

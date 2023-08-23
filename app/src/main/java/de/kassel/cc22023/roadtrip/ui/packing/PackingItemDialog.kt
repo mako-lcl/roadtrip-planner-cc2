@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -23,11 +21,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.ui.packing.ChooseNotificationTypeDialog
-import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
+import de.kassel.cc22023.roadtrip.ui.packing.HeightInput
 import de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog.FloorInputView
 import de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog.LocationInputView
 import de.kassel.cc22023.roadtrip.ui.packing.reminder_dialog.TimeInputView
@@ -41,12 +38,11 @@ fun PackingItemDialogSurface(
     selectedItem.value?.let {
         Dialog(onDismissRequest = { selectedItem.value = null }) {
             Surface(
-                modifier = Modifier
-                    .fillMaxSize(),
                 shape = MaterialTheme.shapes.large
             ) {
                 Column(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     PackingItemDialog(item = it, closeDialog = {
@@ -60,6 +56,7 @@ fun PackingItemDialogSurface(
 
 enum class PackingItemDialogState {
     CHOOSING_TYPE,
+    HEIGHT,
     INPUT
 }
 
@@ -91,8 +88,14 @@ fun PackingItemDialog(
                     notificationType = NotificationType.FLOOR
                     state = PackingItemDialogState.INPUT
                 })
+        } else if (screen == PackingItemDialogState.HEIGHT) {
+            HeightInput(onComplete = {
+                state = PackingItemDialogState.INPUT
+            })
         } else {
-            PackingNotificationDialog(item = item, notificationType, closeDialog = closeDialog)
+            PackingNotificationDialog(item = item, notificationType, closeDialog = closeDialog, onSettings = {
+                state = PackingItemDialogState.HEIGHT
+            })
         }
     }
 }
@@ -102,6 +105,7 @@ fun PackingNotificationDialog(
     item: PackingItem,
     notificationType: NotificationType,
     closeDialog: () -> Unit,
+    onSettings: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -110,11 +114,9 @@ fun PackingNotificationDialog(
         horizontalAlignment = Alignment.CenterHorizontally, // Center horizontally
         verticalArrangement = Arrangement.spacedBy(8.dp) // Add space between elements
     ) {
-        Text(item.name)
-
         when (notificationType.value) {
             "Floor" -> {
-                FloorInputView(item, closeDialog)
+                FloorInputView(item, closeDialog = closeDialog, onSettings = onSettings)
             }
 
             "Location" -> {

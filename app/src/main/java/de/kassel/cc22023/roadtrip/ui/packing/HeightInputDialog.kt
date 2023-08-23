@@ -1,5 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.packing
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
@@ -15,13 +17,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun HeightInputDialog(
-    heightDialogOpen: MutableState<Boolean>,
+fun HeightInput(
+    onComplete: () -> Unit,
     viewModel: PackingViewModel = hiltViewModel()
 ) {
     val height by viewModel.height.collectAsState(initial = 0.0)
@@ -34,38 +36,27 @@ fun HeightInputDialog(
         heightText = height.toString()
     }
 
-    if (heightDialogOpen.value) {
-        AlertDialog(
-            onDismissRequest = { heightDialogOpen.value = false },
-            title = { Text(text = "Enter Height in meters") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        val convertedHeight = heightText.toDoubleOrNull() ?: return@TextButton
-                        // Save the height in SharedPreferences
-                        viewModel.saveHeight(convertedHeight)
-                        heightDialogOpen.value = false
-                    }
-                ) {
-                    Text("Submit")
-                }
+    Column(
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        TextField(
+            value = heightText,
+            onValueChange = {
+                heightText = it
             },
-            dismissButton = {
-                TextButton(onClick = { heightDialogOpen.value = false }) {
-                    Text("Cancel")
-                }
-            },
-            text = {
-                TextField(
-                    value = heightText,
-                    onValueChange = {
-                        heightText = it
-                    },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                )
-            }
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         )
+        TextButton(
+            onClick = {
+                val convertedHeight = heightText.toDoubleOrNull() ?: return@TextButton
+                // Save the height in SharedPreferences
+                viewModel.saveHeight(convertedHeight)
+                onComplete()
+            }
+        ) {
+            Text("Submit")
+        }
     }
 }

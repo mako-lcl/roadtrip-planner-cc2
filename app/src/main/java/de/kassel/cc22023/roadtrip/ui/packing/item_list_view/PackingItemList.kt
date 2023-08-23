@@ -23,9 +23,11 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -46,6 +48,7 @@ import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
+import de.kassel.cc22023.roadtrip.util.hasNoNotifications
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 import okhttp3.internal.toImmutableList
@@ -56,7 +59,6 @@ fun PackingListView(
     viewModel: PackingViewModel = hiltViewModel(),
 ) {
     val data = trip.packingItems
-    val gridListState = rememberLazyGridState()
 
     val selectedItem: MutableState<PackingItem?> = remember {
         mutableStateOf(null)
@@ -81,35 +83,61 @@ fun PackingListView(
             ) {
                 val reversedList = data.reversed()
 
-                LazyVerticalGrid(columns = GridCells.Fixed(2), state = gridListState) {
-                    items(reversedList, key = {item -> item.hashCode()}) {item ->
-                        val delete = SwipeAction(
-                            onSwipe = {
-                                viewModel.onSwipeToDelete(item)
-                            },
-                            icon = {
-                                Icon(
-                                    Icons.Default.Delete,
-                                    contentDescription = "Delete chat",
-                                    modifier = Modifier.padding(16.dp),
-                                    tint = Color.White
-                                )
-                            }, background = Color.Red.copy(alpha = 0.5f),
-                            isUndo = true
-                        )
-                        SwipeableActionsBox(
-                            modifier = Modifier,
-                            swipeThreshold = 100.dp,
-                            endActions = listOf(delete)
-                        ) {
-                            PackingItemCard(item, selectItem = { selectedItem.value = it })
-                        }
-                    }
-                }
+                val sorted = reversedList.sortedBy { it.isChecked }
+
+                PackingList(sorted, selectItem = { selectedItem.value = it })
             }
 /*            LaunchedEffect(data) {
                 gridListState.scrollToItem(0)
             }*/
+        }
+    }
+}
+
+@Composable
+fun PackingList(items: List<PackingItem>, selectItem: (PackingItem) -> Unit, viewModel: PackingViewModel = hiltViewModel()) {
+    val gridListState = rememberLazyGridState()
+
+    LazyVerticalGrid(columns = GridCells.Fixed(2), state = gridListState) {
+        items(items, key = {item -> item.hashCode()}) {item ->
+            val delete = SwipeAction(
+                onSwipe = {
+                    viewModel.onSwipeToDelete(item)
+                },
+                icon = {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Delete chat",
+                        modifier = Modifier.padding(16.dp),
+                        tint = Color.White
+                    )
+                }, background = Color.Red.copy(alpha = 0.5f),
+                isUndo = true
+            )
+
+            val notify = SwipeAction(
+                onSwipe = {
+                    selectItem(item)
+                },
+                icon = {
+                    Icon(
+                        Icons.Default.Notifications,
+                        contentDescription = "Notification for ${item.name}",
+                        modifier = Modifier.padding(16.dp),
+                        tint = Color.White
+                    )
+                }, background = Color.Green.copy(alpha = 0.5f),
+                isUndo = true
+            )
+
+            SwipeableActionsBox(
+                modifier = Modifier,
+                swipeThreshold = 100.dp,
+                startActions = if (item.hasNoNotifications()) listOf(notify) else emptyList(),
+                endActions = listOf(delete)
+            ) {
+                PackingItemCard(item)
+            }
         }
     }
 }

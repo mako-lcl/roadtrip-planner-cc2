@@ -38,10 +38,11 @@ fun LocationInputView(
         var longitude by remember { mutableStateOf(if (item.lon == 0.0) it.longitude.toString() else item.lon.toString()) }
 
         Column(
-            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            Text(item.name)
+
             // TextField for entering latitude
             TextField(
                 value = latitude,
