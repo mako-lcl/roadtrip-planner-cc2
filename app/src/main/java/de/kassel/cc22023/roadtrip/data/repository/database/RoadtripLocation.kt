@@ -18,6 +18,8 @@ data class RoadtripLocation(
     val lat: Double?,
     val lon: Double?,
     val name: String?,
+    val mustHave:Boolean,
+    val date: String
 )
 
 data class RoadtripLocationAndActivity(
