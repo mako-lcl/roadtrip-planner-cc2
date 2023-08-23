@@ -22,7 +22,7 @@ fun convertRoadtripFromTestTrip(trip: OpenAiTrip) : RoadtripAndLocationsAndList 
             RoadtripActivity(0, 0, it)
         }
 
-        val location = RoadtripLocation(0, 0, it.latitude, it.longitude, it.name)
+        val location = RoadtripLocation(0, 0, it.latitude, it.longitude, it.name,it.mustHave,it.date)
         RoadtripLocationAndActivity(location, activities)
     }
 

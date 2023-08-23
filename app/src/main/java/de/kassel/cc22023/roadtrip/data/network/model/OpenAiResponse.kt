@@ -35,5 +35,8 @@ data class OpenAiLoc(
     val name: String,
     val latitude: Double,
     val longitude: Double,
+    @Json(name = "must_have")
+    val mustHave: Boolean,
+    val date: String,
     val activities: List<String>
 )

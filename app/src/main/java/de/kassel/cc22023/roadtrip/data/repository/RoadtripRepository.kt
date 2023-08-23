@@ -73,7 +73,7 @@ class DefaultRoadtripRepository @Inject constructor(
 
         val locations = roadtripLocationDao.insertLocations(
             trip.locations.map {loc ->
-                RoadtripLocation(0, tripId, loc.location.lat, loc.location.lon, loc.location.name)
+                RoadtripLocation(0, tripId, loc.location.lat, loc.location.lon, loc.location.name, loc.location.mustHave, loc.location.date)
             }
         )
 
