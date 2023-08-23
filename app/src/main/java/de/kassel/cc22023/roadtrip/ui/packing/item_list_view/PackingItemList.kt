@@ -107,9 +107,9 @@ fun PackingListView(
                     }
                 }
             }
-            LaunchedEffect(data) {
+/*            LaunchedEffect(data) {
                 gridListState.scrollToItem(0)
-            }
+            }*/
         }
     }
 }

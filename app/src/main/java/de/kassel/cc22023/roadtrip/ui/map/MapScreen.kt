@@ -52,32 +52,19 @@ import timber.log.Timber
 )
 @Composable
 fun MapScreen() {
-    val image: Painter = painterResource(R.drawable.backgroundplanner)
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        // Background image
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxSize()
-        )
-        PermissionBox(
-            permissions = permissions,
-            requiredPermissions = listOf(permissions.first()),
-            description = "App needs location data",
-            onGranted = {
-                MapLoadingScreen()
-            },
-        )
-    }
+    PermissionBox(
+        permissions = permissions,
+        requiredPermissions = listOf(permissions.first()),
+        description = "App needs location data",
+        onGranted = {
+            MapLoadingScreen()
+        },
+    )
 }
 
 @RequiresPermission(

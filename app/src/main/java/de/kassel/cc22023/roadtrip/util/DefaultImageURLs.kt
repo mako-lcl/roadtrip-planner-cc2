@@ -60,8 +60,12 @@ class DefaultImageURLs {
                 return "https://images.unsplash.com/photo-1540221652346-e5dd6b50f3e7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0OTE5MTV8MHwxfHNlYXJjaHwxfHxjbG90aGVzfGVufDB8fHx8MTY5MjcwNTMzOHww&ixlib=rb-4.0.3&q=80&w=200"
             }
 
-            if (name.contains("sun")) {
+            if (name.contains("sunscreen")) {
                 return "https://images.unsplash.com/photo-1594055103006-7871176f1a7e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0OTE5MTV8MHwxfHNlYXJjaHwxfHxzdW5zY3JlZW58ZW58MHx8fHwxNjkyNzA1Mzc5fDA&ixlib=rb-4.0.3&q=80&w=200"
+            }
+
+            if (name.contains("sunglasses")) {
+                return "https://images.unsplash.com/photo-1511499767150-a48a237f0083?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w0OTE5MTV8MHwxfHNlYXJjaHwxfHxzdW5nbGFzc2VzfGVufDB8fHx8MTY5Mjc4MzQ1MXww&ixlib=rb-4.0.3&q=80&w=200"
             }
 
             if (name.contains("bike") || name.contains("bicycle")) {

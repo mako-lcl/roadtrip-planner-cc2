@@ -27,26 +27,5 @@ import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 fun PlannerScreen(
     onNavigateToMap: () -> Unit,
 ) {
-    val image: Painter = painterResource(R.drawable.backgroundplanner)
-    Surface(
-        color = Color.Black.copy(alpha = 0.3f),
-        modifier = Modifier.fillMaxSize()
-    ){
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            // Background image
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.fillMaxSize(),
-                //alpha = 0.1f
-
-            )
-            PlannerTripSelection(onNavigateToMap)
-        }
-    }
-
+    PlannerTripSelection(onNavigateToMap)
 }

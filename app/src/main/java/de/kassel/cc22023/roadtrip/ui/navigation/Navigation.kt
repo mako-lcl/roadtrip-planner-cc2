@@ -25,6 +25,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -79,6 +80,7 @@ fun MainNavigation() {
     HeightInputDialog(heightSettingsDialogOpen)
 
     Scaffold(
+        containerColor = Color.Transparent,
         bottomBar = {
             RoadtripNavBar(navController)
         },
