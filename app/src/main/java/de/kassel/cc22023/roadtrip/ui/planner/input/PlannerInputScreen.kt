@@ -40,7 +40,7 @@ fun PlannerInputScreen(
     val context = LocalContext.current
 
     //Background image
-    val image: Painter = painterResource(R.drawable.map_pin)
+    val image: Painter = painterResource(R.drawable.backgroundplanner)
 
     /*
     *  Start Date Input States

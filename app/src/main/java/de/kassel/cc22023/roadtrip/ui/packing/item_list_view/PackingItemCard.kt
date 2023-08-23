@@ -82,7 +82,7 @@ fun PackingItemCard (
         mutableStateOf(item.name)
     }
 
-    val image: Painter = painterResource(R.drawable.no_image)
+    val image: Painter = painterResource(R.drawable.backgroundplanner)
     Card(modifier = Modifier
         .padding(8.dp)
         .fillMaxWidth()

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -36,7 +37,7 @@ fun TripSelectionCard(
     onNavigateToMap: () -> Unit,
     viewModel: PlannerViewModel = hiltViewModel()
 ) {
-    val tripNumber = trip.trip.id % 10 + 1 // Adjust this based on your trip ID range
+    val tripNumber = trip.trip.id % 5 + 1 // Adjust this based on your trip ID range
     val imageName = "roadtrip$tripNumber"
     val context = LocalContext.current
     val drawableId = remember(imageName) {
@@ -46,8 +47,15 @@ fun TripSelectionCard(
             context.packageName
         )
     }
+    val overlayImage = "selected"
+    val drawableIdOverlay = remember(overlayImage) {
+        context.resources.getIdentifier(
+            overlayImage,
+            "drawable",
+            context.packageName
+        )
+    }
     val image: Painter = painterResource(id = drawableId)
-
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -57,23 +65,43 @@ fun TripSelectionCard(
                 onNavigateToMap()
             }
             .conditional(isSelected) {
-                border(6.dp, Color.Red)
+                border(3.dp, Color.White)
+
             },
     ) {
-
         Column(
             modifier = Modifier.padding(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(120.dp)
-            )
+                    .height(120.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = image,
+                    contentDescription = null,
+                    contentScale = ContentScale.FillHeight,
+                    modifier = Modifier.fillMaxSize()
 
+                )
+                if (isSelected) {
+                    Box(
+                        modifier = Modifier
+                            .padding(0.dp)
+                            .size(35.dp) // Adjust the size as needed
+                            .align(Alignment.TopEnd), // Position the overlay in the top-right corner
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = drawableIdOverlay),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
+            }
             Text("From: ${trip.trip.startLocation}")
             Text("To: ${trip.trip.endLocation}")
             Text("By: ${trip.trip.startDate}")

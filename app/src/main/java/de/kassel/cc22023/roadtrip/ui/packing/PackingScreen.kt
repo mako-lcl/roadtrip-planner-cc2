@@ -31,7 +31,7 @@ val notificationPermissions = listOf(
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val image: Painter = painterResource(R.drawable.packbg_dark)
+    val image: Painter = painterResource(R.drawable.backgroundplanner)
     val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
 
     if (permissionState.allPermissionsGranted) {

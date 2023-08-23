@@ -52,7 +52,7 @@ import timber.log.Timber
 )
 @Composable
 fun MapScreen() {
-    val image: Painter = painterResource(R.drawable.travelbg_2)
+    val image: Painter = painterResource(R.drawable.backgroundplanner)
     val permissions = listOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION
