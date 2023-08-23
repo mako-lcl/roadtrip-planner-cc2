@@ -81,18 +81,6 @@ class PlannerViewModel @Inject constructor(
         }
     }
 
-    fun insertTestRoadtrip(trip: RoadtripAndLocationsAndList) {
-        viewModelScope.launch(Dispatchers.IO) {
-            _requestStatus.value = PlannerRequestStatus.Success
-            roadtripRepository.insertNewRoadtrip(trip) {// insert roadtrip
-                viewModelScope.launch(Dispatchers.IO) {
-                    roadtripRepository.updatePhotos(it)
-                }
-            }
-            preferences.setCurrentTrip(trip.trip.id)
-        }
-    }
-
     fun deleteAllTrips() {
         viewModelScope.launch(Dispatchers.IO) {
             roadtripRepository.deleteAllTrips()

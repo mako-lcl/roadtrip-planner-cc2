@@ -9,7 +9,6 @@ import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.UnsplashApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
-import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivityDao
@@ -20,7 +19,7 @@ import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationDao
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.util.DefaultImageURLs
 import de.kassel.cc22023.roadtrip.util.convertCleanedStringToTrip
-import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromAiTrip
 import de.kassel.cc22023.roadtrip.util.createRoadtripPrompt
 import de.kassel.cc22023.roadtrip.util.launch
 import kotlinx.coroutines.flow.Flow
@@ -133,7 +132,7 @@ class DefaultRoadtripRepository @Inject constructor(
                                 if (content != null) {
                                     val trip = convertCleanedStringToTrip(content)
                                     if (trip != null) {
-                                        val combinedRoadtrip = convertRoadtripFromTestTrip(trip)
+                                        val combinedRoadtrip = convertRoadtripFromAiTrip(trip)
                                         onSuccess(combinedRoadtrip)
                                     } else {
                                         onError()
