@@ -9,5 +9,5 @@ data class UnsplashResult(
 )
 
 data class UnsplashUrls(
-    val thumb: String
+    val regular: String
 )

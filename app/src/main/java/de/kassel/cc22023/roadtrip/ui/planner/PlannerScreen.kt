@@ -10,10 +10,12 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -25,19 +27,5 @@ import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 fun PlannerScreen(
     onNavigateToMap: () -> Unit,
 ) {
-    val image: Painter = painterResource(R.drawable.packbg)
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        // Background image
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxSize()
-        )
-        PlannerTripSelection(onNavigateToMap)
-    }
+    PlannerTripSelection(onNavigateToMap)
 }

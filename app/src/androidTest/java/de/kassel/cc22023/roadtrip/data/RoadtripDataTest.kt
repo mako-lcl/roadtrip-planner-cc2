@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import de.kassel.cc22023.roadtrip.data.repository.database.AppDatabase
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
-import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromAiTrip
 import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
@@ -42,7 +42,7 @@ class RoadtripDataTest {
 
         val trip = loadRoadtripFromAssets(context)
 
-        val roadtrip = convertRoadtripFromTestTrip(trip)
+        val roadtrip = convertRoadtripFromAiTrip(trip)
 
         val tripFromDB = roadtripDataDao.getRoadtripData()
         assertThat(tripFromDB, equalTo(roadtrip))

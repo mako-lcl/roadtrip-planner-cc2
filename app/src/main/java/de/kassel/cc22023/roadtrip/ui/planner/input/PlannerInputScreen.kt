@@ -28,8 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.TransportationType
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerViewModel
-import de.kassel.cc22023.roadtrip.util.convertRoadtripFromTestTrip
-import de.kassel.cc22023.roadtrip.util.loadRoadtripFromAssets
+import de.kassel.cc22023.roadtrip.util.convertRoadtripFromAiTrip
 import java.time.LocalDate
 
 @ExperimentalMaterial3Api
@@ -40,7 +39,7 @@ fun PlannerInputScreen(
     val context = LocalContext.current
 
     //Background image
-    val image: Painter = painterResource(R.drawable.map_pin)
+    val image: Painter = painterResource(R.drawable.backgroundplanner)
 
     /*
     *  Start Date Input States
@@ -129,14 +128,6 @@ fun PlannerInputScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 InputSubmitButton(startLocationError, endLocationError, startLocation, endLocation, startDateError, endDateError, startDate, endDate, selectedText)
-
-                Button(onClick = {
-                    val testTrip = loadRoadtripFromAssets(context)
-                    val trip = convertRoadtripFromTestTrip(testTrip)
-                    viewModel.insertTestRoadtrip(trip)
-                }) {
-                    Text(text = "Load from Disk")
-                }
             }
         }
     }

@@ -17,14 +17,16 @@
 package de.kassel.cc22023.roadtrip.ui.navigation
 
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import android.widget.Toast
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -32,75 +34,66 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.ui.map.MapScreen
-import de.kassel.cc22023.roadtrip.ui.packing.HeightInputDialog
+import de.kassel.cc22023.roadtrip.ui.packing.HeightInput
+import de.kassel.cc22023.roadtrip.ui.packing.NewItemDialog
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
-import de.kassel.cc22023.roadtrip.ui.packing.PackingTopBar
+import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
 import de.kassel.cc22023.roadtrip.ui.planner.NewTripDialog
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerScreen
-import de.kassel.cc22023.roadtrip.ui.planner.PlannerTopBar
-
-enum class TopBarState {
-    PLANNER,
-    PACKING,
-    NONE
-}
 
 @SuppressLint("MissingPermission")
 @Composable
-fun MainNavigation() {
+fun MainNavigation(
+    packingViewModel: PackingViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
-    var topBarState by rememberSaveable { (mutableStateOf(TopBarState.NONE)) }
-
+    val currentTrip by packingViewModel.currentTripId.collectAsState(initial = -1L)
+    val context = LocalContext.current
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-
-    // Control TopBar
-    topBarState = when (navBackStackEntry?.destination?.route) {
-        Screen.Planner.route -> {
-            TopBarState.PLANNER
-        }
-
-        Screen.Packing.route -> {
-            TopBarState.PACKING
-        }
-
-        else -> {
-            TopBarState.NONE
-        }
-    }
 
     val newTripDialogOpen = remember {
         mutableStateOf(false)
     }
     NewTripDialog(newTripDialogOpen)
 
-    val heightSettingsDialogOpen = remember {
+    val newItemDialog = remember {
         mutableStateOf(false)
     }
-    HeightInputDialog(heightSettingsDialogOpen)
+    NewItemDialog(currentTrip, newItemDialog)
 
     Scaffold(
+        containerColor = Color.Transparent,
         bottomBar = {
             RoadtripNavBar(navController)
         },
-        topBar = {
-            AnimatedVisibility(
-                visible = topBarState != TopBarState.NONE,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it }),
-            ) {
-                when (topBarState) {
-                    TopBarState.PLANNER -> {
-                        PlannerTopBar(openDialog = {
-                            newTripDialogOpen.value = true
-                        })
+        floatingActionButton = {
+            when (navBackStackEntry?.destination?.route) {
+                Screen.Planner.route -> {
+                    ExtendedFloatingActionButton(onClick = { newTripDialogOpen.value = true }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add new trip"
+                        )
+                        Text("New")
                     }
-                    TopBarState.PACKING -> {
-                        PackingTopBar(openSettings = {
-                            heightSettingsDialogOpen.value = true
-                        })
-                    }
+                }
 
-                    else -> {}
+                Screen.Packing.route -> {
+                    ExtendedFloatingActionButton(onClick = {
+                        if (currentTrip != -1L) {
+                            newItemDialog.value = true
+                        } else {
+                            Toast
+                                .makeText(context, "Error while creating item", Toast.LENGTH_LONG)
+                                .show()
+                        }
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add new trip"
+                        )
+                        Text("New")
+                    }
                 }
             }
         }

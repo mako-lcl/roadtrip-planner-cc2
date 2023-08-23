@@ -19,11 +19,17 @@ package de.kassel.cc22023.roadtrip.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import dagger.hilt.android.AndroidEntryPoint
+import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.ui.navigation.MainNavigation
 import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 
@@ -38,6 +44,18 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        val image: Painter = painterResource(R.drawable.backgroundplanner)
+                        // Background image
+                        Image(
+                            painter = image,
+                            contentDescription = null,
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier.fillMaxSize(),
+                        )
+                    }
                     MainNavigation()
                 }
             }

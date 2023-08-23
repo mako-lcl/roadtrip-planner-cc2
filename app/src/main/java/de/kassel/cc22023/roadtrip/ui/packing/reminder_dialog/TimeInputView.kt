@@ -46,11 +46,6 @@ fun TimeInputView(
 ) {
     val context = LocalContext.current
 
-    Text(
-        "Add Time Notification",
-        fontSize = 30.sp
-    )
-
     var startDate = LocalDate.now()
     item.time?.let {
         startDate = LocalDateTime.ofEpochSecond(it, 0, ZoneOffset.UTC).toLocalDate()
@@ -62,8 +57,10 @@ fun TimeInputView(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        Text(item.name)
+
         Box {
             TextField(
                 value = selectedStartDate.toString(),
@@ -138,7 +135,7 @@ fun TimeInputView(
             val newTime = LocalDateTime.of(selectedStartDate, LocalTime.of(hour, minute))
             val tz: TimeZone = TimeZone.getDefault()
             val now = Date()
-            val offsetFromUtc: Int = tz.getOffset(now.getTime()) / 1000
+            val offsetFromUtc: Int = tz.getOffset(now.time) / 1000
             item.time = newTime.toEpochSecond(ZoneOffset.ofTotalSeconds(offsetFromUtc))
             item.notificationType = NotificationType.TIME
             viewModel.updateItem(item)

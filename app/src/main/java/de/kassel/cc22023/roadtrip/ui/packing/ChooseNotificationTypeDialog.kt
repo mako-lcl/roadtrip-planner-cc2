@@ -28,8 +28,6 @@ fun ChooseNotificationTypeDialog(
     val location: Painter = painterResource(R.drawable.location)
     val height: Painter = painterResource(R.drawable.height)
     Column(
-        modifier = Modifier
-            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Choose notification type")

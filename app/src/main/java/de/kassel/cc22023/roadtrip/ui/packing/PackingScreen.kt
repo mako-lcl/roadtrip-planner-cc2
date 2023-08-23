@@ -31,7 +31,6 @@ val notificationPermissions = listOf(
 @Composable
 fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
     val context = LocalContext.current
-    val image: Painter = painterResource(R.drawable.packbg_dark)
     val permissionState = rememberMultiplePermissionsState(permissions = notificationPermissions)
 
     if (permissionState.allPermissionsGranted) {
@@ -40,29 +39,17 @@ fun PackingScreen(viewModel: PackingViewModel = hiltViewModel()) {
         viewModel.onPermissionDenied()
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
+    if (permissionState.shouldShowRationale ||
+        !permissionState.allPermissionsGranted ||
+        permissionState.revokedPermissions.isNotEmpty()
     ) {
-        // Background image
-        Image(
-            painter = image,
-            contentDescription = null,
-            contentScale = ContentScale.FillHeight,
-            modifier = Modifier.fillMaxSize()
-        )
-        if (permissionState.shouldShowRationale ||
-            !permissionState.allPermissionsGranted ||
-            permissionState.revokedPermissions.isNotEmpty()
-        ) {
-            PermissionsRejectedView()
-        } else {
-            LaunchedEffect(Unit) {
-                createNotificationChannel(context)
-            }
-
-            PackingListScreen()
+        PermissionsRejectedView()
+    } else {
+        LaunchedEffect(Unit) {
+            createNotificationChannel(context)
         }
+
+        PackingListScreen()
     }
 }
 
