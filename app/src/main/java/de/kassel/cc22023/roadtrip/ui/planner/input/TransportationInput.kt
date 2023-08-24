@@ -10,6 +10,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -28,27 +29,22 @@ fun TransportationInput(
         onExpandedChange = { expanded.value = it },
         Modifier.fillMaxWidth()
     ) {
-        Surface(
-            color = Color.Transparent,
-            shadowElevation = 2.dp,
-            tonalElevation = 50.dp,
-            modifier = Modifier
-                .padding(0.dp)
-                .fillMaxWidth(1f),
-            shape = RoundedCornerShape(15.dp)
 
-        ) {
-            TextField(
-                shape = RoundedCornerShape(15.dp),
-                value = selectedText.value,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
-                modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth()
-            )
-        }
+        TextField(
+            shape = RoundedCornerShape(15.dp),
+            value = selectedText.value,
+            onValueChange = {},
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ) ,
+            readOnly = true,
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded.value) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
         ExposedDropdownMenu(
             expanded = expanded.value,
             onDismissRequest = { expanded.value = false },
