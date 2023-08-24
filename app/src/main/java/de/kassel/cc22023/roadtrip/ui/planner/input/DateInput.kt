@@ -46,58 +46,54 @@ fun DateInput(
         modifier = Modifier
             .padding(horizontal = 32.dp)
     ) {
-        Box {
-            Surface(
-                color = Color.Transparent,
-                shadowElevation = 1.dp,
-                tonalElevation = 50.dp,
-                modifier = Modifier
-                    .fillMaxWidth(1f),
-                shape = RoundedCornerShape(15.dp)
-            ) {
-                TextField(
-                    shape = RoundedCornerShape(15.dp),
-                    value = date.value,
-                    onValueChange = {},
-                    singleLine = true,
-                    enabled = false,
-                    modifier = Modifier.clickable(onClick = {
-                        showDatePicker.value = true
-                    }),
-                    label = { Text(text = promptText) },
-                    colors = TextFieldDefaults.colors(
-
-                        disabledContainerColor = if (!dateError.value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-                        disabledTextColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
-                        disabledTrailingIconColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
-                        disabledSupportingTextColor = MaterialTheme.colorScheme.error,
-                        //errorContainerColor = colorScheme.error,
-                        errorTextColor = MaterialTheme.colorScheme.error
 
 
-                    ),
-                    trailingIcon = {
-                        if (!dateError.value) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.baseline_calendar_month_24),
-                                contentDescription = "Trailing Icon"
-                            )
-                        } else {
-                            Icon(
-                                painter = painterResource(id = R.drawable.error),
-                                contentDescription = "Trailing Icon"
-                            )
-                        }
-                    },
-                    supportingText = {
-                        if (dateError.value) {
-                            Text(text = context.getString(R.string.date_input_error))
-                        }
-                    },
-                    isError = dateError.value,
-                )
-            }
-        }
+            TextField(
+                shape = RoundedCornerShape(15.dp),
+                value = date.value,
+                onValueChange = {},
+                singleLine = true,
+                enabled = false,
+                modifier = Modifier.clickable(onClick = {
+                    showDatePicker.value = true
+                }),
+                label = { Text(text = promptText) },
+                colors = TextFieldDefaults.colors(
+
+                    disabledContainerColor = if (!dateError.value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
+                    disabledTextColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
+                    disabledTrailingIconColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
+                    disabledSupportingTextColor = MaterialTheme.colorScheme.error,
+                    //errorContainerColor = colorScheme.error,
+                    errorTextColor = MaterialTheme.colorScheme.error,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
+
+
+                ),
+                trailingIcon = {
+                    if (!dateError.value) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_calendar_month_24),
+                            contentDescription = "Trailing Icon"
+                        )
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.error),
+                            contentDescription = "Trailing Icon"
+                        )
+                    }
+                },
+                supportingText = {
+                    if (dateError.value) {
+                        Text(text = context.getString(R.string.date_input_error))
+                    }
+                },
+                isError = dateError.value,
+            )
+
+
 
         if (showDatePicker.value) {
             DatePickerDialog(
@@ -110,7 +106,8 @@ fun DateInput(
                     date.value = selectedDate.value.toString()
                     showDatePicker.value = false
                     startDateError.value = selectedStartDate.value.isBefore(LocalDate.now())
-                    endDateError.value = selectedEndDate.value.isBefore(selectedStartDate.value.plusDays(1))
+                    endDateError.value =
+                        selectedEndDate.value.isBefore(selectedStartDate.value.plusDays(1))
                 },
                 onCloseDialog = { showDatePicker.value = false }
             )
