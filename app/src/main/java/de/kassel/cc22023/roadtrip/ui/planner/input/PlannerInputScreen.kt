@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -72,9 +73,6 @@ fun PlannerInputScreen(
     /*
     *  Transportation Input States
     */
-    val expanded = remember {
-        mutableStateOf(false)
-    }
     val selectedText = remember {
         mutableStateOf(TransportationType.values().first().value)
     }
@@ -99,33 +97,26 @@ fun PlannerInputScreen(
             Column(
                 Modifier
                     .fillMaxWidth()
-                    .padding(all = 20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(all = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(50.dp))
 
                 //Input Title
                 InputTitle()
 
-                Spacer(modifier = Modifier.height(50.dp))
-
                 //Start Location
                 LocationInput(startLocation, startLocationError, context.getString(R.string.start_location_prompt))
                 //End Location
                 LocationInput(endLocation, endLocationError, context.getString(R.string.end_location_prompt))
-
-                Spacer(modifier = Modifier.height(20.dp))
 
                 // First Date Selection
                 DateInput(startDate, showStartDatePicker, startDateError, selectedStartDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.start_date_prompt))
                 // Second Date Selection
                 DateInput(endDate, showEndDatePicker, endDateError, selectedEndDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.end_date_prompt))
 
-                Spacer(modifier = Modifier.height(40.dp))
-
-                TransportationInput(expanded, selectedText)
-
-                Spacer(modifier = Modifier.height(20.dp))
+                TransportationInput(selectedText)
 
                 InputSubmitButton(startLocationError, endLocationError, startLocation, endLocation, startDateError, endDateError, startDate, endDate, selectedText)
             }
