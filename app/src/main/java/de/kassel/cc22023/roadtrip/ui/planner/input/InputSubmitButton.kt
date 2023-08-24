@@ -34,6 +34,6 @@ fun InputSubmitButton(
             )
         }
     }) {
-        Text("Load from GPT")
+        Text("Create")
     }
 }
