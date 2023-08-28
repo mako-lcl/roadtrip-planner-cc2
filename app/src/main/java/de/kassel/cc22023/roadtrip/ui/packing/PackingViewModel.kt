@@ -10,14 +10,11 @@ import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager
-import de.kassel.cc22023.roadtrip.ui.map.MapDataUiState
-import de.kassel.cc22023.roadtrip.ui.planner.PlannerDataUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -114,7 +111,7 @@ class PackingViewModel @Inject constructor(
         notificationType: NotificationType,
         checked: Boolean,
         time: Long?,
-        height: Double,
+        floor: Int,
         lat: Double,
         lon: Double,
         tripId: Long,
@@ -127,7 +124,7 @@ class PackingViewModel @Inject constructor(
             notificationType = notificationType,
             isChecked = checked,
             time = time,
-            height = height,
+            floor = floor,
             lat = lat,
             lon = lon,
             image = image
@@ -163,6 +160,7 @@ class PackingViewModel @Inject constructor(
 
     fun onPermissionGranted() {
         sensorRepository.permissionsGranted()
+        locationPermissionGranted()
     }
 
     fun onPermissionDenied() {

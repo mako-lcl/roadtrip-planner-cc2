@@ -1,5 +1,6 @@
 package de.kassel.cc22023.roadtrip.util
 
+import android.hardware.SensorManager
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import de.kassel.cc22023.roadtrip.R
@@ -16,6 +17,10 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+
+fun Float.toHeight(): Float {
+    return SensorManager.getAltitude(SensorManager.PRESSURE_STANDARD_ATMOSPHERE, this)
+}
 
 fun PackingItem.hasNoNotifications() : Boolean {
     return this.notificationType == NotificationType.NONE

@@ -79,7 +79,7 @@ fun LocationInputView(
                     // Handle invalid latitude or longitude input
                 }
             }) {
-                Text(text = "Submit Location")
+                Text(text = "Submit")
             }
 
             LocationSelectorView(selectLocation = {
