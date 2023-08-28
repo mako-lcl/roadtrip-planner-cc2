@@ -53,6 +53,8 @@ interface RoadtripRepository {
     fun getUnsplashImageUrl(name: String) : String?
 
     fun updateItems(items: List<PackingItem>)
+
+    fun resetNotification(items: List<PackingItem>)
 }
 
 class DefaultRoadtripRepository @Inject constructor(
@@ -62,7 +64,7 @@ class DefaultRoadtripRepository @Inject constructor(
     private val packingItemDao: PackingItemDao,
     private val openAiApi: OpenAiApi,
     private val sensorRepository: SensorRepository,
-    private val unsplashApi: UnsplashApi
+    private val unsplashApi: UnsplashApi,
 ) : RoadtripRepository {
     override val allRoadtrips: Flow<List<RoadtripAndLocationsAndList>>
         get() = roadtripDataDao.getAllRoadtripsAsFlow()
@@ -93,7 +95,7 @@ class DefaultRoadtripRepository @Inject constructor(
                 NotificationType.NONE,
                 false,
                 null,
-                0.0,
+                0,
                 0.0,
                 0.0,
                 DefaultImageURLs.getImageByName(it.name)
@@ -188,6 +190,23 @@ class DefaultRoadtripRepository @Inject constructor(
 
     override fun updateItems(items: List<PackingItem>) {
         packingItemDao.updateItems(items)
+    }
+    override fun resetNotification(items: List<PackingItem>) {
+        val update = items.map { item ->
+            PackingItem(
+                item.id,
+                item.tripId,
+                item.name,
+                NotificationType.NONE,
+                item.isChecked,
+                null,
+                0,
+                0.0,
+                0.0,
+                item.image
+            )
+        }
+        updateItems(update)
     }
 
     override fun getRoadtrip(): RoadtripAndLocationsAndList =

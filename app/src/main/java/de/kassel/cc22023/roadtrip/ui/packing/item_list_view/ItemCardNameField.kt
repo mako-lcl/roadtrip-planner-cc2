@@ -36,7 +36,7 @@ fun ItemCardNameField(
                     item.notificationType,
                     item.isChecked,
                     item.time,
-                    item.height,
+                    item.floor,
                     item.lat,
                     item.lon,
                     item.tripId,

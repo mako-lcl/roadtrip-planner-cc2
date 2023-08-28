@@ -90,6 +90,12 @@ android {
 }
 
 dependencies {
+    //work manager
+    val workVersion = "2.8.1"
+    // Kotlin + coroutines
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
+
+
     //coil
     implementation("io.coil-kt:coil:2.4.0")
     implementation("io.coil-kt:coil-compose:2.4.0")
@@ -159,6 +165,10 @@ dependencies {
     // Hilt and Robolectric tests.
     testImplementation(libs.hilt.android.testing)
     kaptTest(libs.hilt.android.compiler)
+    implementation("androidx.hilt:hilt-work:1.0.0")
+    // When using Kotlin.
+    kapt("androidx.hilt:hilt-compiler:1.0.0")
+
 
     // Arch Components
     implementation(libs.androidx.lifecycle.viewmodel.compose)

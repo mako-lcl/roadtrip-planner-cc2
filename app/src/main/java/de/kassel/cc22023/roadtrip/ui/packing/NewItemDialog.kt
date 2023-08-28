@@ -43,7 +43,7 @@ fun NewItemDialog(
                             notificationType = NotificationType.NONE,
                             isChecked = false,
                             null,
-                            0.0,
+                            0,
                             0.0,
                             0.0
                         )

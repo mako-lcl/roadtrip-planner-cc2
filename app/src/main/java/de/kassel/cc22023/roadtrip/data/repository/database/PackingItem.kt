@@ -44,7 +44,7 @@ data class PackingItem(
     var notificationType: NotificationType,
     var isChecked: Boolean,
     var time: Long?,
-    var height: Double,
+    var floor: Int,
     var lat: Double,
     var lon: Double,
     var image: String? = null
@@ -62,7 +62,7 @@ data class PackingItem(
         result = 31 * result + notificationType.hashCode()
         result = 31 * result + isChecked.hashCode()
         result = 31 * result + (time?.hashCode() ?: 0)
-        result = 31 * result + height.hashCode()
+        result = 31 * result + floor.hashCode()
         result = 31 * result + lat.hashCode()
         result = 31 * result + lon.hashCode()
         result = 31 * result + image.hashCode()

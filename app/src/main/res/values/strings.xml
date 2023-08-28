@@ -32,4 +32,6 @@
     <string name="date_input_error">Can not be in the past</string>
     <string name="packing_top_title">Packing list</string>
     <string name="planner_top_title">Roadtrip Planner</string>
+    <string name="notification_title">Detecting floor</string>
+    <string name="notification_message">Checking for reminders..</string>
 </resources>

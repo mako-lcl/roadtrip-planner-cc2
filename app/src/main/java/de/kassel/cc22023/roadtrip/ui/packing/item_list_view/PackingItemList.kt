@@ -132,7 +132,7 @@ fun PackingList(items: List<PackingItem>, selectItem: (PackingItem) -> Unit, vie
             SwipeableActionsBox(
                 modifier = Modifier,
                 swipeThreshold = 100.dp,
-                startActions = if (item.hasNoNotifications()) listOf(notify) else emptyList(),
+                startActions = if (item.hasNoNotifications() && !item.isChecked) listOf(notify) else emptyList(),
                 endActions = listOf(delete)
             ) {
                 PackingItemCard(item)

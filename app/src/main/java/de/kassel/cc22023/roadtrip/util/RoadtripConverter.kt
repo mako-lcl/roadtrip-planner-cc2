@@ -25,7 +25,7 @@ fun convertRoadtripFromAiTrip(trip: OpenAiTrip) : RoadtripAndLocationsAndList {
     val roadtrip = RoadtripData(0, trip.startDate, trip.endDate, trip.startLocation, trip.endLocation)
 
     val packingList = trip.packingList.map {
-        PackingItem(0, 0, it, NotificationType.NONE, false, null, 0.0,0.0,0.0)
+        PackingItem(0, 0, it, NotificationType.NONE, false, null, 0,0.0,0.0)
     }
 
     val roadtripCombined = RoadtripAndLocationsAndList(
