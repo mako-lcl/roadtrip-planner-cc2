@@ -8,6 +8,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -45,7 +46,9 @@ fun ItemCardNameField(
         textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
         colors = TextFieldDefaults.colors(
             disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
-            disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer
+            disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            unfocusedIndicatorColor = Color.Transparent,
+            focusedIndicatorColor = Color.Transparent,
         )
     )
 }

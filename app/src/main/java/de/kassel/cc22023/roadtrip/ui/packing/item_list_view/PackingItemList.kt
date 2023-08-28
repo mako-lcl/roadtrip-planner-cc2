@@ -75,7 +75,7 @@ fun PackingListView(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp, top = 50.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(16.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)

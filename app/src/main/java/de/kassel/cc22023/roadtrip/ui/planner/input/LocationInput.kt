@@ -1,5 +1,6 @@
 package de.kassel.cc22023.roadtrip.ui.planner.input
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +8,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
@@ -24,13 +26,11 @@ fun LocationInput(
 ) {
     val context = LocalContext.current
 
-    Surface(
-        color = Color.Transparent,
-        shadowElevation = 1.dp,
-        tonalElevation = 50.dp,
+    Row(
+
         modifier = Modifier
             .padding(horizontal = 32.dp),
-        shape = RoundedCornerShape(15.dp)
+
     ) {
         TextField(
             shape = RoundedCornerShape(15.dp),
@@ -39,6 +39,11 @@ fun LocationInput(
                 startLocation.value = it
                 startLocationError.value = startLocation.value == ""
             },
+            colors = TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            ) ,
             label = { Text(text = promptText, maxLines = 1) },
             singleLine = true,
             isError = startLocationError.value,
