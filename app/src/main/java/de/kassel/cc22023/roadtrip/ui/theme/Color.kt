@@ -16,6 +16,7 @@
 
 package de.kassel.cc22023.roadtrip.ui.theme
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
 val Purple80 = Color(0xFFD0BCFF)
@@ -30,3 +31,12 @@ val LightBlue = Color(0xFF03A9F4)
 val darkerBlue = Color(0xFF2196F3)
 val darkBackground = Color(red = 28, green = 27, blue = 31)
 val containerColorDark = Color(red = 42, green = 41, blue = 46, alpha = 255)
+val lightBrown = Color(0xFFDFA878)
+val onLightBrown =Color(0xFFF4E0B9)
+
+val brushLight =  Brush.linearGradient(
+    listOf(
+        Color(0xFFF4E0B9),
+        Color(0xFFDFA878)
+    )
+)

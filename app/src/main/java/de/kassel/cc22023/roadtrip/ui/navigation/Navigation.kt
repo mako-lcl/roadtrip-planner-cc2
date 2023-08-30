@@ -68,7 +68,7 @@ fun MainNavigation(
         floatingActionButton = {
             when (navBackStackEntry?.destination?.route) {
                 Screen.Planner.route -> {
-                    FloatingActionButton(onClick = { newTripDialogOpen.value = true }) {
+                    FloatingActionButton(containerColor = MaterialTheme.colorScheme.primary,onClick = { newTripDialogOpen.value = true }) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Add new trip"
@@ -77,7 +77,7 @@ fun MainNavigation(
                 }
 
                 Screen.Packing.route -> {
-                    FloatingActionButton(onClick = {
+                    FloatingActionButton(containerColor = MaterialTheme.colorScheme.primary,onClick = {
                         if (currentTrip != -1L) {
                             newItemDialog.value = true
                         } else {
