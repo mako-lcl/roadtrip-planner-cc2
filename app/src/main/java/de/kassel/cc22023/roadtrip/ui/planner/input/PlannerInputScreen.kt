@@ -1,20 +1,17 @@
 package de.kassel.cc22023.roadtrip.ui.planner.input
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,22 +22,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.repository.database.TransportationType
-import de.kassel.cc22023.roadtrip.ui.planner.PlannerViewModel
-import de.kassel.cc22023.roadtrip.util.convertRoadtripFromAiTrip
 import java.time.LocalDate
 
 @ExperimentalMaterial3Api
 @Composable
-fun PlannerInputScreen(
-    viewModel: PlannerViewModel = hiltViewModel()
-) {
+fun PlannerInputScreen() {
     val context = LocalContext.current
 
     //Background image
-    val image: Painter = painterResource(R.drawable.backgroundplanner)
+    val image: Painter = painterResource(R.drawable.roadtrip5)
 
     /*
     *  Start Date Input States
@@ -77,49 +69,45 @@ fun PlannerInputScreen(
         mutableStateOf(TransportationType.values().first().value)
     }
 
-    AnimatedVisibility(
-        visible = true,
-        enter = fadeIn(),
-        exit = fadeOut()
+    Box(
+        modifier = Modifier.fillMaxSize(),
     ) {
+        // Background image
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize()
+        )
 
-        Box(
-            modifier = Modifier.fillMaxSize(),
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(all = 16.dp)
+                .wrapContentSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Background image
-            Image(
-                painter = image,
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight,
-                modifier = Modifier.fillMaxSize()
-            )
+            Spacer(modifier = Modifier.height(50.dp))
 
-            Column(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(all = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Spacer(modifier = Modifier.height(50.dp))
+            //Input Title
+            InputTitle()
 
-                //Input Title
-                InputTitle()
+            Spacer(modifier = Modifier.height(32.dp))
 
-                //Start Location
-                LocationInput(startLocation, startLocationError, context.getString(R.string.start_location_prompt))
-                //End Location
-                LocationInput(endLocation, endLocationError, context.getString(R.string.end_location_prompt))
+            //Start Location
+            LocationInput(startLocation, startLocationError, context.getString(R.string.start_location_prompt))
+            //End Location
+            LocationInput(endLocation, endLocationError, context.getString(R.string.end_location_prompt))
 
-                // First Date Selection
-                DateInput(startDate, showStartDatePicker, startDateError, selectedStartDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.start_date_prompt))
-                // Second Date Selection
-                DateInput(endDate, showEndDatePicker, endDateError, selectedEndDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.end_date_prompt))
+            // First Date Selection
+            DateInput(startDate, showStartDatePicker, startDateError, selectedStartDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.start_date_prompt))
+            // Second Date Selection
+            DateInput(endDate, showEndDatePicker, endDateError, selectedEndDate, startDateError, selectedStartDate, endDateError, selectedEndDate, context.getString(R.string.end_date_prompt))
 
-                TransportationInput(selectedText)
+            TransportationInput(selectedText)
 
-                InputSubmitButton(startLocationError, endLocationError, startLocation, endLocation, startDateError, endDateError, startDate, endDate, selectedText)
-            }
+            InputSubmitButton(startLocationError, endLocationError, startLocation, endLocation, startDateError, endDateError, startDate, endDate, selectedText)
         }
     }
 }

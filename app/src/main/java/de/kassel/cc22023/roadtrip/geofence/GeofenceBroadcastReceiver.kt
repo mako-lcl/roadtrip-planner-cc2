@@ -1,6 +1,5 @@
 package de.kassel.cc22023.roadtrip.geofence
 
-import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -15,11 +14,9 @@ import de.kassel.cc22023.roadtrip.floor_detection.FloorService
 import de.kassel.cc22023.roadtrip.util.sendNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.math.floor
 
 @AndroidEntryPoint
 class GeofenceBroadcastReceiver : BroadcastReceiver() {
@@ -71,7 +68,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
                     val floorItems = items.filter { it.notificationType == NotificationType.FLOOR }
 
                     if (locationItems.isNotEmpty()) {
-                        val itemsString = items.joinToString("\n") {
+                        val itemsString = locationItems.joinToString("\n") {
                             "• ${it.name}"
                         }
                         val notificationTitle = "Don't forget to pack your bag!"

@@ -9,7 +9,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
-import de.kassel.cc22023.roadtrip.ui.MainActivity
 import de.kassel.cc22023.roadtrip.util.sendNotification
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +16,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.Instant
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 const val ALARM_INTENT = 393482
 
@@ -56,10 +54,7 @@ fun setAlarm(item: PackingItem, context: Context) {
     intent.putExtra("checked", item.isChecked)
     intent.putExtra("image", item.image)
     intent.putExtra("tripId", item.tripId)
-    val pendingIntent = PendingIntent.getBroadcast(context, ALARM_INTENT, intent, PendingIntent.FLAG_IMMUTABLE)
-    // when using setAlarmClock() it displays a notification until alarm rings and when pressed it takes us to mainActivity
-    val mainActivityIntent = Intent(context, MainActivity::class.java)
-    val basicPendingIntent = PendingIntent.getActivity(context, ALARM_INTENT, mainActivityIntent, PendingIntent.FLAG_IMMUTABLE)
+    val pendingIntent = PendingIntent.getBroadcast(context, ALARM_INTENT, intent, PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_CANCEL_CURRENT)
     val date = Instant.ofEpochSecond(time)
     Timber.d("epoch millis: ${date.toEpochMilli()}")
     // creating clockInfo instance
