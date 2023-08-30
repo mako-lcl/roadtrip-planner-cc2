@@ -12,7 +12,6 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.IBinder
-import androidx.core.content.ContextCompat.getSystemService
 import dagger.hilt.android.AndroidEntryPoint
 import de.kassel.cc22023.roadtrip.R
 import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore

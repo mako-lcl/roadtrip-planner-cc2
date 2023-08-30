@@ -2,18 +2,18 @@ package de.kassel.cc22023.roadtrip.data.repository
 
 import android.location.Location
 import de.kassel.cc22023.roadtrip.BuildConfig
-import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
-import de.kassel.cc22023.roadtrip.data.repository.database.PackingItemDao
-import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
 import de.kassel.cc22023.roadtrip.data.network.OpenAiApi
 import de.kassel.cc22023.roadtrip.data.network.UnsplashApi
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequest
 import de.kassel.cc22023.roadtrip.data.network.model.RoadtripRequestMessage
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
+import de.kassel.cc22023.roadtrip.data.repository.database.PackingItemDao
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivity
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripActivityDao
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripData
+import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripDataDao
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocation
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripLocationDao
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
@@ -23,7 +23,6 @@ import de.kassel.cc22023.roadtrip.util.convertRoadtripFromAiTrip
 import de.kassel.cc22023.roadtrip.util.createRoadtripPrompt
 import de.kassel.cc22023.roadtrip.util.launch
 import kotlinx.coroutines.flow.Flow
-import java.lang.Exception
 import javax.inject.Inject
 
 interface RoadtripRepository {

@@ -10,10 +10,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.R
-import de.kassel.cc22023.roadtrip.ui.theme.RoadtripTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

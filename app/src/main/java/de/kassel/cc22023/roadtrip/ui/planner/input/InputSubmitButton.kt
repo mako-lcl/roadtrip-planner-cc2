@@ -6,7 +6,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.hilt.navigation.compose.hiltViewModel
 import de.kassel.cc22023.roadtrip.ui.planner.PlannerViewModel
-import java.time.LocalDate
 
 @Composable
 fun InputSubmitButton(

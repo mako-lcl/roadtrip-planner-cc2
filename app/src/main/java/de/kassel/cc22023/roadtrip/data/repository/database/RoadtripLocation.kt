@@ -8,7 +8,6 @@ import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Relation
-import kotlinx.coroutines.flow.Flow
 
 @Entity
 data class RoadtripLocation(

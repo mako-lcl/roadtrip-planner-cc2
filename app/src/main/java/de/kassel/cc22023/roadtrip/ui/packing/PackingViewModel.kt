@@ -3,10 +3,10 @@ import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.RoadtripRepository
 import de.kassel.cc22023.roadtrip.data.repository.database.NotificationType
 import de.kassel.cc22023.roadtrip.data.repository.database.PackingItem
-import de.kassel.cc22023.roadtrip.data.preferences.PreferenceStore
 import de.kassel.cc22023.roadtrip.data.repository.database.RoadtripAndLocationsAndList
 import de.kassel.cc22023.roadtrip.data.sensors.SensorRepository
 import de.kassel.cc22023.roadtrip.geofence.GeofenceManager

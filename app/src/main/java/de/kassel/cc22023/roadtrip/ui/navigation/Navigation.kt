@@ -34,7 +34,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import de.kassel.cc22023.roadtrip.ui.map.MapScreen
-import de.kassel.cc22023.roadtrip.ui.packing.HeightInput
 import de.kassel.cc22023.roadtrip.ui.packing.NewItemDialog
 import de.kassel.cc22023.roadtrip.ui.packing.PackingScreen
 import de.kassel.cc22023.roadtrip.ui.packing.PackingViewModel
@@ -69,17 +68,16 @@ fun MainNavigation(
         floatingActionButton = {
             when (navBackStackEntry?.destination?.route) {
                 Screen.Planner.route -> {
-                    ExtendedFloatingActionButton(onClick = { newTripDialogOpen.value = true }) {
+                    FloatingActionButton(onClick = { newTripDialogOpen.value = true }) {
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Add new trip"
                         )
-                        Text("New")
                     }
                 }
 
                 Screen.Packing.route -> {
-                    ExtendedFloatingActionButton(onClick = {
+                    FloatingActionButton(onClick = {
                         if (currentTrip != -1L) {
                             newItemDialog.value = true
                         } else {
@@ -92,7 +90,6 @@ fun MainNavigation(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Add new trip"
                         )
-                        Text("New")
                     }
                 }
             }
