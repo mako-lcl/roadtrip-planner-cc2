@@ -70,7 +70,8 @@ fun FloorInputView(
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.Settings,
-                                contentDescription = null
+                                contentDescription = null,
+                                tint = Color.Black
                             )
                         }
                     }

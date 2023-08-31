@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -40,9 +41,9 @@ fun HeightInput(
                 SensorManager.PRESSURE_STANDARD_ATMOSPHERE,
                 pressure.pressure
             )
-            Text("Current height: $altitude")
+            Text("Current height: $altitude", color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-            Text("Which floor are you on? (0 = ground floor)")
+            Text("Which floor are you on? (0 = ground floor)", color = MaterialTheme.colorScheme.onSurfaceVariant)
             TextField(
                 value = floor,
                 onValueChange = {
