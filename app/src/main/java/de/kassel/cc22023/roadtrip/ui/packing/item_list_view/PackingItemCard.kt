@@ -1,6 +1,7 @@
 package de.kassel.cc22023.roadtrip.ui.packing.item_list_view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.Card
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,11 +47,11 @@ fun PackingItemCard (
 
     val image: Painter = painterResource(R.drawable.no_image)
     Card(modifier = Modifier
-        .padding(16.dp)
-        .fillMaxWidth() // Card takes full width
+
+        .fillMaxWidth(), // Card takes full width
     ) {
         Column(
-            modifier = Modifier.padding(bottom = 8.dp),
+            modifier = Modifier.background( MaterialTheme.colorScheme.primaryContainer),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -59,7 +61,7 @@ fun PackingItemCard (
                     .clickable {
                         item.isChecked = !item.isChecked
                         viewModel.updateItem(item)
-                    }
+                    },
             ) {
                 if (item.image != null) {
                     AsyncImage(

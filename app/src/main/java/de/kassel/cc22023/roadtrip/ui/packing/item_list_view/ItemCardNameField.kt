@@ -1,5 +1,6 @@
 package de.kassel.cc22023.roadtrip.ui.packing.item_list_view
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
@@ -8,6 +9,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.sp
@@ -49,6 +51,10 @@ fun ItemCardNameField(
             disabledTextColor = MaterialTheme.colorScheme.onPrimaryContainer,
             unfocusedIndicatorColor = Color.Transparent,
             focusedIndicatorColor = Color.Transparent,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor =  MaterialTheme.colorScheme.primaryContainer,
+
+
         )
     )
 }
