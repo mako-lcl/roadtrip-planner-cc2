@@ -58,8 +58,8 @@ fun DateInput(
                 colors = TextFieldDefaults.colors(
 
                     disabledContainerColor = if (!dateError.value) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.errorContainer,
-                    disabledTextColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
-                    disabledTrailingIconColor = if (!dateError.value) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.error,
+                    disabledTextColor = if (!dateError.value) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+                    disabledTrailingIconColor = if (!dateError.value) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
                     disabledSupportingTextColor = MaterialTheme.colorScheme.error,
                     //errorContainerColor = colorScheme.error,
                     errorTextColor = MaterialTheme.colorScheme.error,

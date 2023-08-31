@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -55,7 +56,7 @@ fun TripSelectionCard(
     Box {
         Card(
             modifier = Modifier
-                .padding(16.dp)
+
                 .fillMaxWidth() // Card takes full width
                 .clickable {
                     viewModel.setTrip(trip.trip.id)
@@ -65,7 +66,8 @@ fun TripSelectionCard(
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.background(de.kassel.cc22023.roadtrip.ui.theme.brushLight
+                modifier = Modifier.background(
+                    de.kassel.cc22023.roadtrip.ui.theme.brushLight
                 )
             ) {
                 Box(modifier = Modifier.height(200.dp)) {
@@ -93,22 +95,31 @@ fun TripSelectionCard(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_marker),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
-                            Text("${trip.trip.startLocation}")
+                            Text(
+                                "${trip.trip.startLocation}",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_down),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_marker),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
-                            Text("${trip.trip.endLocation}")
+                            Text(
+                                "${trip.trip.endLocation}",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                     Column {
@@ -116,22 +127,31 @@ fun TripSelectionCard(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_date),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
-                            Text("${trip.trip.startDate}")
+                            Text(
+                                "${trip.trip.startDate}",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_down),
                             contentDescription = null,
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_date),
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp)
+                                modifier = Modifier.size(16.dp),
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
-                            Text("${trip.trip.endDate}")
+                            Text(
+                                "${trip.trip.endDate}",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
                         }
                     }
                 }

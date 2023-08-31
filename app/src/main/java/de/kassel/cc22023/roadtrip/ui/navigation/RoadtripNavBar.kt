@@ -21,6 +21,7 @@ fun RoadtripNavBar(navController: NavController) {
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+
         modifier = Modifier.height(64.dp)
     ) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()

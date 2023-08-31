@@ -37,10 +37,17 @@ import androidx.core.view.ViewCompat
 private val DarkColorScheme = darkColorScheme(
     primary = Color(0xFFBA704F),
     secondary = lightBrown,
-    tertiary = onLightBrown,
+    tertiary = onLightBrown ,
+    background = LightBlue,
+    surface = onLightBrown,
+    onBackground = Color.White,
+    onSurface = Color.White,
     primaryContainer = lightBrown,
     onPrimaryContainer = onLightBrown,
-
+    secondaryContainer = Color.White,
+    surfaceVariant = lightBrown,
+    onSurfaceVariant = Color.DarkGray,
+    errorContainer = lightBrown,
 
 
 )
@@ -50,23 +57,17 @@ private val LightColorScheme = lightColorScheme(
     secondary = lightBrown,
     tertiary = onLightBrown ,
     background = LightBlue,
-    //surface = darkerBlue,
+    surface = onLightBrown,
     onBackground = Color.White,
-    //onSurface = Color.White,
+    onSurface = Color.Black,
     primaryContainer = lightBrown,
-    onPrimaryContainer = onLightBrown
-    /* Other default colors to override
+    onPrimaryContainer = onLightBrown,
+    secondaryContainer = Color.White,
+    surfaceVariant = lightBrown,
+    onSurfaceVariant = Color.DarkGray,
+    errorContainer = lightBrown,
 
 
-
-     */
-     /*
-
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-
-    */
 )
 
 @Composable
@@ -96,7 +97,7 @@ fun RoadtripTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = LightColorScheme,
         typography = typography,
         content = content
     )

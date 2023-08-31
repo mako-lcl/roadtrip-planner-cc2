@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +40,7 @@ fun SegmentedControl(
     useFixedWidth: Boolean = false,
     itemWidth: Dp = 120.dp,
     cornerRadius : Int = 10,
-    @ColorRes color : Int = R.color.white,
+    @ColorRes color : Int = R.color.brown_200,
     onItemSelection: (selectedItemIndex: Int) -> Unit
 ) {
     val car = painterResource(id = R.drawable.ic_car)
@@ -131,7 +132,7 @@ fun SegmentedControl(
                     /**
                      * not selected colors
                      */
-                    ButtonDefaults.outlinedButtonColors(containerColor = Color.LightGray)
+                    ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer)
                 },
             ) {
                 when (item) {

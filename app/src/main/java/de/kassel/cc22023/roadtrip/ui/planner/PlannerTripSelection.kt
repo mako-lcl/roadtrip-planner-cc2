@@ -57,7 +57,7 @@ fun PlannerTripSelection(
                             isUndo = true
                         )
                         SwipeableActionsBox(
-                            modifier = Modifier,
+                            modifier = Modifier.padding(16.dp),
                             swipeThreshold = 100.dp,
                             endActions = listOf(delete)
                         ) {

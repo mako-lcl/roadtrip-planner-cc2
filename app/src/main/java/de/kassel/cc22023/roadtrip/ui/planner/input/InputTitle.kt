@@ -15,25 +15,13 @@ import de.kassel.cc22023.roadtrip.R
 
 @Composable
 fun InputTitle() {
-    val context = LocalContext.current
-
+    
     val image = painterResource(id = R.drawable.title)
     Image(
         painter = image,
         contentDescription = null,
         contentScale = ContentScale.FillHeight,
-        modifier = Modifier.height(160.dp)
+        modifier = Modifier.height(120.dp)
     )
-/*    Surface(
-        shape = RoundedCornerShape(10),
-        color = MaterialTheme.colorScheme.secondary,
-    ) {
-        Text(
-            context.getString(R.string.planner_top_title),
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White,
-            modifier = Modifier
-                .padding(8.dp),
-        )
-    }*/
+
 }

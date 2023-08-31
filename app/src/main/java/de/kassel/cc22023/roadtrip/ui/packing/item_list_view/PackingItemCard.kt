@@ -47,7 +47,7 @@ fun PackingItemCard (
 
     val image: Painter = painterResource(R.drawable.no_image)
     Card(modifier = Modifier
-        .padding(16.dp)
+
         .fillMaxWidth(), // Card takes full width
     ) {
         Column(
